@@ -26,7 +26,7 @@ import {
 
 import { ValuesTpye } from "./mqtt/mqttComponent";
 import { useEffect, useState } from "react";
-import { error } from "console";
+import CustomScaleControl from "./map/ScaleControl";
 
 const values: ValuesTpye = {
   host: "h1ee611a.ala.cn-hangzhou.emqxsl.cn",
@@ -51,18 +51,7 @@ type AGV_point = {
   x: number;
   y: number;
 };
-async function getData() {
-  const res = await fetch("https://api.example.com/...");
-  // The return value is *not* serialized
-  // You can return Date, Map, Set, etc.
 
-  if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
-}
 //页面jsx
 const MapPage = () => {
   const [dataMap, setDataMap] = useState<string | null>(null);
@@ -89,12 +78,10 @@ const MapPage = () => {
   const AGV_Object = JSON.parse(message_AGV ? message_AGV : "{}");
 
   let AGV_point = [AGV_Object.x, AGV_Object.y];
+  let angle = AGV_Object.yaw;
 
   // 创建一个函数来转换[x, y]坐标到[y, x]
-  const xyToLatLng = (xy: [number, number]): [number, number] => [
-    xy[1] * 20 + 80,
-    xy[0] * 20 + 600,
-  ];
+  const xyToLatLng = (xy: [number, number]): [number, number] => [xy[1], xy[0]];
 
   // 实时车辆坐标
   let AGV_point_real: [number, number] | null = null;
@@ -116,7 +103,6 @@ const MapPage = () => {
     // Get the natural width and height of the image
     width = img.naturalWidth;
     height = img.naturalHeight;
-    // Log the results to the console
     // console.log("The width of the image is " + width + " pixels");
     // console.log("The height of the image is " + height + " pixels");
   };
@@ -168,10 +154,10 @@ const MapPage = () => {
       </CardHeader>
       <CardContent>
         <MapContainer
-          center={{ lat: x0 / 6, lng: y0 - 100 }}
-          zoom={5}
-          minZoom={0}
-          maxZoom={8}
+          center={{ lat: x0 / 2, lng: y0 / 2 }}
+          zoom={0}
+          minZoom={-1}
+          maxZoom={5}
           scrollWheelZoom={true}
           crs={Simple}
           className="rounded-lg w-full h-[30rem] z-0"
@@ -208,8 +194,9 @@ const MapPage = () => {
           )}
 
           {/* {currentTrack && <MapMarker data={currentTrack} />} */}
-          {AGV_point_real && <MapMarker data={AGV_point_real} />}
-          <ScaleControl position="bottomleft" metric={true} imperial={false} />
+          {AGV_point_real && <MapMarker data={AGV_point_real} angle={angle} />}
+          <ScaleControl position="bottomright" metric={true} imperial={false} />
+          <CustomScaleControl />
         </MapContainer>
       </CardContent>
       <CardFooter className="flex gap-3">

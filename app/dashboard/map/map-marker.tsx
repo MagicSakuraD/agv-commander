@@ -3,16 +3,17 @@ import { useEffect, useState } from "react";
 import L from "leaflet";
 
 const icon = L.icon({
-  iconSize: [30, 30],
+  iconSize: [20, 20],
 
-  iconUrl: "/compass.png",
+  iconUrl: "/AGV.png",
 });
 
 interface MapMarkerProps {
-  data: number[];
+  data: [number, number];
+  angle: number; // Add this line
 }
 
-export default function MapMarker({ data }: MapMarkerProps) {
+export default function MapMarker({ data }: MapMarkerProps, angle: number) {
   const [latitude, longitude] = data;
   const [prevPos, setPrevPos] = useState([latitude, longitude]);
 
@@ -27,6 +28,7 @@ export default function MapMarker({ data }: MapMarkerProps) {
       position={[latitude, longitude]}
       previousPosition={prevPos as L.LatLngExpression}
       duration={1000}
+      rotationAngle={angle}
     />
   );
 }
