@@ -13,13 +13,13 @@ function CustomScaleControl() {
    */
   const calculateScale = () => {
     const zoom = map.getZoom();
-    const scale = Math.pow(1 / 2, zoom) * 5;
+    const scale = Math.pow(1 / 2, zoom) * 10;
     return scale;
   };
 
   return (
     <>
-      <div className="leaflet-left leaflet-bottom text-gray-900 bg-slate-50 m-5  border-x-2 border-b-2 w-20 text-xs text-center border-gray-800/75 drop-shadow-2xl">
+      <div className="leaflet-left leaflet-bottom text-gray-900 m-5  border-x-2 border-b-2 w-20 text-xs text-center border-green-600/75 drop-shadow-2xl">
         {calculateScale()} cm
       </div>
     </>

@@ -27,6 +27,7 @@ import {
 import { ValuesTpye } from "./mqtt/mqttComponent";
 import { useEffect, useState } from "react";
 import CustomScaleControl from "./map/ScaleControl";
+import Grid from "./map/grid";
 
 const values: ValuesTpye = {
   host: "h1ee611a.ala.cn-hangzhou.emqxsl.cn",
@@ -51,13 +52,15 @@ type AGV_point = {
   x: number;
   y: number;
 };
-
+// Create a new image object
+const img = new Image();
 //页面jsx
 const MapPage = () => {
   const [dataMap, setDataMap] = useState<string | null>(null);
   useEffect(() => {
     const bodyContent = new FormData();
-    bodyContent.append("mergemap_file_name", "2023_11_07_10_33_57_today44");
+    bodyContent.append("mergemap_file_name", "2023_11_23_15_35_24_CD1");
+
     fetch("http://192.168.2.114:5001/map/getmergemap", {
       method: "POST",
       body: bodyContent,
@@ -81,7 +84,10 @@ const MapPage = () => {
   let angle = AGV_Object.yaw;
 
   // 创建一个函数来转换[x, y]坐标到[y, x]
-  const xyToLatLng = (xy: [number, number]): [number, number] => [xy[1], xy[0]];
+  const xyToLatLng = (xy: [number, number]): [number, number] => [
+    xy[1] * 10,
+    xy[0] * 10,
+  ];
 
   // 实时车辆坐标
   let AGV_point_real: [number, number] | null = null;
@@ -92,31 +98,22 @@ const MapPage = () => {
       number
     ];
   }
-  // Create a new image object
-  const img = new Image();
-  let width = 1000;
-  let height = 1000;
+
   // Set the source of the image to the PNG file
   img.src = dataMap ? dataMap : "/baidu.png";
+
   // Define a function to get the width and height
-  img.onload = function () {
-    // Get the natural width and height of the image
-    width = img.naturalWidth;
-    height = img.naturalHeight;
-    // console.log("The width of the image is " + width + " pixels");
-    // console.log("The height of the image is " + height + " pixels");
-  };
 
   const Simple = L.CRS.Simple;
-  const w = width; // 图片宽度
-  const h = height; // 图片高度
+  const w = img.naturalWidth; // 图片宽度
+  const h = img.naturalHeight; // 图片高度
 
   const x0 = w / 2; // x0为图片中心点的x坐标
   const y0 = h / 2; // y0为图片中心点的y坐标
 
   const bounds: [[number, number], [number, number]] = [
-    [-y0, -x0], // 左上角经纬度坐标
-    [y0, x0], // 右下角经纬度坐标
+    [-x0, -y0], // 左上角经纬度坐标
+    [x0, y0], // 右下角经纬度坐标
   ];
 
   // 定义坐标点
@@ -156,16 +153,15 @@ const MapPage = () => {
         <MapContainer
           center={{ lat: x0 / 2, lng: y0 / 2 }}
           zoom={0}
-          minZoom={-1}
+          minZoom={0}
           maxZoom={5}
           scrollWheelZoom={true}
           crs={Simple}
           className="rounded-lg w-full h-[30rem] z-0"
         >
-          <ImageOverlay
-            url={dataMap ? dataMap : "/baidu.png"}
-            bounds={bounds}
-          />
+          <Grid />
+
+          <ImageOverlay url={img.src} bounds={bounds} />
 
           {points.length > 1 && (
             <>

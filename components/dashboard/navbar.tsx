@@ -11,7 +11,7 @@ import { set } from "react-hook-form";
 const Navbar: React.FC<NavbarProps> = ({ isOpen, setIsOpen }) => {
   return (
     <>
-      <nav className="fixed top-0 z-50 w-full border-b backdrop-blur-md">
+      <nav className="fixed top-0 z-50 w-full border-b backdrop-blur-xl">
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start rtl:justify-end">

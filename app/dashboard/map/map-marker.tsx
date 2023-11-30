@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import L from "leaflet";
 
 const icon = L.icon({
-  iconSize: [20, 20],
+  iconSize: [25, 25],
 
   iconUrl: "/AGV.png",
 });
@@ -13,14 +13,19 @@ interface MapMarkerProps {
   angle: number; // Add this line
 }
 
-export default function MapMarker({ data }: MapMarkerProps, angle: number) {
+export default function MapMarker({ data, angle }: MapMarkerProps) {
   const [latitude, longitude] = data;
   const [prevPos, setPrevPos] = useState([latitude, longitude]);
+  const [prevAngle, setPrevAngle] = useState(angle);
 
   useEffect(() => {
-    if (prevPos[1] !== longitude && prevPos[0] !== latitude)
+    if (prevPos[1] !== longitude || prevPos[0] !== latitude)
       setPrevPos([latitude, longitude]);
   }, [latitude, longitude, prevPos]);
+
+  useEffect(() => {
+    if (prevAngle !== angle) setPrevAngle(angle);
+  }, [angle, prevAngle]);
 
   return (
     <LeafletTrackingMarker
