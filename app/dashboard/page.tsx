@@ -8,6 +8,7 @@ import {
   TileLayer,
   useMap,
   ScaleControl,
+  useMapEvent,
 } from "react-leaflet";
 import L, { LatLngBoundsLiteral } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -58,21 +59,36 @@ const img = new Image();
 const MapPage = () => {
   const [dataMap, setDataMap] = useState<string | null>(null);
   useEffect(() => {
-    const bodyContent = new FormData();
-    bodyContent.append("mergemap_file_name", "2023_11_23_15_35_24_CD1");
+    const fetchData = async () => {
+      try {
+        // 第一个请求
+        const response1 = await fetch("http://192.168.2.114:5001/map/manager", {
+          method: "POST",
+        });
+        const data1 = await response1.json();
+        const current_maps = data1.current_maps.split(" # ")[0];
 
-    fetch("http://192.168.2.114:5001/map/getmergemap", {
-      method: "POST",
-      body: bodyContent,
-    })
-      .then((res) => res.blob())
-      .then((data) => {
-        const imageUrl = URL.createObjectURL(data);
+        // 使用第一个请求的返回值作为第二个请求的参数
+        const bodyContent = new FormData();
+        bodyContent.append("mergemap_file_name", current_maps);
+
+        // 第二个请求
+        const response2 = await fetch(
+          "http://192.168.2.114:5001/map/getmergemap",
+          {
+            method: "POST",
+            body: bodyContent,
+          }
+        );
+        const data2 = await response2.blob();
+        const imageUrl = URL.createObjectURL(data2);
         setDataMap(imageUrl);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error, "😵");
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   const message = useMqtt(values, topicMqtt);
@@ -84,10 +100,7 @@ const MapPage = () => {
   let angle = AGV_Object.yaw;
 
   // 创建一个函数来转换[x, y]坐标到[y, x]
-  const xyToLatLng = (xy: [number, number]): [number, number] => [
-    xy[1] * 10,
-    xy[0] * 10,
-  ];
+  const xyToLatLng = (xy: [number, number]): [number, number] => [xy[1], xy[0]];
 
   // 实时车辆坐标
   let AGV_point_real: [number, number] | null = null;
@@ -142,6 +155,17 @@ const MapPage = () => {
       ? points[points.length - 1]
       : ([0, 0] as [number, number]);
 
+  function MyClick() {
+    const map = useMapEvent("click", (e) => {
+      const popup = L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`坐标${e.latlng.toString().substring(6)}`);
+      popup.openOn(map);
+    });
+
+    return null;
+  }
+
   return (
     <>
       <CardHeader>
@@ -162,7 +186,7 @@ const MapPage = () => {
           <Grid />
 
           <ImageOverlay url={img.src} bounds={bounds} />
-
+          <MyClick />
           {points.length > 1 && (
             <>
               <Polyline
@@ -226,10 +250,10 @@ const MapPage = () => {
         </Card>
         {/* <Card>
           <CardHeader>
-            <CardTitle className="opacity-75">AGV路径规划</CardTitle>
+            <CardTitle className="opacity-75 text-sm">AGV速度</CardTitle>
           </CardHeader>
           <CardContent>
-            <div>{message}</div>
+            <div>0.15 m/s</div>
           </CardContent>
         </Card> */}
       </CardFooter>

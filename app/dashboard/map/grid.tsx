@@ -13,10 +13,16 @@ class CustomGridLayer extends L.GridLayer {
     const tile = document.createElement("canvas");
 
     const ctx = tile.getContext("2d");
+    if (!ctx) {
+      throw new Error("Failed to get 2D context");
+    }
+
+    ctx.fillStyle = "#16a34a";
     const size = this.getTileSize();
 
     tile.width = size.x;
     tile.height = size.y;
+
     if (!ctx) {
       throw new Error("Failed to get 2D context");
     }
