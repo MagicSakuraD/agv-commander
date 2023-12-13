@@ -17,12 +17,11 @@ class CustomGridLayer extends L.GridLayer {
       throw new Error("Failed to get 2D context");
     }
 
-    ctx.fillStyle = "#16a34a";
     const size = this.getTileSize();
-
+    const scale = Math.pow(1 / 2, coords.z);
     tile.width = size.x;
     tile.height = size.y;
-
+    ctx.strokeStyle = "#16a34a";
     if (!ctx) {
       throw new Error("Failed to get 2D context");
     }
@@ -35,6 +34,18 @@ class CustomGridLayer extends L.GridLayer {
     ctx.closePath();
     ctx.stroke();
 
+    // Draw the grid labels
+    ctx.fillStyle = "black";
+    ctx.font = "12px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const x = coords.x * tile.width;
+    const y = coords.y * tile.height;
+    ctx.fillText(
+      `(${x * scale}, ${y * scale})`,
+      tile.width / 7,
+      tile.height / 7
+    );
     return tile;
   }
 }

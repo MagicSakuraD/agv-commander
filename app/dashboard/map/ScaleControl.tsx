@@ -13,7 +13,8 @@ function CustomScaleControl() {
    */
   const calculateScale = () => {
     const zoom = map.getZoom();
-    const scale = Math.pow(1 / 2, zoom) * 10;
+
+    const scale = Math.pow(1 / 2, zoom);
     return scale;
   };
 

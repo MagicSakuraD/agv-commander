@@ -125,8 +125,8 @@ const MapPage = () => {
   const y0 = h / 2; // y0为图片中心点的y坐标
 
   const bounds: [[number, number], [number, number]] = [
-    [-x0, -y0], // 左上角经纬度坐标
-    [x0, y0], // 右下角经纬度坐标
+    [-x0 * 0.05, -y0 * 0.05], // 左上角经纬度坐标
+    [x0 * 0.05, y0 * 0.05], // 右下角经纬度坐标
   ];
 
   // 定义坐标点
@@ -176,12 +176,12 @@ const MapPage = () => {
       <CardContent>
         <MapContainer
           center={{ lat: x0 / 2, lng: y0 / 2 }}
-          zoom={0}
-          minZoom={0}
-          maxZoom={5}
+          zoom={5}
+          minZoom={3}
+          maxZoom={8}
           scrollWheelZoom={true}
           crs={Simple}
-          className="rounded-lg w-full h-[30rem] z-0"
+          className="rounded-lg w-full h-[30rem] z-0 "
         >
           <Grid />
 
@@ -215,8 +215,8 @@ const MapPage = () => {
 
           {/* {currentTrack && <MapMarker data={currentTrack} />} */}
           {AGV_point_real && <MapMarker data={AGV_point_real} angle={angle} />}
-          <ScaleControl position="bottomright" metric={true} imperial={false} />
-          <CustomScaleControl />
+          <ScaleControl position="bottomleft" metric={true} imperial={false} />
+          {/* <CustomScaleControl /> */}
         </MapContainer>
       </CardContent>
       <CardFooter className="flex gap-3">
