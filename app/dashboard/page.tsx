@@ -15,6 +15,8 @@ import "leaflet/dist/leaflet.css";
 import { MapData } from "./map/data";
 import useMqtt from "./mqtt/mqttComponent";
 import MapMarker from "./map/map-marker";
+import { icp_qualityAtom, slam_posAtom, loc_posAtom } from "./atoms";
+import { useAtom } from "jotai";
 
 import {
   Card,
@@ -24,11 +26,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import { Button } from "@/components/ui/button";
 import { ValuesTpye } from "./mqtt/mqttComponent";
 import { useEffect, useState } from "react";
 import CustomScaleControl from "./map/ScaleControl";
 import Grid from "./map/grid";
+import useROSLIB from "./mqtt/roslib";
 
 const values: ValuesTpye = {
   host: "h1ee611a.ala.cn-hangzhou.emqxsl.cn",
@@ -58,6 +61,9 @@ const img = new Image();
 //页面jsx
 const MapPage = () => {
   const [dataMap, setDataMap] = useState<string | null>(null);
+  const [icp_quality, setIcp_quality] = useAtom(icp_qualityAtom);
+  const [slam_pos, setSlam_pos] = useAtom(slam_posAtom);
+  const [loc_pos, setLoc_pos] = useAtom(loc_posAtom);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,10 +98,15 @@ const MapPage = () => {
   }, []);
 
   const message = useMqtt(values, topicMqtt);
+  useROSLIB();
+  // const message_AGV = useMqtt(mqttConfig, "/heart/5003");
+  const message_AGV = slam_pos;
+  const AGV_Object = JSON.parse(
+    message_AGV ? JSON.stringify(message_AGV) : "{}"
+  );
 
-  const message_AGV = useMqtt(mqttConfig, "/heart/5003");
-  const AGV_Object = JSON.parse(message_AGV ? message_AGV : "{}");
-
+  const Local_Object = JSON.parse(loc_pos ? JSON.stringify(loc_pos) : "{}");
+  let Local_point = [Local_Object.x, Local_Object.y];
   let AGV_point = [AGV_Object.x, AGV_Object.y];
   let angle = AGV_Object.yaw;
 
@@ -159,7 +170,7 @@ const MapPage = () => {
     const map = useMapEvent("click", (e) => {
       const popup = L.popup()
         .setLatLng(e.latlng)
-        .setContent(`坐标${e.latlng.toString().substring(6)}`);
+        .setContent(`(${e.latlng.lng}, ${e.latlng.lat})`);
       popup.openOn(map);
     });
 
@@ -219,10 +230,10 @@ const MapPage = () => {
           {/* <CustomScaleControl /> */}
         </MapContainer>
       </CardContent>
-      <CardFooter className="flex gap-3">
-        <Card>
+      <CardFooter className="flex flex-wrap gap-3 justify-between">
+        <Card className="flex-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="opacity-75 text-sm">AGV坐标</CardTitle>
+            <CardTitle className="opacity-75 text-sm">SLAM坐标</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -236,7 +247,7 @@ const MapPage = () => {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+            <div className="scroll-m-20 text-xl font-semibold tracking-tight h-14">
               <ul>
                 <li>
                   x:<b className="ml-1">{AGV_point[0]?.toFixed(2)}</b>
@@ -248,14 +259,96 @@ const MapPage = () => {
             </div>
           </CardContent>
         </Card>
-        {/* <Card>
-          <CardHeader>
-            <CardTitle className="opacity-75 text-sm">AGV速度</CardTitle>
+
+        <Card className="flex-1">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="opacity-75 text-sm">LOC坐标</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-4 h-4 text-muted-foreground"
+            >
+              <path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
           </CardHeader>
           <CardContent>
-            <div>0.15 m/s</div>
+            <div className="scroll-m-20 text-xl font-semibold tracking-tight h-14">
+              <ul>
+                <li>
+                  x:<b className="ml-1">{Local_point[0]?.toFixed(2)}</b>
+                </li>
+                <li>
+                  y:<b className="ml-1">{Local_point[1]?.toFixed(2)}</b>
+                </li>
+              </ul>
+            </div>
           </CardContent>
-        </Card> */}
+        </Card>
+
+        <Card className="flex-1">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="opacity-75 text-sm">匹配度</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="w-4 h-4 text-muted-foreground"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m9 14.25 6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185ZM9.75 9h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008V13.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+              />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="scroll-m-20 text-xl font-semibold tracking-tight h-14 flex  items-center">
+              <div>{(icp_quality * 100).toFixed(2)}%</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="flex-1">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="opacity-75 text-sm">定位控制</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="w-4 h-4 text-muted-foreground"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4.867 19.125h.008v.008h-.008v-.008Z"
+              />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="scroll-m-20 text-xl font-semibold tracking-tight h-14">
+              <CardDescription>
+                重启定位程序和记录debug定位数据的功能
+              </CardDescription>
+              <div className="flex justify-between mt-2">
+                <Button>记录debug</Button>
+                <Button>重启定位</Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </CardFooter>
     </>
   );

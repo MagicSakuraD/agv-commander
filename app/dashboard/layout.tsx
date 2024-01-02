@@ -33,7 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <SideNav />
         </div>
       </aside>
-      <div className="p-4 mt-14 md:ml-48" onClick={handleContentClick}>
+      <div className="md:p-4 mt-14 md:ml-48" onClick={handleContentClick}>
         {children}
       </div>
     </main>
