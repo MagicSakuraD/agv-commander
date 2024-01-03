@@ -1,6 +1,11 @@
 import ROSLIB from "roslib";
 import { use, useEffect, useState } from "react";
-import { icp_qualityAtom, slam_posAtom, loc_posAtom } from "../atoms";
+import {
+  icp_qualityAtom,
+  slam_posAtom,
+  loc_posAtom,
+  ros_RunningAtom,
+} from "../atoms";
 import { useAtom } from "jotai";
 
 export interface ICPQualityMessage extends ROSLIB.Message {
@@ -21,10 +26,21 @@ export default function useROSLIB() {
   const [icp_quality, setIcp_quality] = useAtom(icp_qualityAtom);
   const [slam_pos, setSlam_pos] = useAtom(slam_posAtom);
   const [loc_pos, setLoc_pos] = useAtom(loc_posAtom);
+  const [ros_Running, setRos_Running] = useAtom(ros_RunningAtom);
   useEffect(() => {
     let ros = new ROSLIB.Ros({ url: "ws://192.168.2.114:9090" });
     ros.on("connection", function () {
       console.log("连接ros成功✅");
+      setRos_Running(true);
+    });
+
+    ros.on("error", function (error) {
+      console.log("断开连接❌", error);
+      setRos_Running(false);
+    });
+    ros.on("close", function () {
+      console.log("系统关闭🔌");
+      setRos_Running(false);
     });
     // 接收到icp 质量信号
     const listener_icp_quality = new ROSLIB.Topic({

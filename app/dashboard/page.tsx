@@ -15,7 +15,12 @@ import "leaflet/dist/leaflet.css";
 import { MapData } from "./map/data";
 import useMqtt from "./mqtt/mqttComponent";
 import MapMarker from "./map/map-marker";
-import { icp_qualityAtom, slam_posAtom, loc_posAtom } from "./atoms";
+import {
+  icp_qualityAtom,
+  slam_posAtom,
+  loc_posAtom,
+  ros_RunningAtom,
+} from "./atoms";
 import { useAtom } from "jotai";
 
 import {
@@ -32,6 +37,9 @@ import { useEffect, useState } from "react";
 import CustomScaleControl from "./map/ScaleControl";
 import Grid from "./map/grid";
 import useROSLIB from "./mqtt/roslib";
+import { set } from "react-hook-form";
+import { Badge } from "@/components/ui/badge";
+import useSocket from "./mqtt/socket";
 
 const values: ValuesTpye = {
   host: "h1ee611a.ala.cn-hangzhou.emqxsl.cn",
@@ -64,33 +72,44 @@ const MapPage = () => {
   const [icp_quality, setIcp_quality] = useAtom(icp_qualityAtom);
   const [slam_pos, setSlam_pos] = useAtom(slam_posAtom);
   const [loc_pos, setLoc_pos] = useAtom(loc_posAtom);
+  const [ros_Running, setRos_Running] = useAtom(ros_RunningAtom);
+  const [isRecord, setIsRecord] = useState(0);
+  const [RecordContext, setRecordContext] = useState<string>("记录debug");
+  const [RecordColor, setRecordColor] = useState<
+    "default" | "link" | "destructive" | "outline" | "secondary" | "ghost"
+  >("default");
+  const [png_x, setPng_x] = useState<number>(0);
+  const [png_y, setPng_y] = useState<number>(0);
+  const [resolution, setResolution] = useState<number>(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 第一个请求
-        const response1 = await fetch("http://192.168.2.114:5001/map/manager", {
-          method: "POST",
-        });
-        const data1 = await response1.json();
-        const current_maps = data1.current_maps.split(" # ")[0];
-
-        // 使用第一个请求的返回值作为第二个请求的参数
-        const bodyContent = new FormData();
-        bodyContent.append("mergemap_file_name", current_maps);
-
-        // 第二个请求
-        const response2 = await fetch(
-          "http://192.168.2.114:5001/map/getmergemap",
+        let response = await fetch(
+          "http://192.168.2.112:5000/api/info/CurrentMapUsePngData",
           {
-            method: "POST",
-            body: bodyContent,
+            method: "GET",
           }
         );
-        const data2 = await response2.blob();
-        const imageUrl = URL.createObjectURL(data2);
+        const image_data = await response.json();
+        const imageUrl = `data:image/png;base64,${image_data.data}`;
         setDataMap(imageUrl);
+
+        let response_Name = await fetch(
+          "http://192.168.2.112:5000/api/info/CurrentMapUsePngInfo",
+          {
+            method: "GET",
+          }
+        );
+
+        let data_Name = await response_Name.text();
+        let data_png = JSON.parse(data_Name);
+        setPng_x(data_png.data.x);
+        setPng_y(data_png.data.y);
+        setResolution(data_png.data.resolution);
+
+        useSocket();
       } catch (error) {
-        console.log(error, "😵");
+        console.log(error, "地图获取失败😵");
       }
     };
 
@@ -132,12 +151,9 @@ const MapPage = () => {
   const w = img.naturalWidth; // 图片宽度
   const h = img.naturalHeight; // 图片高度
 
-  const x0 = w / 2; // x0为图片中心点的x坐标
-  const y0 = h / 2; // y0为图片中心点的y坐标
-
   const bounds: [[number, number], [number, number]] = [
-    [-x0 * 0.05, -y0 * 0.05], // 左上角经纬度坐标
-    [x0 * 0.05, y0 * 0.05], // 右下角经纬度坐标
+    [png_x * 10 * resolution, png_y * 10 * resolution], // 左上角经纬度坐标
+    [(png_x * 10 + w) * resolution, (png_y * 10 + h) * resolution], // 右下角经纬度坐标
   ];
 
   // 定义坐标点
@@ -170,23 +186,66 @@ const MapPage = () => {
     const map = useMapEvent("click", (e) => {
       const popup = L.popup()
         .setLatLng(e.latlng)
-        .setContent(`(${e.latlng.lng}, ${e.latlng.lat})`);
+        .setContent(`(${e.latlng.lng.toFixed(2)}, ${e.latlng.lat.toFixed(2)})`);
       popup.openOn(map);
     });
 
     return null;
   }
 
+  function handleRecord() {
+    if (isRecord === 0) {
+      setIsRecord(1);
+      setRecordContext("停止记录");
+      setRecordColor("destructive");
+    } else {
+      setIsRecord(0);
+      setRecordContext("记录debug");
+      setRecordColor("default");
+    }
+  }
   return (
     <>
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold tracking-tight">
-          系统监控
+        <CardTitle className="text-2xl font-semibold tracking-tight flex flex-row justify-between">
+          <p>系统监控</p>
+
+          <div className="text-sm text-muted-foreground flex flex-row items-center gap-1">
+            {ros_Running ? (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="#22c55e"
+                  className="bi bi-check-circle-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                </svg>
+                <p>运行中</p>
+              </>
+            ) : (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="#e11d48"
+                  className="bi bi-x-circle-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
+                </svg>
+                <p>异常</p>
+              </>
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <MapContainer
-          center={{ lat: x0 / 2, lng: y0 / 2 }}
+          center={{ lat: 0, lng: 0 }}
           zoom={5}
           minZoom={3}
           maxZoom={8}
@@ -231,23 +290,26 @@ const MapPage = () => {
         </MapContainer>
       </CardContent>
       <CardFooter className="flex flex-wrap gap-3 justify-between">
-        <Card className="flex-1">
+        <Card className="flex-1 h-32">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="opacity-75 text-sm">SLAM坐标</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              strokeWidth="1.5"
+              strokeWidth={1.5}
               stroke="currentColor"
-              className="w-4 h-4"
+              className="w-4 h-4 text-muted-foreground"
             >
-              <path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"
+              />
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight h-14">
+            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
               <ul>
                 <li>
                   x:<b className="ml-1">{AGV_point[0]?.toFixed(2)}</b>
@@ -260,8 +322,8 @@ const MapPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="flex-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="flex-1 h-32">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
             <CardTitle className="opacity-75 text-sm">LOC坐标</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -276,7 +338,7 @@ const MapPage = () => {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight h-14">
+            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
               <ul>
                 <li>
                   x:<b className="ml-1">{Local_point[0]?.toFixed(2)}</b>
@@ -289,7 +351,7 @@ const MapPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="flex-1">
+        <Card className="flex-1   h-32 ">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="opacity-75 text-sm">匹配度</CardTitle>
             <svg
@@ -308,13 +370,14 @@ const MapPage = () => {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight h-14 flex  items-center">
-              <div>{(icp_quality * 100).toFixed(2)}%</div>
+            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+              {/* <CardDescription>评估AGV定位系统质量的重要指标</CardDescription> */}
+              <div className="mt-4">{(icp_quality * 100).toFixed(2)}%</div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="flex-1">
+        <Card className="flex-1  h-32">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="opacity-75 text-sm">定位控制</CardTitle>
             <svg
@@ -338,12 +401,12 @@ const MapPage = () => {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight h-14">
-              <CardDescription>
-                重启定位程序和记录debug定位数据的功能
-              </CardDescription>
+            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+              <CardDescription>重启定位程序和记录debug定位数据</CardDescription>
               <div className="flex justify-between mt-2">
-                <Button>记录debug</Button>
+                <Button variant={RecordColor} onClick={handleRecord}>
+                  {RecordContext}
+                </Button>
                 <Button>重启定位</Button>
               </div>
             </div>
