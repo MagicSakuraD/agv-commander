@@ -16,7 +16,7 @@ import clsx from "clsx";
 const links = [
   { name: "系统监控", href: "/dashboard", icon: PresentationChartBarIcon },
 
-  { name: "建图模块", href: "/dashboard/map", icon: MapIcon },
+  { name: "建图模块", href: "/dashboard/mapping", icon: MapIcon },
 ];
 
 export default function NavLinks() {

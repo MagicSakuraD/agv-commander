@@ -40,6 +40,8 @@ import useROSLIB from "./mqtt/roslib";
 import { set } from "react-hook-form";
 import { Badge } from "@/components/ui/badge";
 import useSocket from "./mqtt/socket";
+import { io } from "socket.io-client";
+import AlertDialogDemo from "@/components/dashboard/alertDialog";
 
 const values: ValuesTpye = {
   host: "h1ee611a.ala.cn-hangzhou.emqxsl.cn",
@@ -69,6 +71,7 @@ const img = new Image();
 //页面jsx
 const MapPage = () => {
   const [dataMap, setDataMap] = useState<string | null>(null);
+  const [rpi_temperature, setRpi_temperature] = useState<number>(0);
   const [icp_quality, setIcp_quality] = useAtom(icp_qualityAtom);
   const [slam_pos, setSlam_pos] = useAtom(slam_posAtom);
   const [loc_pos, setLoc_pos] = useAtom(loc_posAtom);
@@ -107,7 +110,16 @@ const MapPage = () => {
         setPng_y(data_png.data.y);
         setResolution(data_png.data.resolution);
 
-        useSocket();
+        const socket = io("http://192.168.2.114:5001");
+        socket.on("transmit_data", (data) => {
+          // setRos_Running(data.location_record_is_running);
+          setRpi_temperature(data.rpi_temperature);
+        });
+        socket.on("status", (data) => {
+          socket.emit("start");
+        });
+
+        // useSocket();
       } catch (error) {
         console.log(error, "地图获取失败😵");
       }
@@ -117,6 +129,7 @@ const MapPage = () => {
   }, []);
 
   const message = useMqtt(values, topicMqtt);
+
   useROSLIB();
   // const message_AGV = useMqtt(mqttConfig, "/heart/5003");
   const message_AGV = slam_pos;
@@ -193,7 +206,9 @@ const MapPage = () => {
     return null;
   }
 
-  function handleRecord() {
+  async function handleRecord() {
+    let bodyContent = new FormData();
+    bodyContent.append("btn_value", `${isRecord}`);
     if (isRecord === 0) {
       setIsRecord(1);
       setRecordContext("停止记录");
@@ -203,6 +218,15 @@ const MapPage = () => {
       setRecordContext("记录debug");
       setRecordColor("default");
     }
+    let response_btn = await fetch(
+      "http://192.168.2.114:5001/monitor/record_data",
+      {
+        method: "POST",
+        body: bodyContent,
+      }
+    );
+    let data_btn = await response_btn.text();
+    console.log(data_btn, "👌");
   }
   return (
     <>
@@ -290,7 +314,7 @@ const MapPage = () => {
         </MapContainer>
       </CardContent>
       <CardFooter className="flex flex-wrap gap-3 justify-between">
-        <Card className="flex-1 h-32">
+        <Card className="flex-1 h-36">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="opacity-75 text-sm">SLAM坐标</CardTitle>
             <svg
@@ -322,7 +346,7 @@ const MapPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="flex-1 h-32">
+        <Card className="flex-1 h-36">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
             <CardTitle className="opacity-75 text-sm">LOC坐标</CardTitle>
             <svg
@@ -351,7 +375,7 @@ const MapPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="flex-1   h-32 ">
+        <Card className="flex-1   h-36 ">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="opacity-75 text-sm">匹配度</CardTitle>
             <svg
@@ -377,7 +401,33 @@ const MapPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="flex-1  h-32">
+        <Card className="flex-1   h-36 ">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="opacity-75 text-sm">温度</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="w-4 h-4 text-muted-foreground"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m9 14.25 6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185ZM9.75 9h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008V13.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+              />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+              {/* <CardDescription>评估AGV定位系统质量的重要指标</CardDescription> */}
+              <div className="mt-4">{rpi_temperature}℃</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="flex-1  h-36">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="opacity-75 text-sm">定位控制</CardTitle>
             <svg
@@ -407,7 +457,7 @@ const MapPage = () => {
                 <Button variant={RecordColor} onClick={handleRecord}>
                   {RecordContext}
                 </Button>
-                <Button>重启定位</Button>
+                <AlertDialogDemo />
               </div>
             </div>
           </CardContent>
