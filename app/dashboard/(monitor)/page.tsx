@@ -20,6 +20,7 @@ import {
   slam_posAtom,
   loc_posAtom,
   ros_RunningAtom,
+  temperatureAtom,
 } from "./atoms";
 import { useAtom } from "jotai";
 
@@ -42,6 +43,13 @@ import { Badge } from "@/components/ui/badge";
 import useSocket from "./mqtt/socket";
 import { io } from "socket.io-client";
 import AlertDialogDemo from "@/components/dashboard/alertDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
+import { Suspense } from "react";
+import NodeSkeleton from "./NodeSkeleton";
+import Nodelist from "./tabs/nodelist";
+import Map_Manager from "./tabs/(map-manager)/map-manager";
+import Localization from "./localizationBags/Localization";
 
 const values: ValuesTpye = {
   host: "h1ee611a.ala.cn-hangzhou.emqxsl.cn",
@@ -70,25 +78,27 @@ type AGV_point = {
 const img = new Image();
 //页面jsx
 const MapPage = () => {
+  const { toast } = useToast();
   const [dataMap, setDataMap] = useState<string | null>(null);
-  const [rpi_temperature, setRpi_temperature] = useState<number>(0);
+  const [rpi_temperature, setRpi_temperature] = useAtom(temperatureAtom);
   const [icp_quality, setIcp_quality] = useAtom(icp_qualityAtom);
   const [slam_pos, setSlam_pos] = useAtom(slam_posAtom);
   const [loc_pos, setLoc_pos] = useAtom(loc_posAtom);
   const [ros_Running, setRos_Running] = useAtom(ros_RunningAtom);
   const [isRecord, setIsRecord] = useState(0);
-  const [RecordContext, setRecordContext] = useState<string>("记录debug");
+  const [RecordContext, setRecordContext] = useState<string>("记录数据");
   const [RecordColor, setRecordColor] = useState<
     "default" | "link" | "destructive" | "outline" | "secondary" | "ghost"
   >("default");
   const [png_x, setPng_x] = useState<number>(0);
   const [png_y, setPng_y] = useState<number>(0);
   const [resolution, setResolution] = useState<number>(0);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         let response = await fetch(
-          "http://192.168.2.112:5000/api/info/CurrentMapUsePngData",
+          "http://192.168.2.112:8888/api/info/CurrentMapUsePngData",
           {
             method: "GET",
           }
@@ -98,7 +108,7 @@ const MapPage = () => {
         setDataMap(imageUrl);
 
         let response_Name = await fetch(
-          "http://192.168.2.112:5000/api/info/CurrentMapUsePngInfo",
+          "http://192.168.2.112:8888/api/info/CurrentMapUsePngInfo",
           {
             method: "GET",
           }
@@ -114,6 +124,7 @@ const MapPage = () => {
         socket.on("transmit_data", (data) => {
           // setRos_Running(data.location_record_is_running);
           setRpi_temperature(data.rpi_temperature);
+          // console.log(data.rpi_temperature, "👌");
         });
         socket.on("status", (data) => {
           socket.emit("start");
@@ -129,7 +140,7 @@ const MapPage = () => {
   }, []);
 
   const message = useMqtt(values, topicMqtt);
-
+  // const message = null;
   useROSLIB();
   // const message_AGV = useMqtt(mqttConfig, "/heart/5003");
   const message_AGV = slam_pos;
@@ -140,7 +151,7 @@ const MapPage = () => {
   const Local_Object = JSON.parse(loc_pos ? JSON.stringify(loc_pos) : "{}");
   let Local_point = [Local_Object.x, Local_Object.y];
   let AGV_point = [AGV_Object.x, AGV_Object.y];
-  let angle = AGV_Object.yaw;
+  let angle = Local_Object.degree.toFixed(2);
 
   // 创建一个函数来转换[x, y]坐标到[y, x]
   const xyToLatLng = (xy: [number, number]): [number, number] => [xy[1], xy[0]];
@@ -207,26 +218,155 @@ const MapPage = () => {
   }
 
   async function handleRecord() {
-    let bodyContent = new FormData();
-    bodyContent.append("btn_value", `${isRecord}`);
+    // 获取当前日期并转换为字符串
+    let currentDate = new Date();
+    let dateString = currentDate.toISOString().slice(0, 10); // 格式为 "YYYY-MM-DD"
+
+    // 获取当前的小时、分钟和秒数
+    let timeString =
+      currentDate.getHours().toString().padStart(2, "0") +
+      ":" +
+      currentDate.getMinutes().toString().padStart(2, "0") +
+      ":" +
+      currentDate.getSeconds().toString().padStart(2, "0"); // 格式为 "HH:MM:SS"
+
+    // 将日期字符串和时间字符串添加到 "RecordDebugData" 后面
+    let nameValue = "RecordDebugData-" + dateString + "_" + timeString;
+
+    let cmdValue;
     if (isRecord === 0) {
+      cmdValue = "start";
       setIsRecord(1);
       setRecordContext("停止记录");
       setRecordColor("destructive");
     } else {
+      cmdValue = "stop";
       setIsRecord(0);
       setRecordContext("记录debug");
       setRecordColor("default");
     }
+
+    // 创建请求体对象
+    let bodyContent = {
+      cmd: cmdValue,
+      name: nameValue,
+    };
+
     let response_btn = await fetch(
-      "http://192.168.2.114:5001/monitor/record_data",
+      "http://192.168.2.112:8888/api/config/StartRecordDebugData",
       {
         method: "POST",
-        body: bodyContent,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyContent),
       }
     );
-    let data_btn = await response_btn.text();
-    console.log(data_btn, "👌");
+    let data_Record = await response_btn.text();
+    // 将响应文本转换为一个对象
+    let responseObj = JSON.parse(data_Record);
+    // 检查 'code' 的值
+    if (responseObj.code === 0) {
+      // 如果 'code' 的值为 0，那么打印 'data' 的值
+      console.log(responseObj.data);
+      toast({
+        description: "✅: " + responseObj.data,
+      });
+    } else if (responseObj.code === -1) {
+      // 如果 'code' 的值为 -1，那么打印一个错误消息
+      console.log(responseObj.msg);
+      toast({
+        description: "❌: " + responseObj.data,
+      });
+    }
+  }
+
+  async function handleRestart() {
+    // 创建请求体对象
+    let bodyContent = {
+      cmd: "start",
+    };
+
+    // 发送 POST 请求
+    fetch("http://192.168.2.112:8888/api/config/StartLocalization", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyContent),
+    })
+      .then((response) => {
+        // 检查响应的状态码
+        if (!response.ok) {
+          throw new Error("HTTP 状态" + response.status);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // 处理响应数据
+
+        if (data.code === 0) {
+          // 如果 'code' 的值为 0，那么打印 'data' 的值
+          console.log(data.data);
+          toast({
+            description: "✅: " + data.data,
+          });
+        } else if (data.code === -1) {
+          // 如果 'code' 的值为 -1，那么打印一个错误消息
+          console.log(data.msg);
+          toast({
+            description: "❌: " + data.data,
+          });
+        }
+      })
+      .catch((error) => {
+        // 处理错误
+        console.error("Error:", error);
+      });
+  }
+
+  async function handleStop() {
+    // 创建请求体对象
+    let bodyContent = {
+      cmd: "stop",
+    };
+
+    // 发送 POST 请求
+    fetch("http://192.168.2.112:8888/api/config/StartLocalization", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyContent),
+    })
+      .then((response) => {
+        // 检查响应的状态码
+        if (!response.ok) {
+          throw new Error("HTTP 状态" + response.status);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // 处理响应数据
+
+        if (data.code === 0) {
+          // 如果 'code' 的值为 0，那么打印 'data' 的值
+          console.log(data.data);
+          toast({
+            description: "✅: " + data.data,
+          });
+        } else if (data.code === -1) {
+          // 如果 'code' 的值为 -1，那么打印一个错误消息
+          console.log(data.msg);
+          toast({
+            description: "❌: " + data.data,
+          });
+        }
+      })
+      .catch((error) => {
+        // 处理错误
+        console.error("Error:", error);
+      });
   }
   return (
     <>
@@ -313,155 +453,226 @@ const MapPage = () => {
           {/* <CustomScaleControl /> */}
         </MapContainer>
       </CardContent>
-      <CardFooter className="flex flex-wrap gap-3 justify-between">
-        <Card className="flex-1 h-36">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="opacity-75 text-sm">SLAM坐标</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4 text-muted-foreground"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"
-              />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
-              <ul>
-                <li>
-                  x:<b className="ml-1">{AGV_point[0]?.toFixed(2)}</b>
-                </li>
-                <li>
-                  y:<b className="ml-1">{AGV_point[1]?.toFixed(2)}</b>
-                </li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card className="flex-1 h-36">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
-            <CardTitle className="opacity-75 text-sm">LOC坐标</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="w-4 h-4 text-muted-foreground"
-            >
-              <path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
-              <ul>
-                <li>
-                  x:<b className="ml-1">{Local_point[0]?.toFixed(2)}</b>
-                </li>
-                <li>
-                  y:<b className="ml-1">{Local_point[1]?.toFixed(2)}</b>
-                </li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
+      <CardFooter className="">
+        <Tabs defaultValue="AGV" className="w-full">
+          <TabsList>
+            <TabsTrigger value="AGV">AGV定位</TabsTrigger>
+            <TabsTrigger value="Node">ROS节点</TabsTrigger>
+            <TabsTrigger value="mapmanager">地图管理</TabsTrigger>
+          </TabsList>
+          <TabsContent value="AGV" className="flex flex-col gap-4">
+            <div className="flex flex-wrap gap-3 justify-between w-full">
+              <Card className="flex-1 h-36">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="opacity-75 text-sm">SLAM坐标</CardTitle>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="bi bi-broadcast w-4 h-4"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
+                    <path d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707m2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708m5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708m2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0" />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+                    <ul>
+                      <li>
+                        x:<b className="ml-1">{AGV_point[0]?.toFixed(2)} m</b>
+                      </li>
+                      <li>
+                        y:<b className="ml-1">{AGV_point[1]?.toFixed(2)} m</b>
+                      </li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
 
-        <Card className="flex-1   h-36 ">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="opacity-75 text-sm">匹配度</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="w-4 h-4 text-muted-foreground"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m9 14.25 6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185ZM9.75 9h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008V13.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-              />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
-              {/* <CardDescription>评估AGV定位系统质量的重要指标</CardDescription> */}
-              <div className="mt-4">{(icp_quality * 100).toFixed(2)}%</div>
-            </div>
-          </CardContent>
-        </Card>
+              <Card className="flex-1 h-36">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
+                  <CardTitle className="opacity-75 text-sm">LOC坐标</CardTitle>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="bi bi-geo-alt w-4 h-4"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
+                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" />
+                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+                    <ul>
+                      <li>
+                        x:<b className="ml-1">{Local_point[0]?.toFixed(2)} m</b>
+                      </li>
+                      <li>
+                        y:<b className="ml-1">{Local_point[1]?.toFixed(2)} m</b>
+                      </li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
 
-        <Card className="flex-1   h-36 ">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="opacity-75 text-sm">温度</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="w-4 h-4 text-muted-foreground"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m9 14.25 6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185ZM9.75 9h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008V13.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-              />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
-              {/* <CardDescription>评估AGV定位系统质量的重要指标</CardDescription> */}
-              <div className="mt-4">{rpi_temperature}℃</div>
-            </div>
-          </CardContent>
-        </Card>
+              <Card className="flex-1 h-36">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="opacity-75 text-sm">角度</CardTitle>
+                  <svg
+                    className="icon w-4 h-4"
+                    viewBox="0 0 1024 1024"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M0 960h1024V1024H0z"
+                      fill="currentColor"
+                      p-id="2361"
+                    ></path>
+                    <path
+                      d="M581.12 1021.44c-32.768 0-60.416-24.576-63.488-57.856-19.968-207.36-159.744-387.584-356.352-458.752-33.28-11.776-50.176-48.64-38.4-81.92 12.288-33.28 48.64-50.176 81.92-38.4 242.688 88.064 415.232 310.272 439.808 566.272 3.584 35.328-22.528 66.56-57.344 69.632-1.536 0.512-3.584 1.024-6.144 1.024zM628.736 229.376L377.344 83.456 593.92 0z"
+                      fill="currentColor"
+                      p-id="2362"
+                    ></path>
+                    <path
+                      d="M0.0768 960.12288l512-886.784 55.424 32-512 886.784z"
+                      fill="currentColor"
+                      p-id="2363"
+                    ></path>
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+                    <div className="mt-4">{angle}°</div>
+                  </div>
+                </CardContent>
+              </Card>
 
-        <Card className="flex-1  h-36">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="opacity-75 text-sm">定位控制</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="w-4 h-4 text-muted-foreground"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4.867 19.125h.008v.008h-.008v-.008Z"
-              />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="scroll-m-20 text-xl font-semibold tracking-tight">
-              <CardDescription>重启定位程序和记录debug定位数据</CardDescription>
-              <div className="flex justify-between mt-2">
-                <Button variant={RecordColor} onClick={handleRecord}>
-                  {RecordContext}
-                </Button>
-                <AlertDialogDemo />
+              <Card className="flex-1   h-36 ">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="opacity-75 text-sm">匹配度</CardTitle>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="bi bi-percent w-4 h-4"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
+                    <path d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0M4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5m7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+                    {/* <CardDescription>评估AGV定位系统质量的重要指标</CardDescription> */}
+                    <div className="mt-4">
+                      {(icp_quality * 100).toFixed(2)}%
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="flex-1  h-36 ">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="opacity-75 text-sm">温度</CardTitle>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="bi bi-thermometer-low w-4 h-4"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
+                    <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V9.5a.5.5 0 0 1 1 0v1.585a1.5 1.5 0 0 1 1 1.415" />
+                    <path d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1" />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+                    <div className="mt-4">{rpi_temperature}℃</div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="flex-1  h-36">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="opacity-75 text-sm">定位数据</CardTitle>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="bi bi-bug w-4 h-4"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
+                    <path d="M4.355.522a.5.5 0 0 1 .623.333l.291.956A5 5 0 0 1 8 1c1.007 0 1.946.298 2.731.811l.29-.956a.5.5 0 1 1 .957.29l-.41 1.352A5 5 0 0 1 13 6h.5a.5.5 0 0 0 .5-.5V5a.5.5 0 0 1 1 0v.5A1.5 1.5 0 0 1 13.5 7H13v1h1.5a.5.5 0 0 1 0 1H13v1h.5a1.5 1.5 0 0 1 1.5 1.5v.5a.5.5 0 1 1-1 0v-.5a.5.5 0 0 0-.5-.5H13a5 5 0 0 1-10 0h-.5a.5.5 0 0 0-.5.5v.5a.5.5 0 1 1-1 0v-.5A1.5 1.5 0 0 1 2.5 10H3V9H1.5a.5.5 0 0 1 0-1H3V7h-.5A1.5 1.5 0 0 1 1 5.5V5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 .5.5H3c0-1.364.547-2.601 1.432-3.503l-.41-1.352a.5.5 0 0 1 .333-.623M4 7v4a4 4 0 0 0 3.5 3.97V7zm4.5 0v7.97A4 4 0 0 0 12 11V7zM12 6a4 4 0 0 0-1.334-2.982A3.98 3.98 0 0 0 8 2a3.98 3.98 0 0 0-2.667 1.018A4 4 0 0 0 4 6z" />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+                    <CardDescription>记录debug定位数据</CardDescription>
+                    <div className="flex justify-center mt-2">
+                      <Button
+                        variant={RecordColor}
+                        onClick={handleRecord}
+                        className="w-full"
+                      >
+                        {RecordContext}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="flex-1  h-36">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="opacity-75 text-sm">重启定位</CardTitle>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="bi bi-gear w-4 h-4"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
+                    <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                    <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className="scroll-m-20 text-xl font-semibold tracking-tight">
+                    <CardDescription>启动或关闭定位节点</CardDescription>
+                    <div className="flex justify-between mt-2">
+                      <Button onClick={handleRestart}>开启定位</Button>
+                      <Button variant="secondary" onClick={handleStop}>
+                        关闭定位
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="">
+              <CardHeader>
+                <CardTitle>定位数据包</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Localization isRecord={isRecord} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="Node">
+            <Suspense fallback={<NodeSkeleton />}>
+              <div>
+                <Nodelist />
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="mapmanager">
+            <Suspense fallback={<NodeSkeleton />}>
+              <div>
+                <Map_Manager />
+              </div>
+            </Suspense>
+          </TabsContent>
+        </Tabs>
       </CardFooter>
     </>
   );

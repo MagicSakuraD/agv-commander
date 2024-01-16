@@ -18,6 +18,7 @@ export interface SlamPosMessage extends ROSLIB.Message {
       position: {
         x: number;
         y: number;
+        degree: number;
       };
     };
   };
@@ -26,6 +27,7 @@ export default function useROSLIB() {
   const [icp_quality, setIcp_quality] = useAtom(icp_qualityAtom);
   const [slam_pos, setSlam_pos] = useAtom(slam_posAtom);
   const [loc_pos, setLoc_pos] = useAtom(loc_posAtom);
+
   const [ros_Running, setRos_Running] = useAtom(ros_RunningAtom);
   useEffect(() => {
     let ros = new ROSLIB.Ros({ url: "ws://192.168.2.114:9090" });
@@ -76,6 +78,7 @@ export default function useROSLIB() {
       setLoc_pos({
         x: (message as any).pose.position.x,
         y: (message as any).pose.position.y,
+        degree: (message as any).acceleration.angular.x,
       });
     });
   }, []);
