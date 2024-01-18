@@ -50,6 +50,7 @@ import NodeSkeleton from "./NodeSkeleton";
 import Nodelist from "./tabs/nodelist";
 import Map_Manager from "./tabs/(map-manager)/map-manager";
 import Localization from "./localizationBags/Localization";
+import ActiveShapePieChart from "./ActiveShapePieChart";
 
 const values: ValuesTpye = {
   host: "h1ee611a.ala.cn-hangzhou.emqxsl.cn",
@@ -86,6 +87,7 @@ const MapPage = () => {
   const [loc_pos, setLoc_pos] = useAtom(loc_posAtom);
   const [ros_Running, setRos_Running] = useAtom(ros_RunningAtom);
   const [isRecord, setIsRecord] = useState(0);
+  const [Record_ok, setRecord_ok] = useState(0);
   const [RecordContext, setRecordContext] = useState<string>("记录数据");
   const [RecordColor, setRecordColor] = useState<
     "default" | "link" | "destructive" | "outline" | "secondary" | "ghost"
@@ -232,7 +234,7 @@ const MapPage = () => {
 
     // 将日期字符串和时间字符串添加到 "RecordDebugData" 后面
     let nameValue = "RecordDebugData-" + dateString + "_" + timeString;
-
+    setRecord_ok(Record_ok + 1);
     let cmdValue;
     if (isRecord === 0) {
       cmdValue = "start";
@@ -479,10 +481,16 @@ const MapPage = () => {
                   <div className="scroll-m-20 text-xl font-semibold tracking-tight">
                     <ul>
                       <li>
-                        x:<b className="ml-1">{AGV_point[0]?.toFixed(2)} m</b>
+                        x:
+                        <b className="ml-1  w-16">
+                          {AGV_point[0]?.toFixed(2)} m
+                        </b>
                       </li>
                       <li>
-                        y:<b className="ml-1">{AGV_point[1]?.toFixed(2)} m</b>
+                        y:
+                        <b className="ml-1  w-16">
+                          {AGV_point[1]?.toFixed(2)} m
+                        </b>
                       </li>
                     </ul>
                   </div>
@@ -506,10 +514,16 @@ const MapPage = () => {
                   <div className="scroll-m-20 text-xl font-semibold tracking-tight">
                     <ul>
                       <li>
-                        x:<b className="ml-1">{Local_point[0]?.toFixed(2)} m</b>
+                        x:
+                        <b className="ml-1 w-16">
+                          {Local_point[0]?.toFixed(2)} m
+                        </b>
                       </li>
                       <li>
-                        y:<b className="ml-1">{Local_point[1]?.toFixed(2)} m</b>
+                        y:
+                        <b className="ml-1 w-16">
+                          {Local_point[1]?.toFixed(2)} m
+                        </b>
                       </li>
                     </ul>
                   </div>
@@ -545,7 +559,7 @@ const MapPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="scroll-m-20 text-xl font-semibold tracking-tight">
-                    <div className="mt-4">{angle}°</div>
+                    <div className="mt-4 w-12">{angle}°</div>
                   </div>
                 </CardContent>
               </Card>
@@ -565,7 +579,7 @@ const MapPage = () => {
                 <CardContent>
                   <div className="scroll-m-20 text-xl font-semibold tracking-tight">
                     {/* <CardDescription>评估AGV定位系统质量的重要指标</CardDescription> */}
-                    <div className="mt-4">
+                    <div className="mt-4 w-12">
                       {(icp_quality * 100).toFixed(2)}%
                     </div>
                   </div>
@@ -646,15 +660,25 @@ const MapPage = () => {
                 </CardContent>
               </Card>
             </div>
+            <div className="flex flex-row gap-4">
+              <Card className="flex-1">
+                <CardHeader>
+                  <CardTitle>定位数据包</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Localization isRecord={Record_ok} />
+                </CardContent>
+              </Card>
 
-            <Card className="">
-              <CardHeader>
-                <CardTitle>定位数据包</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Localization isRecord={isRecord} />
-              </CardContent>
-            </Card>
+              <Card className="flex-1">
+                <CardHeader>
+                  <CardTitle>硬盘</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ActiveShapePieChart />
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="Node">
