@@ -660,7 +660,7 @@ const MapPage = () => {
                 </CardContent>
               </Card>
             </div>
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-col gap-4 md:flex-row">
               <Card className="flex-1">
                 <CardHeader>
                   <CardTitle>定位数据包</CardTitle>
