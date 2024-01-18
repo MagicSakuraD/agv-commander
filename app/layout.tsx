@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AGV调度系统",
+  title: "AGV_SLAM",
   description: "无人物流AGV",
 };
 

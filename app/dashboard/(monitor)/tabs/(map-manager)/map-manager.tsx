@@ -1,7 +1,10 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { Map_AGV, columns, Map_bag, columns_bag } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import { set, useForm } from "react-hook-form";
+import * as z from "zod";
 import {
   Card,
   CardContent,
@@ -35,6 +38,23 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast, useToast } from "@/components/ui/use-toast";
+import handleAck from "mqtt/lib/handlers/ack";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface AlertDialogBtnProps {
   status: number; // 或者你的状态的类型
@@ -170,6 +190,126 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
   );
 };
 
+const FormSchema = z.object({
+  mapping_name: z.string({
+    required_error: "请选择一个建图数据包来建图.",
+  }),
+});
+
+export function SelectForm() {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  });
+
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    toast({
+      title: "成功提交如下数据包:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    });
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+        <FormField
+          control={form.control}
+          name="mapping_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>数据包</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a verified email to display" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="m@example.com">m@example.com</SelectItem>
+                  <SelectItem value="m@google.com">m@google.com</SelectItem>
+                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>请选择你的建图数据包</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
+  );
+}
+
+const Item = () => {
+  const [DialogStatus, setDialogStatus] = useState(0);
+  function handlefalse() {
+    setDialogStatus(1);
+  }
+  function handletrue() {
+    setDialogStatus(1);
+  }
+
+  function handleCancel() {
+    setDialogStatus(0);
+  }
+
+  switch (DialogStatus) {
+    case 0:
+      return (
+        <div>
+          <AlertDialogCancel
+            onClick={handleCancel}
+            className="absolute border-none	right-4 top-4 rounded-sm opacity-70  transition-opacity hover:opacity-100 focus:outline-none  disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+          >
+            ❌
+          </AlertDialogCancel>
+          <AlertDialogHeader>
+            <AlertDialogTitle>🗑️清空缓存</AlertDialogTitle>
+
+            <AlertDialogDescription>
+              是否需要清理缓存建图文件夹❓
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button onClick={handletrue}>是</Button>
+            <Button onClick={handlefalse}>否</Button>
+          </AlertDialogFooter>
+        </div>
+      );
+    case 1:
+      return (
+        <div>
+          <SelectForm />
+        </div>
+      );
+    case 2:
+      return <div></div>;
+    case 3:
+      return <div></div>;
+    default:
+      return <div></div>;
+  }
+};
+
+const MappingBtn = () => {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="default" className="w-auto mx-auto">
+          开始建图
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <Item />
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
 const Map_Manager = () => {
   const [status, setStatus] = useState(1);
   const [maps, setMaps] = React.useState<Map_AGV[]>([]);
@@ -261,7 +401,7 @@ const Map_Manager = () => {
           </div>
 
           <CardFooter>
-            <p>Card Footer</p>
+            <MappingBtn />
           </CardFooter>
         </Card>
       </div>
