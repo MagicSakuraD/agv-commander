@@ -1,28 +1,14 @@
-import React, { FC, PureComponent } from "react";
+import React, {
+  FC,
+  PureComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { set } from "react-hook-form";
 import { PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
 
-const data = [
-  { name: "Group A", value: 400 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  { name: "Group D", value: 200 },
-];
-
-interface renderShapeProps {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  startAngle: number;
-  endAngle: number;
-  fill: string;
-  payload: { name: string; value: number };
-  percent: number;
-  value: number;
-}
-
-const renderActiveShape: FC<renderShapeProps> = (props) => {
+const renderActiveShape = (props: any) => {
   const RADIAN = Math.PI / 180;
   const {
     cx,
@@ -81,7 +67,7 @@ const renderActiveShape: FC<renderShapeProps> = (props) => {
         y={ey}
         textAnchor={textAnchor}
         fill="#333"
-      >{`PV ${value}`}</text>
+      >{`${value} GB`}</text>
       <text
         x={ex + (cos >= 0 ? 1 : -1) * 12}
         y={ey}
@@ -89,48 +75,84 @@ const renderActiveShape: FC<renderShapeProps> = (props) => {
         textAnchor={textAnchor}
         fill="#999"
       >
-        {`(Rate ${(percent * 100).toFixed(2)}%)`}
+        {`(${(percent * 100).toFixed(2)}%)`}
       </text>
     </g>
   );
 };
 
-const renderShape = (props: unknown) => {
-  return <ActiveShapePieChart {...(props as renderShapeProps)} />;
+const ActiveShapePieChart = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [data, setData] = useState<{ name: string; value: unknown }[]>([]);
+  useEffect(() => {
+    // 发送 GET 请求
+    fetch("http://192.168.2.112:8888/api/info/GetDiskInfo", {
+      method: "GET",
+    })
+      .then((response) => {
+        // 检查响应的状态码
+        if (!response.ok) {
+          throw new Error("HTTP 状态" + response.status);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // 处理响应数据
+
+        let dataList = data.data;
+        dataList["system_size"] =
+          dataList["total_size"] -
+          dataList["bag_size"] -
+          dataList["free_size"] -
+          dataList["log_size"];
+
+        // 删除 total_size
+        delete dataList["total_size"];
+
+        // 创建一个映射对象，将英文的键名映射到中文的名字
+        const nameMap: { [key: string]: string } = {
+          bag_size: "数据包",
+          free_size: "空闲空间",
+          log_size: "日志",
+          system_size: "系统",
+        };
+
+        // 映射 dataList 到新的数组
+        const res_data = Object.entries(dataList).map(([name, value]) => ({
+          name: nameMap[name],
+          value,
+        }));
+
+        setData(res_data);
+      })
+      .catch((error) => {
+        // 处理错误
+        console.error("Error:", error);
+      });
+  }, []);
+  const onPieEnter = useCallback(
+    (_: object, index: number) => {
+      setActiveIndex(index);
+    },
+    [setActiveIndex]
+  );
+
+  return (
+    <PieChart width={400} height={400}>
+      <Pie
+        activeIndex={activeIndex}
+        activeShape={renderActiveShape}
+        data={data}
+        cx={200}
+        cy={200}
+        innerRadius={60}
+        outerRadius={80}
+        fill="#16a34a"
+        dataKey="value"
+        onMouseEnter={onPieEnter}
+      />
+    </PieChart>
+  );
 };
 
-export default class ActiveShapePieChart extends PureComponent {
-  static demoUrl =
-    "https://codesandbox.io/s/pie-chart-with-customized-active-shape-y93si";
-
-  state = {
-    activeIndex: 0,
-  };
-
-  onPieEnter = (_: object, index: number) => {
-    this.setState({
-      activeIndex: index,
-    });
-  };
-
-  render() {
-    return (
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart width={400} height={400}>
-          <Pie
-            activeIndex={this.state.activeIndex}
-            activeShape={renderShape}
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={80}
-            fill="#8884d8"
-            dataKey="value"
-            onMouseEnter={this.onPieEnter}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-    );
-  }
-}
+export default ActiveShapePieChart;
