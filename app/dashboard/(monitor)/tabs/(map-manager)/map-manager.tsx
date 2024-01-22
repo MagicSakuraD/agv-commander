@@ -67,6 +67,8 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
 }) => {
   const [seconds, setSeconds] = useState(0);
   const [formValues, setFormValues] = useState("");
+  const [isCheck, setIsCheck] = useState(false);
+
   useEffect(() => {
     if (status === 0) {
       const intervalId = setInterval(() => {
@@ -118,7 +120,6 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
       </DialogTrigger>
       {status ? (
         <div>
-          {" "}
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
               <DialogTitle className="flex flex-row gap-2 items-center">
@@ -155,35 +156,81 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
         </div>
       ) : (
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="flex flex-row gap-2 items-center">
-              <svg
-                aria-hidden="true"
-                className="inline w-8 h-8 text-gray-200 animate-spin  fill-green-600"
-                viewBox="0 0 100 101"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                  fill="currentFill"
-                />
-              </svg>
-              <p className="text-green-600">录制中</p>
-            </DialogTitle>
-            <div className="text-lg text-muted-foreground">
-              录制时长: {seconds} 秒
+          {isCheck ? (
+            <div>
+              <DialogHeader>
+                <DialogTitle className="flex flex-row gap-2 items-center">
+                  <svg
+                    aria-hidden="true"
+                    className="inline w-8 h-8 text-gray-200 animate-spin  fill-green-600"
+                    viewBox="0 0 100 101"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                      fill="currentFill"
+                    />
+                  </svg>
+                  <p className="text-green-600">等待相关ROS</p>
+                </DialogTitle>
+
+                <div className="text-lg text-muted-foreground">
+                  录制时长: {seconds} 秒
+                </div>
+              </DialogHeader>
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleOver}
+                >
+                  结束录制
+                </Button>
+              </DialogClose>
             </div>
-          </DialogHeader>
-          <DialogClose asChild>
-            <Button type="button" variant="destructive" onClick={handleOver}>
-              结束录制
-            </Button>
-          </DialogClose>
+          ) : (
+            <div>
+              <DialogHeader>
+                <DialogTitle className="flex flex-row gap-2 items-center">
+                  <svg
+                    aria-hidden="true"
+                    className="inline w-8 h-8 text-gray-200 animate-spin  fill-green-600"
+                    viewBox="0 0 100 101"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                      fill="currentFill"
+                    />
+                  </svg>
+                  <p className="text-green-600">录制中</p>
+                </DialogTitle>
+
+                <div className="text-lg text-muted-foreground">
+                  录制时长: {seconds} 秒
+                </div>
+              </DialogHeader>
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleOver}
+                >
+                  结束录制
+                </Button>
+              </DialogClose>
+            </div>
+          )}
         </DialogContent>
       )}
     </Dialog>
@@ -196,7 +243,11 @@ const FormSchema = z.object({
   }),
 });
 
-export function SelectForm() {
+interface SelectFormProps {
+  bags: Map_bag[];
+}
+
+const SelectForm: React.FC<SelectFormProps> = ({ bags }) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -214,23 +265,28 @@ export function SelectForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-auto space-y-6">
         <FormField
           control={form.control}
           name="mapping_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>数据包</FormLabel>
+              <FormLabel className="text-lg font-semibold">
+                建图数据包
+              </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
+                    <SelectValue placeholder="请选择..." />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+
+                <SelectContent className="h-auto">
+                  {bags.map((bag, index) => (
+                    <SelectItem key={index} value={bag.name}>
+                      {bag.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormDescription>请选择你的建图数据包</FormDescription>
@@ -238,13 +294,17 @@ export function SelectForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">提交</Button>
       </form>
     </Form>
   );
+};
+
+interface ItemProps {
+  bags: Map_bag[];
 }
 
-const Item = () => {
+const Item: React.FC<ItemProps> = ({ bags }) => {
   const [DialogStatus, setDialogStatus] = useState(0);
   function handlefalse() {
     setDialogStatus(1);
@@ -263,7 +323,7 @@ const Item = () => {
         <div>
           <AlertDialogCancel
             onClick={handleCancel}
-            className="absolute border-none	right-4 top-4 rounded-sm opacity-70  transition-opacity hover:opacity-100 focus:outline-none  disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            className="absolute border-none	right-4 top-4 rounded-sm opacity-70  transition-opacity hover:opacity-100 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
           >
             ❌
           </AlertDialogCancel>
@@ -274,16 +334,20 @@ const Item = () => {
               是否需要清理缓存建图文件夹❓
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <Button onClick={handletrue}>是</Button>
-            <Button onClick={handlefalse}>否</Button>
+          <AlertDialogFooter className="flex flex-wrap gap-3 mt-5">
+            <Button onClick={handletrue} className="w-auto">
+              是
+            </Button>
+            <Button onClick={handlefalse} className="w-auto">
+              否
+            </Button>
           </AlertDialogFooter>
         </div>
       );
     case 1:
       return (
         <div>
-          <SelectForm />
+          <SelectForm bags={bags} />
         </div>
       );
     case 2:
@@ -295,7 +359,11 @@ const Item = () => {
   }
 };
 
-const MappingBtn = () => {
+interface MappingBtnProps {
+  bags: Map_bag[];
+}
+
+const MappingBtn: React.FC<MappingBtnProps> = ({ bags }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -304,7 +372,7 @@ const MappingBtn = () => {
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
-        <Item />
+        <Item bags={bags} />
       </AlertDialogContent>
     </AlertDialog>
   );
@@ -359,12 +427,12 @@ const Map_Manager = () => {
       .then((data) => {
         // 处理响应数据
         let bag_data = data.data.bags;
-        for (const name of bag_data) {
-          bags_list.push({
-            name: name,
-          });
-        }
+        const bags_list = bag_data.map((item: string) => ({
+          name: item,
+        }));
+        console.log(bag_data);
         console.log(bags_list);
+
         setBags(bags_list);
       })
       .catch((error) => {
@@ -401,7 +469,7 @@ const Map_Manager = () => {
           </div>
 
           <CardFooter>
-            <MappingBtn />
+            <MappingBtn bags={bags} />
           </CardFooter>
         </Card>
       </div>

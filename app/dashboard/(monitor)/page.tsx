@@ -465,7 +465,7 @@ const MapPage = () => {
           </TabsList>
           <TabsContent value="AGV" className="flex flex-col gap-4">
             <div className="flex flex-wrap gap-3 justify-between w-full">
-              <Card className="flex-1 h-36">
+              <Card className="flex-1 h-36 grow ">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="opacity-75 text-sm">SLAM坐标</CardTitle>
                   <svg
@@ -497,7 +497,7 @@ const MapPage = () => {
                 </CardContent>
               </Card>
 
-              <Card className="flex-1 h-36">
+              <Card className="flex-1 h-36 grow ">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
                   <CardTitle className="opacity-75 text-sm">LOC坐标</CardTitle>
                   <svg
@@ -559,7 +559,7 @@ const MapPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="scroll-m-20 text-xl font-semibold tracking-tight">
-                    <div className="mt-4 w-12">{angle}°</div>
+                    <div className="mt-4 w-14">{angle}°</div>
                   </div>
                 </CardContent>
               </Card>
@@ -579,7 +579,7 @@ const MapPage = () => {
                 <CardContent>
                   <div className="scroll-m-20 text-xl font-semibold tracking-tight">
                     {/* <CardDescription>评估AGV定位系统质量的重要指标</CardDescription> */}
-                    <div className="mt-4 w-12">
+                    <div className="mt-4 w-14">
                       {(icp_quality * 100).toFixed(2)}%
                     </div>
                   </div>
@@ -601,7 +601,7 @@ const MapPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="scroll-m-20 text-xl font-semibold tracking-tight">
-                    <div className="mt-4">{rpi_temperature}℃</div>
+                    <div className="mt-4 w-14">{rpi_temperature}℃</div>
                   </div>
                 </CardContent>
               </Card>
@@ -634,7 +634,7 @@ const MapPage = () => {
                 </CardContent>
               </Card>
 
-              <Card className="flex-1  h-36">
+              <Card className="flex-1  h-36 grow ">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="opacity-75 text-sm">重启定位</CardTitle>
                   <svg
