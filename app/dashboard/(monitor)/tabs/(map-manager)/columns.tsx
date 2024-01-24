@@ -21,18 +21,6 @@ export const columns: ColumnDef<Map_AGV>[] = [
   {
     accessorKey: "name",
     header: () => <div className="">地图名</div>,
-    // cell: ({ row }) => {
-    //   const map = row.original;
-    //   return (
-    //     <DropdownMenu>
-    //       <DropdownMenuTrigger>
-    //         <Button variant="ghost" className="h-8 w-8 p-0">
-    //           <span className="sr-only">Open menu</span>
-    //         </Button>
-    //       </DropdownMenuTrigger>
-    //     </DropdownMenu>
-    //   );
-    // },
   },
 ];
 

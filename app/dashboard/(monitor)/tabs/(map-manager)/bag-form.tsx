@@ -1,6 +1,6 @@
 "use client";
 import * as z from "zod";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { set, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
 
+import next from "next";
+import useSWR from "swr";
+import { time } from "console";
+
 const formSchema = z.object({
   bag_name: z
     .string()
@@ -26,13 +30,18 @@ const formSchema = z.object({
 interface Bag_formProps {
   status: number; // 或者你的状态的类型
   setStatus: React.Dispatch<React.SetStateAction<number>>;
+
   setFormValues: React.Dispatch<React.SetStateAction<string>>;
+  setCheck: React.Dispatch<React.SetStateAction<boolean>>;
+  setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Bag_form: React.FC<Bag_formProps> = ({
   status,
   setStatus,
   setFormValues,
+  setCheck,
+  setSuccess,
 }) => {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({

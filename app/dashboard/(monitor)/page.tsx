@@ -672,7 +672,7 @@ const MapPage = () => {
 
               <Card className="flex-1">
                 <CardHeader>
-                  <CardTitle>硬盘</CardTitle>
+                  <CardTitle>硬盘空间</CardTitle>
                 </CardHeader>
                 <CardContent className="flex justify-center items-center">
                   <ActiveShapePieChart />

@@ -11,29 +11,14 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import DeletItem from "./deletItem";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Loc_AGV = {
   name: string;
 };
-
-function handleDelete(loc: Loc_AGV) {
-  fetch("http://192.168.2.112:8888/api/config/deleteRecordMappingBag", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      bag_name: loc.name,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => console.log(data))
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
 
 export const columns: ColumnDef<Loc_AGV>[] = [
   {
@@ -69,12 +54,7 @@ export const columns: ColumnDef<Loc_AGV>[] = [
               拷贝数据包名
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-red-600"
-              onClick={() => handleDelete(loc)}
-            >
-              删除<DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-            </DropdownMenuItem>
+            <DeletItem {...loc} />
           </DropdownMenuContent>
         </DropdownMenu>
       );

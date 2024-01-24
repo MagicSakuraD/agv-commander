@@ -55,6 +55,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  checkAtom,
+  successAtom,
+  bagnameAtom,
+} from "@/app/dashboard/(monitor)/atoms";
+import { useAtom } from "jotai";
+import CheckMapping from "./CheckMapping";
+import LoadingMapping from "./LoadingMapping";
+import DisplayCompletedMap from "./DisplayCompletedMap";
 
 interface AlertDialogBtnProps {
   status: number; // 或者你的状态的类型
@@ -67,7 +76,11 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
 }) => {
   const [seconds, setSeconds] = useState(0);
   const [formValues, setFormValues] = useState("");
-  const [isCheck, setIsCheck] = useState(false);
+  // const [check, setCheck] = useAtom(checkAtom);
+  // const [success, setSuccess] = useAtom(successAtom);
+
+  const [check, setCheck] = useState(true);
+  const [success, setSuccess] = useState(true);
 
   useEffect(() => {
     if (status === 0) {
@@ -83,7 +96,7 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
     setStatus(1);
     setSeconds(0);
     toast({
-      description: "建图数据包录制完成",
+      description: "建图数据包录制结束",
     });
     // 发送 fetch 请求
     fetch("http://192.168.2.112:8888/api/config/StartRecordMappingData", {
@@ -151,84 +164,75 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
               status={status}
               setStatus={setStatus}
               setFormValues={setFormValues}
+              setCheck={setCheck}
+              setSuccess={setSuccess}
             />
           </DialogContent>
         </div>
       ) : (
         <DialogContent className="sm:max-w-[425px]">
-          {isCheck ? (
+          {check ? (
             <div>
-              <DialogHeader>
-                <DialogTitle className="flex flex-row gap-2 items-center">
-                  <svg
-                    aria-hidden="true"
-                    className="inline w-8 h-8 text-gray-200 animate-spin  fill-green-600"
-                    viewBox="0 0 100 101"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                      fill="currentColor"
-                    />
-                    <path
-                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                      fill="currentFill"
-                    />
-                  </svg>
-                  <p className="text-green-600">等待相关ROS</p>
-                </DialogTitle>
-
-                <div className="text-lg text-muted-foreground">
-                  录制时长: {seconds} 秒
-                </div>
-              </DialogHeader>
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={handleOver}
-                >
-                  结束录制
-                </Button>
-              </DialogClose>
+              <CheckMapping setCheck={setCheck} setSuccess={setSuccess} />
             </div>
           ) : (
             <div>
-              <DialogHeader>
-                <DialogTitle className="flex flex-row gap-2 items-center">
-                  <svg
-                    aria-hidden="true"
-                    className="inline w-8 h-8 text-gray-200 animate-spin  fill-green-600"
-                    viewBox="0 0 100 101"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                      fill="currentColor"
-                    />
-                    <path
-                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                      fill="currentFill"
-                    />
-                  </svg>
-                  <p className="text-green-600">录制中</p>
-                </DialogTitle>
-
-                <div className="text-lg text-muted-foreground">
-                  录制时长: {seconds} 秒
+              {success ? (
+                <div className="flex justify-center flex-col">
+                  <DialogHeader>
+                    <div className="text-lg text-muted-foreground flex gap-2 items-center">
+                      <p className="text-center">相关ROS节点未启动,无法录制</p>
+                    </div>
+                  </DialogHeader>
+                  <DialogClose asChild>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={handleOver}
+                      className="w-1/2"
+                    >
+                      结束录制
+                    </Button>
+                  </DialogClose>
                 </div>
-              </DialogHeader>
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={handleOver}
-                >
-                  结束录制
-                </Button>
-              </DialogClose>
+              ) : (
+                <div>
+                  <DialogHeader>
+                    <DialogTitle className="flex flex-row gap-2 items-center">
+                      <svg
+                        aria-hidden="true"
+                        className="inline w-8 h-8 text-gray-200 animate-spin  fill-green-600"
+                        viewBox="0 0 100 101"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                          fill="currentFill"
+                        />
+                      </svg>
+                      <p className="text-green-600">录制中</p>
+                    </DialogTitle>
+
+                    <div className="text-lg text-muted-foreground">
+                      录制时长: {seconds} 秒
+                    </div>
+                  </DialogHeader>
+                  <DialogClose asChild>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={handleOver}
+                    >
+                      结束录制
+                    </Button>
+                  </DialogClose>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
@@ -245,22 +249,54 @@ const FormSchema = z.object({
 
 interface SelectFormProps {
   bags: Map_bag[];
+  setDialogStatus: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const SelectForm: React.FC<SelectFormProps> = ({ bags }) => {
+const SelectForm: React.FC<SelectFormProps> = ({ bags, setDialogStatus }) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-
+  const [bagname, setBagname] = useAtom(bagnameAtom);
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    setBagname(data.mapping_name);
+    let bodyContent = JSON.stringify({
+      bag_name: data.mapping_name,
+    });
+
+    let headersList = {
+      "Content-Type": "application/json",
+    };
+    fetch("http://192.168.2.112:8888/api/work/StartMappingTaskByBag", {
+      method: "POST",
+      body: bodyContent,
+      headers: headersList,
+    })
+      .then((response) => {
+        // 检查响应的状态码
+        if (!response.ok) {
+          throw new Error("HTTP 状态" + response.status);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // 处理响应数据
+        let Mapping_data = data.data;
+        console.log(Mapping_data);
+      })
+      .catch((error) => {
+        // 处理错误
+        console.error("Error:", error);
+      });
+    console.log(data.mapping_name);
     toast({
       title: "成功提交如下数据包:",
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          <code className="text-white">{data.mapping_name}</code>
         </pre>
       ),
     });
+    setDialogStatus(2);
   }
 
   return (
@@ -309,7 +345,27 @@ const Item: React.FC<ItemProps> = ({ bags }) => {
   function handlefalse() {
     setDialogStatus(1);
   }
+
   function handletrue() {
+    fetch("http://192.168.2.112:8888/api/work/ClearMappingCache", {
+      method: "POST",
+    })
+      .then((response) => {
+        // 检查响应的状态码
+        if (!response.ok) {
+          throw new Error("HTTP 状态" + response.status);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // 处理响应数据
+        let Clear_data = data.data;
+        console.log(Clear_data);
+      })
+      .catch((error) => {
+        // 处理错误
+        console.error("Error:", error);
+      });
     setDialogStatus(1);
   }
 
@@ -328,7 +384,7 @@ const Item: React.FC<ItemProps> = ({ bags }) => {
             ❌
           </AlertDialogCancel>
           <AlertDialogHeader>
-            <AlertDialogTitle>🗑️清空缓存</AlertDialogTitle>
+            <AlertDialogTitle>清空缓存</AlertDialogTitle>
 
             <AlertDialogDescription>
               是否需要清理缓存建图文件夹❓
@@ -347,13 +403,22 @@ const Item: React.FC<ItemProps> = ({ bags }) => {
     case 1:
       return (
         <div>
-          <SelectForm bags={bags} />
+          <SelectForm bags={bags} setDialogStatus={setDialogStatus} />
         </div>
       );
     case 2:
-      return <div></div>;
+      return (
+        <div>
+          <LoadingMapping setDialogStatus={setDialogStatus} />
+        </div>
+      );
     case 3:
-      return <div></div>;
+      return (
+        <div>
+          <DisplayCompletedMap setDialogStatus={setDialogStatus} />
+        </div>
+      );
+
     default:
       return <div></div>;
   }

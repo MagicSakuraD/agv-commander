@@ -13,3 +13,8 @@ export const loc_posAtom = atom<{ x: number; y: number; degree: number }>({
 
 export const ros_RunningAtom = atom(true);
 export const temperatureAtom = atom(0);
+
+export const checkAtom = atom(true);
+export const successAtom = atom(true);
+
+export const bagnameAtom = atom("");

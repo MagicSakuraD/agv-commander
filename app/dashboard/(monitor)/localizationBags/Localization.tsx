@@ -15,6 +15,7 @@ const Localization: React.FC<LocalizationProps> = ({ isRecord }) => {
       // 发送 GET 请求
       fetch("http://192.168.2.112:8888/api/info/GetAllLocalizationBagsName", {
         method: "GET",
+        next: { tags: ["Loc"] },
       })
         .then((response) => {
           // 检查响应的状态码
