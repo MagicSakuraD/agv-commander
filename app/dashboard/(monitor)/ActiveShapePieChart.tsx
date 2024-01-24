@@ -100,14 +100,16 @@ const ActiveShapePieChart = () => {
         // 处理响应数据
 
         let dataList = data.data;
-        dataList["system_size"] =
+        let res_system =
           dataList["total_size"] -
           dataList["bag_size"] -
           dataList["free_size"] -
           dataList["log_size"];
 
+        dataList["system_size"] = parseFloat(res_system.toFixed(2));
         // 删除 total_size
         delete dataList["total_size"];
+        console.log(dataList);
 
         // 创建一个映射对象，将英文的键名映射到中文的名字
         const nameMap: { [key: string]: string } = {

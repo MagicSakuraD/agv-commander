@@ -16,6 +16,7 @@ import { bagnameAtom } from "../../atoms";
 import { set } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
+import Image from "next/image";
 
 interface DisplayCompletedMapProps {
   setDialogStatus: React.Dispatch<React.SetStateAction<number>>;
@@ -96,9 +97,13 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
     <div>
       <AlertDialogHeader>
         <AlertDialogTitle>是否保存地图❓</AlertDialogTitle>
-        <AlertDialogDescription>
-          <img src={`data:image/png;base64,${imgdata}`} alt="地图图片" />
-        </AlertDialogDescription>
+
+        <Image
+          src={`data:image/png;base64,${imgdata}`}
+          width={500}
+          height={500}
+          alt="地图图片"
+        />
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel onClick={handleGiveUp}>不保存</AlertDialogCancel>

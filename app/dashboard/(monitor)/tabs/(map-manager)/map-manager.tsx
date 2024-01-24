@@ -481,6 +481,7 @@ const Map_Manager = () => {
     // 发送 GET 请求
     fetch("http://192.168.2.112:8888/api/info/GetAllMappingBagsName", {
       method: "GET",
+      next: { tags: ["Mapping"] },
     })
       .then((response) => {
         // 检查响应的状态码
