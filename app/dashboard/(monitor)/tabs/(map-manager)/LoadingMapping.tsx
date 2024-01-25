@@ -36,35 +36,7 @@ const LoadingMapping: React.FC<LoadingMappingProps> = ({ setDialogStatus }) => {
 
   const [loadingData, setLoadingData] = useState<number>(0);
   const [resData, setResData] = useState<any>(null);
-  // const { data, error, isLoading } = useSWR(
-  //   "http://192.168.2.112:8888/api/work/GetMappingTaskProcess",
-  //   fetcher,
-  //   {
-  //     refreshInterval: 2000, // 每隔 3000 毫秒重新获取一次数据
-  //     refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
-  //   }
-  // );
 
-  // useEffect(() => {
-  //   if (data?.data) {
-  //     if (data.data === "建图成功") {
-  //       setDialogStatus(3);
-  //     }
-  //     const match = data.data.match(/running (\d+\.\d+)%/);
-  //     if (match) {
-  //       const percentage = Math.floor(parseFloat(match[1]));
-  //       console.log(percentage); // 输出：52
-  //       setLoadingData(percentage);
-  //     }
-  //   }
-  // }, [data]);
-
-  // if (error) {
-  //   toast({
-  //     title: "请求失败",
-  //     description: "请检查网络连接",
-  //   });
-  // }
   const intervalId = useRef<NodeJS.Timeout | null>(null);
   const startFetching = () => {
     intervalId.current = setInterval(() => {
@@ -77,9 +49,9 @@ const LoadingMapping: React.FC<LoadingMappingProps> = ({ setDialogStatus }) => {
         .then((res) => res.json())
         .then((data) => {
           // 处理数据
-          console.log(data);
+
           setResData(data.data);
-          console.log(typeof data.data, "是不是字符串");
+
           if (data.data === "建图流程执行完成!") {
             console.log("建图成功1✅");
             setDialogStatus(3);

@@ -139,14 +139,14 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
   }
 
   return (
-    <div>
+    <div className="w-auto h-auto">
       <AlertDialogHeader>
         <AlertDialogTitle>是否保存地图❓</AlertDialogTitle>
-        <div ref={screenRef}>
+        <div ref={screenRef} className="w-auto h-auto">
           <Image
             src={`data:image/png;base64,${imgdata}`}
-            width={500}
-            height={500}
+            layout="fill"
+            objectFit="cover" // 保持图片的宽高比
             alt="地图图片"
           />
           <FullscreenButton />

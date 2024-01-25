@@ -23,9 +23,9 @@ export async function handleDelete(loc: Loc_AGV) {
   } catch (error) {
     console.error("Error❌:", error);
   }
-  revalidatePath("/dashboard");
+  // revalidatePath("/dashboard");
 
-  redirect("/dashboard");
+  // redirect("/dashboard");
 }
 
 export async function handleDeleteMappingBag(mapping_name: Map_bag) {
@@ -47,5 +47,5 @@ export async function handleDeleteMappingBag(mapping_name: Map_bag) {
   } catch (error) {
     console.error("Error❌:", error);
   }
-  revalidateTag("Mapping");
+  // revalidateTag("Mapping");
 }

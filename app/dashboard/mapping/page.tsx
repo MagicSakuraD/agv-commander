@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import Image from "next/image";
 
 const MappingPage = () => {
   return (
@@ -60,6 +61,25 @@ const MappingPage = () => {
           <p>Card Footer</p>
         </CardFooter>
       </Card>
+
+      {/* <div>
+        <AlertDialogHeader>
+          <AlertDialogTitle>是否保存地图❓</AlertDialogTitle>
+          <div ref={screenRef} className="w-3/5">
+            <Image
+              src={`data:image/png;base64,${imgdata}`}
+              layout="fill"
+              objectFit="cover" // 保持图片的宽高比
+              alt="地图图片"
+            />
+            <FullscreenButton />
+          </div>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={handleGiveUp}>不保存</AlertDialogCancel>
+          <AlertDialogAction onClick={handleSave}>保存</AlertDialogAction>
+        </AlertDialogFooter>
+      </div> */}
     </div>
   );
 };
