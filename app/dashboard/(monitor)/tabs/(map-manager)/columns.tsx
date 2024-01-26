@@ -51,7 +51,7 @@ export const columns: ColumnDef<Map_AGV>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(map_name.name)}
             >
-              拷贝数据包名
+              拷贝地图名
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <SetCurrentMap {...map_name} />

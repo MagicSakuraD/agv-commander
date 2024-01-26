@@ -1,3 +1,4 @@
+"use client";
 import { LeafletTrackingMarker } from "react-leaflet-tracking-marker";
 import { useEffect, useState } from "react";
 import L from "leaflet";

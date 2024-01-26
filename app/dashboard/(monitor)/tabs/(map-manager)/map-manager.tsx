@@ -64,6 +64,7 @@ import { useAtom } from "jotai";
 import CheckMapping from "./CheckMapping";
 import LoadingMapping from "./LoadingMapping";
 import DisplayCompletedMap from "./DisplayCompletedMap";
+import useSWR from "swr";
 
 interface AlertDialogBtnProps {
   status: number; // 或者你的状态的类型
@@ -450,62 +451,54 @@ const Map_Manager = () => {
 
   const [bags, setBags] = React.useState<Map_bag[]>([]);
   let bags_list: Map_bag[] = [];
+
+  // 使用 useSWR，传入一个 URL，一个获取数据的函数，和一些选项
+  const fetcher = (...args: [string, RequestInit?]) =>
+    fetch(...args).then((res) => res.json());
+  // 定义一个常量，用于存储 API 的 URL
+  const {
+    data: mapsData,
+    error: mapsError,
+    isLoading: mapsLoading,
+  } = useSWR("http://192.168.2.112:8888/api/info/GetAllMapsName", fetcher, {
+    refreshInterval: 1000,
+    refreshWhenHidden: false,
+  });
+
+  const {
+    data: bagsData,
+    error: bagsError,
+    isLoading: bagsLoading,
+  } = useSWR(
+    "http://192.168.2.112:8888/api/info/GetAllMappingBagsName",
+    fetcher,
+    {
+      refreshInterval: 1000,
+      refreshWhenHidden: false,
+    }
+  );
+
   useEffect(() => {
-    // 发送 GET 请求
-    fetch("http://192.168.2.112:8888/api/info/GetAllMapsName", {
-      method: "GET",
-    })
-      .then((response) => {
-        // 检查响应的状态码
-        if (!response.ok) {
-          throw new Error("HTTP 状态" + response.status);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // 处理响应数据
-        let map_data = data.data.maps;
-        for (const name of map_data) {
-          map_list.push({
-            name: name,
-          });
-        }
-        console.log(map_list);
-        setMaps(map_list);
-      })
-      .catch((error) => {
-        // 处理错误
-        console.error("Error:", error);
-      });
+    if (mapsData && mapsData.data.maps) {
+      // 处理地图数据
+      let map_data = mapsData.data.maps;
+      for (const name of map_data) {
+        map_list.push({
+          name: name,
+        });
+      }
+      setMaps(map_list);
+    }
 
-    // 发送 GET 请求
-    fetch("http://192.168.2.112:8888/api/info/GetAllMappingBagsName", {
-      method: "GET",
-      next: { tags: ["Mapping"] },
-    })
-      .then((response) => {
-        // 检查响应的状态码
-        if (!response.ok) {
-          throw new Error("HTTP 状态" + response.status);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // 处理响应数据
-        let bag_data = data.data.bags;
-        const bags_list = bag_data.map((item: string) => ({
-          name: item,
-        }));
-        console.log(bag_data);
-        console.log(bags_list);
-
-        setBags(bags_list);
-      })
-      .catch((error) => {
-        // 处理错误
-        console.error("Error:", error);
-      });
-  }, []);
+    if (bagsData && bagsData.data.bags) {
+      // 处理建图数据包数据
+      let bag_data = bagsData.data.bags;
+      const bags_list = bag_data.map((item: string) => ({
+        name: item,
+      }));
+      setBags(bags_list);
+    }
+  }, [mapsData, bagsData]);
   return (
     <div>
       <div className="flex flex-col md:flex-row gap-5">
