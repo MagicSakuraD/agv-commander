@@ -51,6 +51,7 @@ import Nodelist from "./tabs/nodelist";
 import Map_Manager from "./tabs/(map-manager)/map-manager";
 import Localization from "./localizationBags/Localization";
 import ActiveShapePieChart from "./ActiveShapePieChart";
+import { columns_bag } from "./tabs/(map-manager)/columns";
 
 const values: ValuesTpye = {
   host: "h1ee611a.ala.cn-hangzhou.emqxsl.cn",
@@ -118,9 +119,9 @@ const MapPage = () => {
 
         let data_Name = await response_Name.text();
         let data_png = JSON.parse(data_Name);
-        setPng_x(data_png.data.x);
-        setPng_y(data_png.data.y);
-        setResolution(data_png.data.resolution);
+        setPng_x(Number(data_png.data.x));
+        setPng_y(Number(data_png.data.y));
+        setResolution(Number(data_png.data.resolution));
 
         const socket = io("http://192.168.2.114:5001");
         socket.on("transmit_data", (data) => {
@@ -176,10 +177,12 @@ const MapPage = () => {
   const Simple = L.CRS.Simple;
   const w = img.naturalWidth; // 图片宽度
   const h = img.naturalHeight; // 图片高度
-
+  // console.log(png_x, w, resolution, png_x + w * resolution, "👌");
   const bounds: [[number, number], [number, number]] = [
     [png_x * 10 * resolution, png_y * 10 * resolution], // 左上角经纬度坐标
     [(png_x * 10 + w) * resolution, (png_y * 10 + h) * resolution], // 右下角经纬度坐标
+    // [w * resolution + png_x, h * resolution + png_y], // 右上角经纬度坐标
+    // [png_x, png_y], // 左下角经纬度坐标
   ];
 
   // 定义坐标点

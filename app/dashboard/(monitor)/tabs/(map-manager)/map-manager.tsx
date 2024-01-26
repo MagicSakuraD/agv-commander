@@ -387,7 +387,7 @@ const Item: React.FC<ItemProps> = ({ bags }) => {
             <AlertDialogTitle>清空缓存</AlertDialogTitle>
 
             <AlertDialogDescription>
-              是否需要清理缓存建图文件夹❓
+              是否需要清理缓存建图文件夹?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex flex-wrap gap-3 mt-5">

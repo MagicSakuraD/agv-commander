@@ -17,6 +17,7 @@ import { set } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import Image from "next/image";
+import { Card } from "@/components/ui/card";
 
 interface DisplayCompletedMapProps {
   setDialogStatus: React.Dispatch<React.SetStateAction<number>>;
@@ -74,23 +75,21 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
       .then((data) => {
         // 处理解析后的数据
         console.log(data);
+        toast({
+          description: `建图结束：${data.data}`,
+        });
       })
       .catch((error) => {
         // 处理错误
         console.error("Error:", error);
       });
     setDialogStatus(0);
-    toast({
-      title: "Scheduled: Catch up",
-      description: "不保存，建图结束",
-    });
   }
 
   function handleGiveUp() {
     setDialogStatus(0);
     toast({
-      title: "Scheduled: Catch up",
-      description: "保存成功，建图结束",
+      description: "不保存，建图结束",
     });
   }
 
@@ -139,20 +138,19 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
   }
 
   return (
-    <div className="w-auto h-auto">
+    <div>
       <AlertDialogHeader>
         <AlertDialogTitle>是否保存地图❓</AlertDialogTitle>
-        <div ref={screenRef} className="w-auto h-auto">
-          <Image
-            src={`data:image/png;base64,${imgdata}`}
-            layout="fill"
-            objectFit="cover" // 保持图片的宽高比
-            alt="地图图片"
-          />
-          <FullscreenButton />
-        </div>
       </AlertDialogHeader>
-      <AlertDialogFooter>
+      <div ref={screenRef} className="relative flex h-96">
+        <Image
+          src={`data:image/png;base64,${imgdata}`}
+          alt="地图图片"
+          fill={true}
+        />
+        <FullscreenButton />
+      </div>
+      <AlertDialogFooter className="mt-4">
         <AlertDialogCancel onClick={handleGiveUp}>不保存</AlertDialogCancel>
         <AlertDialogAction onClick={handleSave}>保存</AlertDialogAction>
       </AlertDialogFooter>
