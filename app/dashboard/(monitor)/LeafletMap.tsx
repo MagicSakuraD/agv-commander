@@ -15,6 +15,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import Grid from "./map/grid";
 import MapMarker from "./map/map-marker";
+import useROSLIB from "./mqtt/roslib";
 
 function MyClick() {
   const map = useMapEvent("click", (e) => {
@@ -59,6 +60,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
     iconUrl: "/rounded-rectangle.png",
     iconSize: [30, 30],
   });
+  useROSLIB();
 
   return (
     <div>

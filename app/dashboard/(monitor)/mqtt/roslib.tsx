@@ -9,8 +9,6 @@ import {
 } from "../atoms";
 import { useAtom } from "jotai";
 
-import React from "react";
-
 export interface ICPQualityMessage extends ROSLIB.Message {
   data: number;
 }

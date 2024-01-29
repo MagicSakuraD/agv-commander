@@ -153,7 +153,7 @@ const MapPage = () => {
 
   const message = useMqtt(values, topicMqtt);
   // const message = null;
-  useROSLIB();
+
   // const message_AGV = useMqtt(mqttConfig, "/heart/5003");
   const message_AGV = slam_pos;
   const AGV_Object = JSON.parse(
