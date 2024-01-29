@@ -1,30 +1,111 @@
 "use client";
+import React, { Children, ReactNode } from "react";
 import L from "leaflet";
-import dynamic from "next/dynamic";
-import { Children, ReactNode } from "react";
+import {
+  ImageOverlay,
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+  useMap,
+  ScaleControl,
+  useMapEvent,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import Grid from "./map/grid";
+import MapMarker from "./map/map-marker";
 
-// 动态导入 MapContainer 组件，禁用 SSR
-const DynamicMapContainer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false }
-);
+function MyClick() {
+  const map = useMapEvent("click", (e) => {
+    const popup = L.popup()
+      .setLatLng(e.latlng)
+      .setContent(`(${e.latlng.lng.toFixed(2)}, ${e.latlng.lat.toFixed(2)})`);
+    popup.openOn(map);
+  });
 
-// 在你的组件中使用 DynamicMapContainer 替代 MapContainer
-function MyComponent({ children }: { children: ReactNode }) {
-  const Simple = L.CRS.Simple;
-  return (
-    <DynamicMapContainer
-      center={{ lat: 0, lng: 0 }}
-      zoom={5}
-      minZoom={3}
-      maxZoom={8}
-      scrollWheelZoom={true}
-      crs={Simple}
-      className="rounded-lg w-full h-[30rem] z-0 "
-    >
-      {children}
-    </DynamicMapContainer>
-  );
+  return null;
 }
 
-export default MyComponent;
+interface MapMarkerProps {
+  img: HTMLImageElement;
+  bounds: [[number, number], [number, number]];
+  points: [number, number][];
+  AGV_point_real: [number, number] | null;
+  angle: any;
+}
+
+const LeafletMap: React.FC<MapMarkerProps> = ({
+  img,
+  bounds,
+  points,
+  AGV_point_real,
+  angle,
+}) => {
+  const Simple = L.CRS.Simple;
+  let startPoints = points ? points[0] : ([0, 0] as [number, number]);
+  // console.log(startPoints);
+  let endPoints =
+    points && points.length >= 2
+      ? points[points.length - 1]
+      : ([0, 0] as [number, number]);
+
+  const customIcon = L.icon({
+    iconUrl: "/dot.png",
+    iconSize: [20, 20],
+  });
+
+  const endIcon = L.icon({
+    iconUrl: "/rounded-rectangle.png",
+    iconSize: [30, 30],
+  });
+
+  return (
+    <div>
+      <MapContainer
+        center={[0, 0]}
+        zoom={5}
+        minZoom={3}
+        maxZoom={8}
+        scrollWheelZoom={true}
+        crs={Simple}
+        className="rounded-lg w-full h-[30rem] z-0 "
+      >
+        <Grid />
+
+        <ImageOverlay url={img.src} bounds={bounds} />
+        <MyClick />
+        {points.length > 1 && (
+          <>
+            <Polyline
+              pathOptions={{
+                color: "#0c0a09",
+                weight: 8,
+              }}
+              positions={points}
+            />
+            <Marker
+              // position={[startPoints[0] - 16, startPoints[1] + 15]}
+              position={startPoints}
+              icon={customIcon}
+            >
+              <Popup>起点</Popup>
+            </Marker>
+            <Marker
+              // position={[endPoints[0] - 10, endPoints[1] + 10]}
+              position={endPoints}
+              icon={endIcon}
+            >
+              <Popup>终点</Popup>
+            </Marker>
+          </>
+        )}
+
+        {AGV_point_real && <MapMarker data={AGV_point_real} angle={angle} />}
+        <ScaleControl position="bottomleft" metric={true} imperial={false} />
+      </MapContainer>
+    </div>
+  );
+};
+
+export default LeafletMap;

@@ -1,4 +1,5 @@
 "use client";
+
 import {
   ImageOverlay,
   MapContainer,
@@ -14,7 +15,7 @@ import L, { LatLngBoundsLiteral } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapData } from "./map/data";
 import useMqtt from "./mqtt/mqttComponent";
-import MapMarker from "./map/map-marker";
+
 import {
   icp_qualityAtom,
   slam_posAtom,
@@ -54,6 +55,13 @@ import ActiveShapePieChart from "./ActiveShapePieChart";
 import { columns_bag } from "./tabs/(map-manager)/columns";
 import MyComponent from "./LeafletMap";
 
+import dynamic from "next/dynamic";
+import Roslib from "./mqtt/roslib";
+
+const LeafletMap = dynamic(() => import("./LeafletMap"), {
+  ssr: false, // 禁用服务器端渲染
+});
+
 const values: ValuesTpye = {
   host: "h1ee611a.ala.cn-hangzhou.emqxsl.cn",
   port: 8084,
@@ -90,7 +98,7 @@ const MapPage = () => {
   const [ros_Running, setRos_Running] = useAtom(ros_RunningAtom);
   const [isRecord, setIsRecord] = useState(0);
   const [Record_ok, setRecord_ok] = useState(0);
-  const [RecordContext, setRecordContext] = useState<string>("记录数据");
+  const [RecordContext, setRecordContext] = useState<string>("记录定位数据");
   const [RecordColor, setRecordColor] = useState<
     "default" | "link" | "destructive" | "outline" | "secondary" | "ghost"
   >("default");
@@ -174,8 +182,6 @@ const MapPage = () => {
   img.src = dataMap ? dataMap : "/baidu.png";
 
   // Define a function to get the width and height
-
-  const Simple = L.CRS.Simple;
   const w = img.naturalWidth; // 图片宽度
   const h = img.naturalHeight; // 图片高度
   // console.log(png_x, w, resolution, png_x + w * resolution, "👌");
@@ -194,34 +200,8 @@ const MapPage = () => {
     points = data ? data.map((value) => xyToLatLng(value)) : [];
     // setPoints(points);
   }
-  const customIcon = L.icon({
-    iconUrl: "/dot.png",
-    iconSize: [20, 20],
-  });
 
-  const endIcon = L.icon({
-    iconUrl: "/rounded-rectangle.png",
-    iconSize: [30, 30],
-  });
   // console.log(points);
-
-  let startPoints = points ? points[0] : ([0, 0] as [number, number]);
-  // console.log(startPoints);
-  let endPoints =
-    points && points.length >= 2
-      ? points[points.length - 1]
-      : ([0, 0] as [number, number]);
-
-  function MyClick() {
-    const map = useMapEvent("click", (e) => {
-      const popup = L.popup()
-        .setLatLng(e.latlng)
-        .setContent(`(${e.latlng.lng.toFixed(2)}, ${e.latlng.lat.toFixed(2)})`);
-      popup.openOn(map);
-    });
-
-    return null;
-  }
 
   async function handleRecord() {
     // 获取当前日期并转换为字符串
@@ -248,7 +228,7 @@ const MapPage = () => {
     } else {
       cmdValue = "stop";
       setIsRecord(0);
-      setRecordContext("记录debug");
+      setRecordContext("记录定位数据");
       setRecordColor("default");
     }
 
@@ -415,54 +395,13 @@ const MapPage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <MapContainer
-            center={{ lat: 0, lng: 0 }}
-            zoom={5}
-            minZoom={3}
-            maxZoom={8}
-            scrollWheelZoom={true}
-            crs={Simple}
-            className="rounded-lg w-full h-[30rem] z-0 "
-          >
-            <Grid />
-
-            <ImageOverlay url={img.src} bounds={bounds} />
-            <MyClick />
-            {points.length > 1 && (
-              <>
-                <Polyline
-                  pathOptions={{
-                    color: "#0c0a09",
-                    weight: 8,
-                  }}
-                  positions={points}
-                />
-                <Marker
-                  // position={[startPoints[0] - 16, startPoints[1] + 15]}
-                  position={startPoints}
-                  icon={customIcon}
-                >
-                  <Popup>起点</Popup>
-                </Marker>
-                <Marker
-                  // position={[endPoints[0] - 10, endPoints[1] + 10]}
-                  position={endPoints}
-                  icon={endIcon}
-                >
-                  <Popup>终点</Popup>
-                </Marker>
-              </>
-            )}
-
-            {AGV_point_real && (
-              <MapMarker data={AGV_point_real} angle={angle} />
-            )}
-            <ScaleControl
-              position="bottomleft"
-              metric={true}
-              imperial={false}
-            />
-          </MapContainer>
+          <LeafletMap
+            img={img}
+            bounds={bounds}
+            points={points}
+            AGV_point_real={AGV_point_real}
+            angle={angle}
+          ></LeafletMap>
         </CardContent>
         <CardFooter className="">
           <Tabs defaultValue="AGV" className="w-full">
@@ -473,7 +412,7 @@ const MapPage = () => {
             </TabsList>
             <TabsContent value="AGV" className="flex flex-col gap-4">
               <div className="flex flex-wrap gap-3 justify-between w-full">
-                <Card className="flex-1 h-36 grow ">
+                <Card className="flex-1 h-auto grow ">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="opacity-75 text-sm">
                       SLAM坐标
@@ -507,7 +446,7 @@ const MapPage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="flex-1 h-36 grow ">
+                <Card className="flex-1 h-auto grow ">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
                     <CardTitle className="opacity-75 text-sm">
                       LOC坐标
@@ -542,7 +481,7 @@ const MapPage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="flex-1 h-36">
+                <Card className="flex-1 h-auto">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="opacity-75 text-sm">角度</CardTitle>
                     <svg
@@ -576,7 +515,7 @@ const MapPage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="flex-1   h-36 ">
+                <Card className="flex-1  h-auto ">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="opacity-75 text-sm">匹配度</CardTitle>
                     <svg
@@ -598,7 +537,7 @@ const MapPage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="flex-1  h-36 ">
+                <Card className="flex-1  h-auto ">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="opacity-75 text-sm">温度</CardTitle>
                     <svg
@@ -618,7 +557,7 @@ const MapPage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="flex-1  h-36">
+                <Card className="flex-1  h-auto">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="opacity-75 text-sm">
                       定位数据
@@ -648,7 +587,7 @@ const MapPage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="flex-1  h-36 grow ">
+                <Card className="flex-1  h-auto grow ">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="opacity-75 text-sm">
                       重启定位

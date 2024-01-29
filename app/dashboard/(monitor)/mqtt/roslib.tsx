@@ -1,3 +1,4 @@
+"use client";
 import ROSLIB from "roslib";
 import { use, useEffect, useState } from "react";
 import {
@@ -7,6 +8,8 @@ import {
   ros_RunningAtom,
 } from "../atoms";
 import { useAtom } from "jotai";
+
+import React from "react";
 
 export interface ICPQualityMessage extends ROSLIB.Message {
   data: number;
