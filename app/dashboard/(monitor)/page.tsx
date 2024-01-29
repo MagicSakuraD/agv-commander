@@ -85,12 +85,11 @@ type AGV_point = {
   x: number;
   y: number;
 };
-// Create a new image object
-const img = new Image();
+
 //页面jsx
 const MapPage = () => {
   const { toast } = useToast();
-  const [dataMap, setDataMap] = useState<string | null>(null);
+
   const [rpi_temperature, setRpi_temperature] = useAtom(temperatureAtom);
   const [icp_quality, setIcp_quality] = useAtom(icp_qualityAtom);
   const [slam_pos, setSlam_pos] = useAtom(slam_posAtom);
@@ -102,54 +101,6 @@ const MapPage = () => {
   const [RecordColor, setRecordColor] = useState<
     "default" | "link" | "destructive" | "outline" | "secondary" | "ghost"
   >("default");
-  const [png_x, setPng_x] = useState<number>(0);
-  const [png_y, setPng_y] = useState<number>(0);
-  const [resolution, setResolution] = useState<number>(0);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let response = await fetch(
-          "http://192.168.2.112:8888/api/info/CurrentMapUsePngData",
-          {
-            method: "GET",
-          }
-        );
-        const image_data = await response.json();
-        const imageUrl = `data:image/png;base64,${image_data.data}`;
-        setDataMap(imageUrl);
-
-        let response_Name = await fetch(
-          "http://192.168.2.112:8888/api/info/CurrentMapUsePngInfo",
-          {
-            method: "GET",
-          }
-        );
-
-        let data_Name = await response_Name.text();
-        let data_png = JSON.parse(data_Name);
-        setPng_x(Number(data_png.data.x));
-        setPng_y(Number(data_png.data.y));
-        setResolution(Number(data_png.data.resolution));
-
-        const socket = io("http://192.168.2.114:5001");
-        socket.on("transmit_data", (data) => {
-          // setRos_Running(data.location_record_is_running);
-          setRpi_temperature(data.rpi_temperature);
-          // console.log(data.rpi_temperature, "👌");
-        });
-        socket.on("status", (data) => {
-          socket.emit("start");
-        });
-
-        // useSocket();
-      } catch (error) {
-        console.log(error, "地图获取失败😵");
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const message = useMqtt(values, topicMqtt);
   // const message = null;
@@ -177,20 +128,6 @@ const MapPage = () => {
       number
     ];
   }
-
-  // Set the source of the image to the PNG file
-  img.src = dataMap ? dataMap : "/baidu.png";
-
-  // Define a function to get the width and height
-  const w = img.naturalWidth; // 图片宽度
-  const h = img.naturalHeight; // 图片高度
-  // console.log(png_x, w, resolution, png_x + w * resolution, "👌");
-  const bounds: [[number, number], [number, number]] = [
-    [png_x * 10 * resolution, png_y * 10 * resolution], // 左上角经纬度坐标
-    [(png_x * 10 + w) * resolution, (png_y * 10 + h) * resolution], // 右下角经纬度坐标
-    // [w * resolution + png_x, h * resolution + png_y], // 右上角经纬度坐标
-    // [png_x, png_y], // 左下角经纬度坐标
-  ];
 
   // 定义坐标点
 
@@ -396,8 +333,6 @@ const MapPage = () => {
         </CardHeader>
         <CardContent>
           <LeafletMap
-            img={img}
-            bounds={bounds}
             points={points}
             AGV_point_real={AGV_point_real}
             angle={angle}
