@@ -124,10 +124,10 @@ const MapPage = () => {
   let AGV_point_real: [number, number] | null = null;
   if (typeof AGV_Object.x === "number" && typeof AGV_Object.y === "number") {
     AGV_point_real = xyToLatLng(AGV_point as [number, number]);
-    AGV_point_real = AGV_point_real.map((value) => Math.round(value)) as [
-      number,
-      number
-    ];
+
+    AGV_point_real = AGV_point_real.map((value) =>
+      parseFloat(value.toFixed(2))
+    ) as [number, number];
   }
 
   // 定义坐标点
@@ -342,7 +342,7 @@ const MapPage = () => {
         <CardFooter className="">
           <Tabs defaultValue="AGV" className="w-full">
             <TabsList>
-              <TabsTrigger value="AGV">AGV定位</TabsTrigger>
+              <TabsTrigger value="AGV">定位</TabsTrigger>
               {/* <TabsTrigger value="Node">ROS节点</TabsTrigger> */}
               <TabsTrigger value="mapmanager">地图管理</TabsTrigger>
               <TabsTrigger value="InitPose">初始化点</TabsTrigger>
@@ -589,7 +589,7 @@ const MapPage = () => {
 
             <TabsContent value="InitPose">
               <Suspense fallback={<NodeSkeleton />}>
-                <AddInitPose />
+                <AddInitPose AGV_point_real={AGV_point_real} angle={angle} />
               </Suspense>
             </TabsContent>
           </Tabs>
