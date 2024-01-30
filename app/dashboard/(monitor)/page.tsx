@@ -57,6 +57,7 @@ import MyComponent from "./LeafletMap";
 
 import dynamic from "next/dynamic";
 import Roslib from "./mqtt/roslib";
+import AddInitPose from "./tabs/(InitPose)/AddInitPose";
 
 const LeafletMap = dynamic(() => import("./LeafletMap"), {
   ssr: false, // 禁用服务器端渲染
@@ -342,8 +343,9 @@ const MapPage = () => {
           <Tabs defaultValue="AGV" className="w-full">
             <TabsList>
               <TabsTrigger value="AGV">AGV定位</TabsTrigger>
-              <TabsTrigger value="Node">ROS节点</TabsTrigger>
+              {/* <TabsTrigger value="Node">ROS节点</TabsTrigger> */}
               <TabsTrigger value="mapmanager">地图管理</TabsTrigger>
+              <TabsTrigger value="InitPose">初始化点</TabsTrigger>
             </TabsList>
             <TabsContent value="AGV" className="flex flex-col gap-4">
               <div className="flex flex-wrap gap-3 justify-between w-full">
@@ -571,19 +573,23 @@ const MapPage = () => {
               </div>
             </TabsContent>
 
-            <TabsContent value="Node">
+            {/* <TabsContent value="Node">
               <Suspense fallback={<NodeSkeleton />}>
                 <div>
                   <Nodelist />
                 </div>
               </Suspense>
-            </TabsContent>
+            </TabsContent> */}
 
             <TabsContent value="mapmanager">
               <Suspense fallback={<NodeSkeleton />}>
-                <div>
-                  <Map_Manager />
-                </div>
+                <Map_Manager />
+              </Suspense>
+            </TabsContent>
+
+            <TabsContent value="InitPose">
+              <Suspense fallback={<NodeSkeleton />}>
+                <AddInitPose />
               </Suspense>
             </TabsContent>
           </Tabs>

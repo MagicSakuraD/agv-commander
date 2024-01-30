@@ -31,7 +31,7 @@ export default function useROSLIB() {
 
   const [ros_Running, setRos_Running] = useAtom(ros_RunningAtom);
   useEffect(() => {
-    let ros = new ROSLIB.Ros({ url: "ws://192.168.2.114:9090" });
+    let ros = new ROSLIB.Ros({ url: "ws://192.168.2.112:9090" });
     ros.on("connection", function () {
       console.log("连接ros成功✅");
       setRos_Running(true);
