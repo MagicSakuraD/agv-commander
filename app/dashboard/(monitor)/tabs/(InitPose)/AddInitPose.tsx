@@ -48,6 +48,7 @@ const InputName: React.FC<InputNameProps> = ({ AGV_point_real, angle }) => {
       Posename: "",
     },
   });
+  // console.log(angle, "angle😡");
   function onSubmit(data: z.infer<typeof FormSchema>) {
     // 创建请求体对象
     let bodyContent = {
@@ -143,16 +144,6 @@ const AddInitPose: React.FC<AddInitPoseProps> = ({ AGV_point_real, angle }) => {
       refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
     }
   );
-  const data1 = [
-    {
-      name: "showcase",
-      x: 0,
-      y: 0,
-      roll: 0,
-      pitch: 0,
-      yaw: 0,
-    },
-  ];
 
   useEffect(() => {
     let res_data = data?.data;
@@ -161,17 +152,18 @@ const AddInitPose: React.FC<AddInitPoseProps> = ({ AGV_point_real, angle }) => {
         .filter((item: string) => item.startsWith("  pose"))
         .map((item: string) => {
           const [pose, values] = item.split(": ");
+          const id = Number(pose.substring(6));
           const [coords, name_test] = values.split("#");
+          console.log(coords, "coords👌");
           const name = name_test || "起始点";
-          const [x, y, roll, pitch, yaw] = coords
+          const [x, y, z, roll, pitch, yaw] = coords
             .replace("[", "")
             .replace("]", "")
             .split(",")
             .map((value) => (isNaN(Number(value)) ? value : Number(value)));
-          return { name, x, y, roll, pitch, yaw };
+          return { id, name, x, y, z, roll, pitch, yaw };
         });
       setRes_pose(ros_Pose);
-      console.log(ros_Pose);
     }
   }, [data]);
 

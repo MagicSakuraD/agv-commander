@@ -27,6 +27,10 @@ export type Pose = {
 
 export const columns: ColumnDef<Pose>[] = [
   {
+    accessorKey: "id",
+    header: "序号",
+  },
+  {
     accessorKey: "name",
     header: "站点名",
   },
@@ -37,6 +41,10 @@ export const columns: ColumnDef<Pose>[] = [
   {
     accessorKey: "y",
     header: "y",
+  },
+  {
+    accessorKey: "z",
+    header: "z",
   },
   {
     accessorKey: "roll",

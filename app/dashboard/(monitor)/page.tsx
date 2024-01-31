@@ -115,6 +115,7 @@ const MapPage = () => {
   const Local_Object = JSON.parse(loc_pos ? JSON.stringify(loc_pos) : "{}");
   let Local_point = [Local_Object.x, Local_Object.y];
   let AGV_point = [AGV_Object.x, AGV_Object.y];
+
   let angle = Local_Object.degree.toFixed(2);
 
   // 创建一个函数来转换[x, y]坐标到[y, x]
@@ -123,7 +124,7 @@ const MapPage = () => {
   // 实时车辆坐标
   let AGV_point_real: [number, number] | null = null;
   if (typeof AGV_Object.x === "number" && typeof AGV_Object.y === "number") {
-    AGV_point_real = xyToLatLng(AGV_point as [number, number]);
+    AGV_point_real = xyToLatLng(Local_point as [number, number]);
 
     AGV_point_real = AGV_point_real.map((value) =>
       parseFloat(value.toFixed(2))
@@ -510,7 +511,7 @@ const MapPage = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="scroll-m-20 text-xl font-semibold tracking-tight">
-                      <CardDescription>记录debug定位数据</CardDescription>
+                      <CardDescription>记录定位debug数据</CardDescription>
                       <div className="flex justify-center mt-2">
                         <Button
                           variant={RecordColor}
