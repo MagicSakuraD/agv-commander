@@ -1,5 +1,6 @@
 "use server";
 import { Loc_AGV } from "@/app/dashboard/(monitor)/localizationBags/columns";
+import { Pose } from "@/app/dashboard/(monitor)/tabs/(InitPose)/columns";
 import {
   Map_AGV,
   Map_bag,
@@ -85,6 +86,36 @@ export async function handleSetCurrentMap(map_name: Map_AGV) {
         },
         body: JSON.stringify({
           map_name: map_name.name,
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    return data.data;
+  } catch (error) {
+    console.error("Error❌:", error);
+    return error;
+  }
+}
+
+export async function changeInitPose(Pose_data: Pose) {
+  try {
+    const response = await fetch(
+      "http://192.168.2.112:8888/api/config/changeInitPose",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          line_number: Pose_data.id,
+          name: Pose_data.name,
+          pitch: Pose_data.pitch,
+          roll: Pose_data.roll,
+          x: Pose_data.x,
+          y: Pose_data.y,
+          yaw: Pose_data.yaw,
+          z: Pose_data.z,
         }),
       }
     );

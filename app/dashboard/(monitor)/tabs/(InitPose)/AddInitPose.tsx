@@ -154,7 +154,7 @@ const AddInitPose: React.FC<AddInitPoseProps> = ({ AGV_point_real, angle }) => {
           const [pose, values] = item.split(": ");
           const id = Number(pose.substring(6));
           const [coords, name_test] = values.split("#");
-          console.log(coords, "coords👌");
+
           const name = name_test || "起始点";
           const [x, y, z, roll, pitch, yaw] = coords
             .replace("[", "")
