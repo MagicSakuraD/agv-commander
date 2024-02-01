@@ -19,3 +19,4 @@ export const successAtom = atom(true);
 
 export const bagnameAtom = atom("");
 export const MapNameAtom = atom("");
+export const startAtom = atom(-1);

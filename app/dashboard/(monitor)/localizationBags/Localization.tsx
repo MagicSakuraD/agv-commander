@@ -38,7 +38,7 @@ const Localization: React.FC<LocalizationProps> = ({ isRecord }) => {
           name: name,
         });
       }
-      console.log(loc_list);
+      // console.log(loc_list);
       setLocs(loc_list);
     }
   }, [data]);

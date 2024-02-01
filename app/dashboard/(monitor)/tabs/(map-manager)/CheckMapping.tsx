@@ -1,4 +1,6 @@
 import { DialogHeader } from "@/components/ui/dialog";
+import { startAtom } from "@/lib/atoms";
+import { useAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -11,6 +13,7 @@ const CheckMapping: React.FC<CheckMappingProps> = ({
   setCheck,
   setSuccess,
 }) => {
+  const [start, setStart] = useAtom(startAtom);
   const API_URL = "http://192.168.2.112:8888/api/info/CheckIsMappingRecord";
   const [shouldFetch, setShouldFetch] = useState(true);
   const fetcher = (...args: [string, RequestInit?]) =>
@@ -47,8 +50,8 @@ const CheckMapping: React.FC<CheckMappingProps> = ({
   }, [shouldFetch]); // 依赖于 shouldFetch
 
   useEffect(() => {
-    if (data && data.data === true) {
-      console.log("录制完成✅");
+    if (data && data.data === true && start === 0) {
+      console.log("开始录制✅");
       setShouldFetch(false); // 如果返回值为 true，停止发送请求
       setCheck(false);
       setSuccess(false);

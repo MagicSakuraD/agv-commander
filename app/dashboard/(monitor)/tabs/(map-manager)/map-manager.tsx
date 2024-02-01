@@ -115,6 +115,10 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
       .then((data) => {
         // 处理解析后的数据
         console.log(data);
+        toast({
+          title: "消息📢:",
+          description: data.data,
+        });
       })
       .catch((error) => {
         // 处理错误

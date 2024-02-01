@@ -11,6 +11,7 @@ import { Pose } from "./columns";
 import { changeInitPose } from "@/lib/actions";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -38,42 +39,52 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: "站点名必须至少包含2个字符",
   }),
-  x: z.number().min(0, {
-    message: "x不能为空",
-  }),
-  y: z.number().min(0, {
-    message: "y不能为空",
-  }),
-  z: z.number().min(0, { message: "z不能为空" }),
-  roll: z.number().min(0, { message: "roll不能为空" }),
-  pitch: z.number().min(0, { message: "pitch不能为空" }),
-  yaw: z.number().min(0, { message: "yaw不能为空" }),
+  x: z.number(),
+  y: z.number(),
+  z: z.number(),
+  roll: z.number(),
+  pitch: z.number(),
+  yaw: z.number(),
 });
 
 interface ProfileFormProps {
   pose_id: number;
+  pose_name: string;
+  pose_x: number;
+  pose_y: number;
+  pose_z: number;
+  pose_roll: number;
+  pose_pitch: number;
+  pose_yaw: number;
 }
 
-export function ProfileForm({ pose_id }: ProfileFormProps) {
+export function ProfileForm({
+  pose_id,
+  pose_name,
+  pose_x,
+  pose_y,
+  pose_z,
+  pose_roll,
+  pose_pitch,
+  pose_yaw,
+}: ProfileFormProps) {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: 1,
-      name: "test",
-      x: 0,
-      y: 0,
-      z: 0,
-      roll: 0,
-      pitch: 0,
-      yaw: 0,
+      id: pose_id,
+      name: pose_name,
+      x: pose_x,
+      y: pose_y,
+      z: pose_z,
+      roll: pose_roll,
+      pitch: pose_pitch,
+      yaw: pose_yaw,
     },
   });
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     const result = await changeInitPose(values);
     if (result) {
       toast({
@@ -100,13 +111,11 @@ export function ProfileForm({ pose_id }: ProfileFormProps) {
                 <Input
                   placeholder="请输入序号"
                   {...field}
-                  type="number"
                   onChange={(e) => field.onChange(Number(e.target.value))}
+                  disabled
                 />
               </FormControl>
-              <FormDescription>
-                当前站点序号为{pose_id}，也可修改其他序号的站点信息
-              </FormDescription>
+              <FormDescription>固定值,不可修改,用于标识点位</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -241,7 +250,9 @@ export function ProfileForm({ pose_id }: ProfileFormProps) {
           )}
         />
 
-        <Button type="submit">提交</Button>
+        <DialogClose asChild>
+          <Button type="submit">提交</Button>
+        </DialogClose>
       </form>
     </Form>
   );
@@ -269,7 +280,16 @@ const ChangeInitPoseBtn = (Pose_data: Pose) => {
         <DialogHeader>
           <DialogTitle>修改初始化点位</DialogTitle>
         </DialogHeader>
-        <ProfileForm pose_id={Pose_data.id} />
+        <ProfileForm
+          pose_id={Pose_data.id}
+          pose_name={Pose_data.name}
+          pose_x={Pose_data.x}
+          pose_y={Pose_data.y}
+          pose_z={Pose_data.z}
+          pose_roll={Pose_data.roll}
+          pose_pitch={Pose_data.pitch}
+          pose_yaw={Pose_data.yaw}
+        />
       </DialogContent>
     </>
   );

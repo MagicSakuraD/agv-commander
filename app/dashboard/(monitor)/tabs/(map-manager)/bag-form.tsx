@@ -15,10 +15,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
-
 import next from "next";
 import useSWR from "swr";
 import { time } from "console";
+import { toast } from "@/components/ui/use-toast";
+import { startAtom } from "@/lib/atoms";
+import { useAtom } from "jotai";
 
 const formSchema = z.object({
   bag_name: z
@@ -43,6 +45,7 @@ const Bag_form: React.FC<Bag_formProps> = ({
   setCheck,
   setSuccess,
 }) => {
+  const [start, setStart] = useAtom(startAtom);
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,6 +79,11 @@ const Bag_form: React.FC<Bag_formProps> = ({
       .then((data) => {
         // 处理解析后的数据
         console.log(data);
+        setStart(data.code);
+        toast({
+          title: "消息📢:",
+          description: data.data,
+        });
       })
       .catch((error) => {
         // 处理错误
