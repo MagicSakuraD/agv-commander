@@ -1,5 +1,5 @@
 import { DialogHeader } from "@/components/ui/dialog";
-import { startAtom } from "@/lib/atoms";
+
 import { useAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -9,37 +9,30 @@ interface CheckMappingProps {
 }
 
 const CheckMapping: React.FC<CheckMappingProps> = ({ setStatus }) => {
-  const [start, setStart] = useAtom(startAtom);
-
   const API_URL = "http://192.168.2.112:8888/api/info/CheckIsMappingRecord";
-  const [shouldFetch, setShouldFetch] = useState(true);
+
   const fetcher = (...args: [string, RequestInit?]) =>
     fetch(...args).then((res) => res.json());
   // 定义一个常量，用于存储 API 的 URL
 
   // 使用 useSWR，传入一个 URL，一个获取数据的函数，和一些选项
   // 把 shouldFetch 加入到依赖项中
-  const { data, error, isLoading } = useSWR(
-    shouldFetch ? API_URL : null,
-    fetcher,
-    {
-      refreshInterval: 3000, // 每隔 3000 毫秒重新获取一次数据
-      refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
-    }
-  );
+  const { data, error, isLoading } = useSWR(API_URL, fetcher, {
+    refreshInterval: 3000, // 每隔 3000 毫秒重新获取一次数据
+    refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
+  });
 
   useEffect(() => {
     // 定义一个变量，用于存储 setTimeout 的返回值
     let timerId: NodeJS.Timeout;
     // 如果 shouldFetch 为 true，设置一个 30 秒后停止发送请求的定时器
-    if (shouldFetch) {
-      timerId = setTimeout(() => {
-        // setShouldFetch(false); // 30 秒后停止发送请求
-        console.log("结束请求");
 
-        setStatus(2);
-      }, 30000);
-    }
+    timerId = setTimeout(() => {
+      // setShouldFetch(false); // 30 秒后停止发送请求
+      console.log("无法录制😭");
+      setStatus(2);
+    }, 30000);
+
     // 返回一个清理函数，用于清除定时器
     return () => {
       clearTimeout(timerId); // 组件卸载时或者 shouldFetch 变化时，清除定时器
@@ -48,11 +41,9 @@ const CheckMapping: React.FC<CheckMappingProps> = ({ setStatus }) => {
   }, []); // 依赖于 shouldFetch
 
   useEffect(() => {
-    if (data && data.data === true && start === 0) {
+    if (data && data.data === true) {
       console.log("开始录制✅");
-
       setStatus(3);
-      console.log(start, "ok🤔");
     }
   }, [data]);
 

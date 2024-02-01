@@ -22,13 +22,18 @@ import {
 // import ChangeInitPoseBtn from "./ChangeInitPoseBtn";
 // import DeleteInitPosebtn from "./DeleteInitPosebtn";
 
-export type Pose = {
+export type Fileprop = {
+  id: number;
   param_name: string;
   param_value: string;
   comment: string;
 };
 
-export const columns: ColumnDef<Pose>[] = [
+export const columns: ColumnDef<Fileprop>[] = [
+  {
+    accessorKey: "id",
+    header: "序号",
+  },
   {
     accessorKey: "param_name",
     header: "参数名",

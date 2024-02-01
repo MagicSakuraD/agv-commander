@@ -39,6 +39,9 @@ import {
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { GetConfigContent } from "@/lib/actions";
+import { DataTable } from "@/components/ui/data-table";
+import { Fileprop, columns } from "./columns";
 
 const FormSchema = z.object({
   File: z.string({
@@ -52,6 +55,7 @@ const MappingPage = () => {
     value: string;
   }
   const [Files, setFiles] = useState<File[]>([]);
+  const [fileData, setFileData] = useState<Fileprop[]>([]);
   useEffect(() => {
     // 发送 GET 请求
     fetch("http://192.168.2.112:8888/api/info/GetAllConfigsFileName", {
@@ -82,33 +86,39 @@ const MappingPage = () => {
     resolver: zodResolver(FormSchema),
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    // let path = data.File;
-    // let url = `http://192.168.2.112:8888/api/info/GetConfigContent/${path}`;
-    // // 使用 useSWR，传入一个 URL，一个获取数据的函数，和一些选项
-    // const fetcher = (...args: [string, RequestInit?]) =>
-    //   fetch(...args).then((res) => res.json());
-    // // 定义一个常量，用于存储 API 的 URL
-    // const {
-    //   data: file_param,
-    //   error,
-    //   isLoading,
-    // } = useSWR(url, fetcher, {
-    //   refreshInterval: 1000,
-    //   refreshWhenHidden: false,
-    // });
-    // console.log(file_param);
+  function parseArray(arr: string[]) {
+    let result = [];
+    for (let i = 0; i < arr.length; i++) {
+      let line = arr[i];
+      let match = line.match(/(.*):(.*)#(.*)/);
+      if (line.startsWith("#")) {
+        let comment = line.slice(1).trim();
+        result.push({ id: i, param_name: "", param_value: "", comment });
+      } else if (match) {
+        let param_name = match[1].trim();
+        let param_value = match[2].trim();
+        let comment = match[3].trim();
+        result.push({ id: i, param_name, param_value, comment });
+      } else {
+        match = line.match(/(.*):(.*)/);
+        if (match) {
+          let param_name = match[1].trim();
+          let param_value = match[2].trim();
+          result.push({ id: i, param_name, param_value, comment: "" });
+        } else {
+          result.push({ id: i, param_name: "", param_value: "", comment: "" });
+        }
+      }
+    }
+    return result;
+  }
 
-    toast({
-      title: "消息📢:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">
-            {JSON.stringify(data.File, null, 2)}
-          </code>
-        </pre>
-      ),
-    });
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const path = data.File;
+    const res = await GetConfigContent(path);
+    let parsed = parseArray(res);
+    console.log(parsed);
+    setFileData(parsed);
   }
 
   return (
@@ -187,6 +197,15 @@ const MappingPage = () => {
               <Button type="submit">提交</Button>
             </form>
           </Form>
+        </CardContent>
+      </Card>
+
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>配置文件参数信息</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable columns={columns} data={fileData} />
         </CardContent>
       </Card>
     </div>

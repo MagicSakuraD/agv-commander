@@ -82,13 +82,7 @@ const InputName: React.FC<InputNameProps> = ({ AGV_point_real, angle }) => {
         setPose(Pose_data);
         toast({
           title: "消息📢:",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">
-                {JSON.stringify(Pose_data, null, 2)}
-              </code>
-            </pre>
-          ),
+          description: "添加成功✔️",
         });
         console.log(Pose_data);
       })
@@ -167,6 +161,17 @@ const AddInitPose: React.FC<AddInitPoseProps> = ({ AGV_point_real, angle }) => {
           return { id, name, x, y, z, roll, pitch, yaw };
         });
       setRes_pose(ros_Pose);
+      const markerlist_res = ros_Pose.map(
+        (pose: { id: number; x: number; y: number; yaw: number }) => ({
+          id: pose.id,
+          x: pose.x,
+          y: pose.y,
+          yaw: pose.yaw,
+        })
+      );
+
+      setMarkerlist(markerlist_res);
+      console.log(markerlist, "👻");
     }
   }, [data]);
 

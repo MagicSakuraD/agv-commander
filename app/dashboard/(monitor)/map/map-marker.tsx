@@ -32,7 +32,7 @@ export default function MapMarker({ data, angle }: MapMarkerProps) {
     <LeafletTrackingMarker
       icon={icon}
       position={[latitude, longitude]}
-      previousPosition={prevPos as L.LatLngExpression}
+      // previousPosition={prevPos as L.LatLngExpression}
       duration={1000}
       rotationAngle={angle}
     />

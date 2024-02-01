@@ -14,10 +14,7 @@ export const loc_posAtom = atom<{ x: number; y: number; degree: number }>({
 export const ros_RunningAtom = atom(true);
 export const temperatureAtom = atom(0);
 
-export const checkAtom = atom(true);
-export const successAtom = atom(true);
-
 export const bagnameAtom = atom("");
 export const MapNameAtom = atom("");
-export const startAtom = atom(-1);
-export const markerlistAtom = atom([{ x: 0, y: 0, yaw: 0 }]);
+
+export const markerlistAtom = atom([{ id: 0, x: 0, y: 0, yaw: 0 }]);

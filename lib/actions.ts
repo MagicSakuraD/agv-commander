@@ -120,6 +120,31 @@ export async function handleSetCurrentMap(map_name: Map_AGV) {
   }
 }
 
+export async function GetConfigContent(path_name: string) {
+  try {
+    const response = await fetch(
+      `http://192.168.2.112:8888/api/info/GetConfigContent/{path}?path=${path_name}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.code === 0) {
+      console.log(data.data);
+      return data.data;
+    } else {
+      console.error("请求失败❌:", data.data);
+      return data.code;
+    }
+  } catch (error) {
+    console.error("Error❌:", error);
+    return error;
+  }
+}
+
 export async function changeInitPose(Pose_data: Pose) {
   try {
     const response = await fetch(

@@ -1,6 +1,6 @@
 "use client";
 import React, { Children, ReactNode, useEffect, useState } from "react";
-import L from "leaflet";
+import L, { Point } from "leaflet";
 import {
   ImageOverlay,
   MapContainer,
@@ -23,10 +23,12 @@ import {
   ros_RunningAtom,
   temperatureAtom,
   MapNameAtom,
+  markerlistAtom,
 } from "@/lib/atoms";
 import { useAtom } from "jotai";
 import useSocket from "./mqtt/socket";
 import { io } from "socket.io-client";
+import PointMarker from "./tabs/(InitPose)/PointMarker";
 
 function MyClick() {
   const map = useMapEvent("click", (e) => {
@@ -55,6 +57,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
   const [resolution, setResolution] = useState<number>(0);
   const [rpi_temperature, setRpi_temperature] = useAtom(temperatureAtom);
   const [MapName, setMapName] = useAtom(MapNameAtom);
+  const [markerlist, setMarkerlist] = useAtom(markerlistAtom);
 
   // Create a new image object
   const img = new Image();
@@ -180,6 +183,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
           </>
         )}
 
+        {markerlist.length >= 2 && <PointMarker />}
         {AGV_point_real && <MapMarker data={AGV_point_real} angle={angle} />}
         <ScaleControl position="bottomleft" metric={true} imperial={false} />
       </MapContainer>

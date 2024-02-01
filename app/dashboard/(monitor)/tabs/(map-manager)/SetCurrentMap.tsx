@@ -8,7 +8,6 @@ import { handleSetCurrentMap } from "@/lib/actions";
 import { toast, useToast } from "@/components/ui/use-toast";
 import { MapNameAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
-import { set } from "zod";
 
 const SetCurrentMap = (map_name: Map_AGV) => {
   // const [mapResult, setMapResult] = React.useState<string>("");

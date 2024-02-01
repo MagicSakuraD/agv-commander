@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Map_AGV, columns, Map_bag, columns_bag } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import {
   Card,
@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/card";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -37,8 +36,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { toast, useToast } from "@/components/ui/use-toast";
-import handleAck from "mqtt/lib/handlers/ack";
+import { toast } from "@/components/ui/use-toast";
 import {
   Form,
   FormControl,
@@ -55,13 +53,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { checkAtom, successAtom, bagnameAtom } from "@/lib/atoms";
+import { bagnameAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
 import CheckMapping from "./CheckMapping";
 import LoadingMapping from "./LoadingMapping";
 import DisplayCompletedMap from "./DisplayCompletedMap";
 import useSWR from "swr";
-import { stat } from "fs";
 
 interface AlertDialogBtnProps {
   status: number; // 或者你的状态的类型
@@ -72,13 +69,7 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
   status,
   setStatus,
 }) => {
-  const [seconds, setSeconds] = useState(0);
   const [formValues, setFormValues] = useState("");
-  // const [check, setCheck] = useAtom(checkAtom);
-  // const [success, setSuccess] = useAtom(successAtom);
-
-  const [check, setCheck] = useState(true);
-  const [success, setSuccess] = useState(true);
 
   return (
     <Dialog>
@@ -93,8 +84,6 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
           status={status}
           setStatus={setStatus}
           setFormValues={setFormValues}
-          setCheck={setCheck}
-          setSuccess={setSuccess}
         />
       </DialogContent>
     </Dialog>
@@ -107,16 +96,12 @@ interface SwitchStatusProps {
   setStatus: React.Dispatch<React.SetStateAction<number>>;
 
   setFormValues: React.Dispatch<React.SetStateAction<string>>;
-  setCheck: React.Dispatch<React.SetStateAction<boolean>>;
-  setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const SwitchStatus: React.FC<SwitchStatusProps> = ({
   formValues,
   status,
   setStatus,
   setFormValues,
-  setCheck,
-  setSuccess,
 }) => {
   const [seconds, setSeconds] = useState(0);
   useEffect(() => {
@@ -130,8 +115,6 @@ const SwitchStatus: React.FC<SwitchStatusProps> = ({
   }, [status]);
 
   function handleOver() {
-    setStatus(0);
-    setSeconds(0);
     // 发送 fetch 请求
     fetch("http://192.168.2.112:8888/api/config/StartRecordMappingData", {
       method: "POST", // 或 'GET'
@@ -152,7 +135,7 @@ const SwitchStatus: React.FC<SwitchStatusProps> = ({
         // 处理解析后的数据
         console.log(data);
         toast({
-          title: "消息📢:",
+          title: "结束录制消息📢:",
           description: data.data,
         });
       })
@@ -160,6 +143,8 @@ const SwitchStatus: React.FC<SwitchStatusProps> = ({
         // 处理错误
         console.error("Error:", error);
       });
+    setStatus(0);
+    setSeconds(0);
   }
 
   switch (status) {
@@ -211,16 +196,18 @@ const SwitchStatus: React.FC<SwitchStatusProps> = ({
               <p className="text-center">相关ROS节点未启动,无法录制</p>
             </div>
           </DialogHeader>
-          <DialogClose asChild>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleOver}
-              className="w-1/2"
-            >
-              结束录制
-            </Button>
-          </DialogClose>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleOver}
+                className="w-1/2"
+              >
+                结束录制
+              </Button>
+            </DialogClose>
+          </DialogFooter>
         </div>
       );
 
@@ -248,7 +235,7 @@ const SwitchStatus: React.FC<SwitchStatusProps> = ({
               <p className="text-green-600">录制中</p>
             </DialogTitle>
             <DialogDescription>
-              结束录制后,等待1-5秒数据包生成
+              结束录制后,等待1-3秒数据包生成
             </DialogDescription>
             <div className="text-lg text-muted-foreground">
               录制时长: {seconds} 秒
