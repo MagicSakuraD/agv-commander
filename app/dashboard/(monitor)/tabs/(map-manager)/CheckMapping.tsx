@@ -5,15 +5,12 @@ import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 
 interface CheckMappingProps {
-  setCheck: React.Dispatch<React.SetStateAction<boolean>>;
-  setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
+  setStatus: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const CheckMapping: React.FC<CheckMappingProps> = ({
-  setCheck,
-  setSuccess,
-}) => {
+const CheckMapping: React.FC<CheckMappingProps> = ({ setStatus }) => {
   const [start, setStart] = useAtom(startAtom);
+
   const API_URL = "http://192.168.2.112:8888/api/info/CheckIsMappingRecord";
   const [shouldFetch, setShouldFetch] = useState(true);
   const fetcher = (...args: [string, RequestInit?]) =>
@@ -37,24 +34,25 @@ const CheckMapping: React.FC<CheckMappingProps> = ({
     // 如果 shouldFetch 为 true，设置一个 30 秒后停止发送请求的定时器
     if (shouldFetch) {
       timerId = setTimeout(() => {
-        setShouldFetch(false); // 30 秒后停止发送请求
+        // setShouldFetch(false); // 30 秒后停止发送请求
         console.log("结束请求");
-        setCheck(false);
+
+        setStatus(2);
       }, 30000);
     }
     // 返回一个清理函数，用于清除定时器
     return () => {
       clearTimeout(timerId); // 组件卸载时或者 shouldFetch 变化时，清除定时器
-      console.log(shouldFetch);
+      // console.log(shouldFetch);
     };
-  }, [shouldFetch]); // 依赖于 shouldFetch
+  }, []); // 依赖于 shouldFetch
 
   useEffect(() => {
     if (data && data.data === true && start === 0) {
       console.log("开始录制✅");
-      setShouldFetch(false); // 如果返回值为 true，停止发送请求
-      setCheck(false);
-      setSuccess(false);
+
+      setStatus(3);
+      console.log(start, "ok🤔");
     }
   }, [data]);
 

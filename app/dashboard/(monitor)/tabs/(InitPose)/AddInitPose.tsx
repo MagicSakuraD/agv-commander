@@ -28,6 +28,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import useSWR from "swr";
+import { markerlistAtom } from "@/lib/atoms";
+import { useAtom } from "jotai";
 
 const FormSchema = z.object({
   Posename: z.string().min(2, {
@@ -130,6 +132,7 @@ interface AddInitPoseProps {
 
 const AddInitPose: React.FC<AddInitPoseProps> = ({ AGV_point_real, angle }) => {
   const [res_pose, setRes_pose] = useState([]);
+  const [markerlist, setMarkerlist] = useAtom(markerlistAtom);
   const fetcher = (...args: [string, RequestInit?]) =>
     fetch(...args).then((res) => res.json());
   // 定义一个常量，用于存储 API 的 URL

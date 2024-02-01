@@ -20,3 +20,4 @@ export const successAtom = atom(true);
 export const bagnameAtom = atom("");
 export const MapNameAtom = atom("");
 export const startAtom = atom(-1);
+export const markerlistAtom = atom([{ x: 0, y: 0, yaw: 0 }]);

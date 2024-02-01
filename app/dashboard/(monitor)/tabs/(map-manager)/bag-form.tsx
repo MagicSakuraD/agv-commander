@@ -34,16 +34,12 @@ interface Bag_formProps {
   setStatus: React.Dispatch<React.SetStateAction<number>>;
 
   setFormValues: React.Dispatch<React.SetStateAction<string>>;
-  setCheck: React.Dispatch<React.SetStateAction<boolean>>;
-  setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Bag_form: React.FC<Bag_formProps> = ({
   status,
   setStatus,
   setFormValues,
-  setCheck,
-  setSuccess,
 }) => {
   const [start, setStart] = useAtom(startAtom);
   // 1. Define your form.
@@ -58,7 +54,6 @@ const Bag_form: React.FC<Bag_formProps> = ({
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    setStatus(0);
 
     // 发送 fetch 请求
     fetch("http://192.168.2.112:8888/api/config/StartRecordMappingData", {
@@ -92,6 +87,7 @@ const Bag_form: React.FC<Bag_formProps> = ({
 
     setFormValues(values.bag_name);
     console.log(values.bag_name);
+    setStatus(1);
   }
 
   return (
