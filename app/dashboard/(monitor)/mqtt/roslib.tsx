@@ -6,7 +6,7 @@ import {
   slam_posAtom,
   loc_posAtom,
   ros_RunningAtom,
-} from "../atoms";
+} from "../../../../lib/atoms";
 import { useAtom } from "jotai";
 
 export interface ICPQualityMessage extends ROSLIB.Message {
@@ -65,7 +65,6 @@ export default function useROSLIB() {
 
     listener_slam_pos.subscribe(function (message: ROSLIB.Message) {
       setSlam_pos((message as SlamPosMessage).pose.pose.position);
-      // console.log((message as SlamPosMessage).pose.pose.position);
     });
 
     // 接收到loc定位结果

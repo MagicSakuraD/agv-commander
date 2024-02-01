@@ -55,11 +55,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  checkAtom,
-  successAtom,
-  bagnameAtom,
-} from "@/app/dashboard/(monitor)/atoms";
+import { checkAtom, successAtom, bagnameAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
 import CheckMapping from "./CheckMapping";
 import LoadingMapping from "./LoadingMapping";

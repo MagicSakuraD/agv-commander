@@ -12,12 +12,85 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useAtom } from "jotai";
-import { bagnameAtom } from "../../atoms";
+import { bagnameAtom } from "../../../../../lib/atoms";
 import { set } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+
+const FormSchema = z.object({
+  mapname: z.string().min(2, {
+    message: "地图名至少包含两个字符",
+  }),
+});
+
+interface InputFormProps {
+  bagname: string;
+  setBagname: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export function InputForm({ bagname, setBagname }: InputFormProps) {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      mapname: bagname,
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    toast({
+      title: "消息📢:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    });
+    setBagname(data.mapname);
+  }
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex w-full items-center gap -2 justify-between"
+      >
+        <FormField
+          control={form.control}
+          name="mapname"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>地图名</FormLabel>
+              <FormControl>
+                <Input placeholder="请输入地图名" {...field} />
+              </FormControl>
+              <FormDescription>
+                选填,默认地图名为bag文件名,可自行修改
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">提交</Button>
+      </form>
+    </Form>
+  );
+}
 
 interface DisplayCompletedMapProps {
   setDialogStatus: React.Dispatch<React.SetStateAction<number>>;
@@ -144,7 +217,8 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
       <AlertDialogHeader>
         <AlertDialogTitle>是否保存地图❓</AlertDialogTitle>
       </AlertDialogHeader>
-      <div ref={screenRef} className="relative flex h-96">
+      <InputForm bagname={bagname} setBagname={setBagname} />
+      <div ref={screenRef} className="relative flex h-96 mt-3">
         <Image
           src={`data:image/png;base64,${imgdata}`}
           alt="地图图片"

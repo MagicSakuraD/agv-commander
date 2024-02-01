@@ -22,7 +22,7 @@ import {
   loc_posAtom,
   ros_RunningAtom,
   temperatureAtom,
-} from "./atoms";
+} from "../../../lib/atoms";
 import { useAtom } from "jotai";
 
 import {
@@ -195,12 +195,14 @@ const MapPage = () => {
       // 如果 'code' 的值为 0，那么打印 'data' 的值
       console.log(responseObj.data);
       toast({
+        title: "消息📢:",
         description: "✅: " + responseObj.data,
       });
     } else if (responseObj.code === -1) {
       // 如果 'code' 的值为 -1，那么打印一个错误消息
       console.log(responseObj.msg);
       toast({
+        title: "消息📢:",
         description: "❌: " + responseObj.data,
       });
     }
@@ -234,12 +236,14 @@ const MapPage = () => {
           // 如果 'code' 的值为 0，那么打印 'data' 的值
           console.log(data.data);
           toast({
+            title: "消息📢:",
             description: "✅: " + data.data,
           });
         } else if (data.code === -1) {
           // 如果 'code' 的值为 -1，那么打印一个错误消息
           console.log(data.msg);
           toast({
+            title: "消息📢:",
             description: "❌: " + data.data,
           });
         }
@@ -278,12 +282,14 @@ const MapPage = () => {
           // 如果 'code' 的值为 0，那么打印 'data' 的值
           console.log(data.data);
           toast({
+            title: "消息📢:",
             description: "✅: " + data.data,
           });
         } else if (data.code === -1) {
           // 如果 'code' 的值为 -1，那么打印一个错误消息
           console.log(data.msg);
           toast({
+            title: "消息📢:",
             description: "❌: " + data.data,
           });
         }
@@ -333,10 +339,10 @@ const MapPage = () => {
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent></CardContent>
-        <CardFooter className="">
+        {/* <CardContent></CardContent> */}
+        <CardContent className="">
           <Tabs defaultValue="AGV" className="w-full">
-            <TabsList className="my-2">
+            <TabsList className="mb-3">
               <TabsTrigger value="AGV">定位</TabsTrigger>
               {/* <TabsTrigger value="Node">ROS节点</TabsTrigger> */}
               <TabsTrigger value="mapmanager">地图管理</TabsTrigger>
@@ -593,7 +599,7 @@ const MapPage = () => {
               </Suspense>
             </TabsContent>
           </Tabs>
-        </CardFooter>
+        </CardContent>
       </>
     );
   }

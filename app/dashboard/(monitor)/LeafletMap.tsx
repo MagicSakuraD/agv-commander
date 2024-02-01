@@ -22,7 +22,8 @@ import {
   loc_posAtom,
   ros_RunningAtom,
   temperatureAtom,
-} from "./atoms";
+  MapNameAtom,
+} from "@/lib/atoms";
 import { useAtom } from "jotai";
 import useSocket from "./mqtt/socket";
 import { io } from "socket.io-client";
@@ -53,12 +54,12 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
   const [png_y, setPng_y] = useState<number>(0);
   const [resolution, setResolution] = useState<number>(0);
   const [rpi_temperature, setRpi_temperature] = useAtom(temperatureAtom);
-  const [dataMap, setDataMap] = useState<string>("");
+  const [MapName, setMapName] = useAtom(MapNameAtom);
 
   // Create a new image object
   const img = new Image();
   // Set the source of the image to the PNG file
-  img.src = dataMap;
+  img.src = MapName;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,7 +73,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
         const image_data = await response.json();
         if (image_data.code === 0) {
           const imageUrl = `data:image/png;base64,${image_data.data}`;
-          setDataMap(imageUrl);
+          setMapName(imageUrl);
         }
 
         let response_Name = await fetch(
@@ -106,7 +107,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
     };
 
     fetchData();
-  }, []);
+  }, [MapName]);
 
   const Simple = L.CRS.Simple;
   let startPoints = points ? points[0] : ([0, 0] as [number, number]);

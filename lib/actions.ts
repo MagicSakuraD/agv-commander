@@ -112,6 +112,7 @@ export async function handleSetCurrentMap(map_name: Map_AGV) {
     );
     const data = await response.json();
     console.log(data);
+
     return data.data;
   } catch (error) {
     console.error("Error❌:", error);

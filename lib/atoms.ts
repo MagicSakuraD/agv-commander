@@ -18,3 +18,4 @@ export const checkAtom = atom(true);
 export const successAtom = atom(true);
 
 export const bagnameAtom = atom("");
+export const MapNameAtom = atom("");
