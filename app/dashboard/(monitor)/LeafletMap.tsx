@@ -53,7 +53,12 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
   const [png_y, setPng_y] = useState<number>(0);
   const [resolution, setResolution] = useState<number>(0);
   const [rpi_temperature, setRpi_temperature] = useAtom(temperatureAtom);
-  const [dataMap, setDataMap] = useState<string | null>(null);
+  const [dataMap, setDataMap] = useState<string>("");
+
+  // Create a new image object
+  const img = new Image();
+  // Set the source of the image to the PNG file
+  img.src = dataMap;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,9 +82,8 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
           }
         );
 
-        let data_Name = await response_Name.json();
-        if (data_Name.code === 0) {
-          let data_png = JSON.parse(data_Name);
+        let data_png = await response_Name.json();
+        if (data_png.code === 0) {
           setPng_x(Number(data_png.data.x));
           setPng_y(Number(data_png.data.y));
           setResolution(Number(data_png.data.resolution));
@@ -122,11 +126,6 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
     iconSize: [30, 30],
   });
   useROSLIB();
-
-  // Create a new image object
-  const img = new Image();
-  // Set the source of the image to the PNG file
-  img.src = dataMap ? dataMap : "/baidu.png";
 
   // Define a function to get the width and height
   const w = img?.naturalWidth; // 图片宽度
