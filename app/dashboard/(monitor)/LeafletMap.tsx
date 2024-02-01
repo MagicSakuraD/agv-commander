@@ -137,8 +137,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
     // [w * resolution + png_x, h * resolution + png_y], // 右上角经纬度坐标
     // [png_x, png_y], // 左下角经纬度坐标
   ];
-  console.log(img.src);
-  console.log(bounds, "👌");
+
   return (
     <div>
       <MapContainer
