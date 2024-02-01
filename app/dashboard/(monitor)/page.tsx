@@ -333,13 +333,7 @@ const MapPage = () => {
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <LeafletMap
-            points={points}
-            AGV_point_real={AGV_point_real}
-            angle={angle}
-          ></LeafletMap>
-        </CardContent>
+        <CardContent></CardContent>
         <CardFooter className="">
           <Tabs defaultValue="AGV" className="w-full">
             <TabsList className="my-2">
@@ -348,6 +342,11 @@ const MapPage = () => {
               <TabsTrigger value="mapmanager">地图管理</TabsTrigger>
               <TabsTrigger value="InitPose">初始化点</TabsTrigger>
             </TabsList>
+            <LeafletMap
+              points={points}
+              AGV_point_real={AGV_point_real}
+              angle={angle}
+            ></LeafletMap>
             <TabsContent value="AGV" className="flex flex-col gap-4">
               <div className="flex flex-wrap gap-3 justify-between w-full">
                 <Card className="flex-1 h-auto grow ">

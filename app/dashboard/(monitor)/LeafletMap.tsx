@@ -65,8 +65,10 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
           }
         );
         const image_data = await response.json();
-        const imageUrl = `data:image/png;base64,${image_data.data}`;
-        setDataMap(imageUrl);
+        if (image_data.code === 0) {
+          const imageUrl = `data:image/png;base64,${image_data.data}`;
+          setDataMap(imageUrl);
+        }
 
         let response_Name = await fetch(
           "http://192.168.2.112:8888/api/info/CurrentMapUsePngInfo",
@@ -75,11 +77,13 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
           }
         );
 
-        let data_Name = await response_Name.text();
-        let data_png = JSON.parse(data_Name);
-        setPng_x(Number(data_png.data.x));
-        setPng_y(Number(data_png.data.y));
-        setResolution(Number(data_png.data.resolution));
+        let data_Name = await response_Name.json();
+        if (data_Name.code === 0) {
+          let data_png = JSON.parse(data_Name);
+          setPng_x(Number(data_png.data.x));
+          setPng_y(Number(data_png.data.y));
+          setResolution(Number(data_png.data.resolution));
+        }
 
         const socket = io("http://192.168.2.114:5001");
         socket.on("transmit_data", (data) => {
@@ -134,7 +138,8 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
     // [w * resolution + png_x, h * resolution + png_y], // 右上角经纬度坐标
     // [png_x, png_y], // 左下角经纬度坐标
   ];
-
+  console.log(img.src);
+  console.log(bounds, "👌");
   return (
     <div>
       <MapContainer

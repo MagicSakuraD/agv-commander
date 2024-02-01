@@ -38,6 +38,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 const FormSchema = z.object({
   File: z.string({
@@ -82,6 +83,22 @@ const MappingPage = () => {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    // let path = data.File;
+    // let url = `http://192.168.2.112:8888/api/info/GetConfigContent/${path}`;
+    // // 使用 useSWR，传入一个 URL，一个获取数据的函数，和一些选项
+    // const fetcher = (...args: [string, RequestInit?]) =>
+    //   fetch(...args).then((res) => res.json());
+    // // 定义一个常量，用于存储 API 的 URL
+    // const {
+    //   data: file_param,
+    //   error,
+    //   isLoading,
+    // } = useSWR(url, fetcher, {
+    //   refreshInterval: 1000,
+    //   refreshWhenHidden: false,
+    // });
+    // console.log(file_param);
+
     toast({
       title: "消息📢:",
       description: (

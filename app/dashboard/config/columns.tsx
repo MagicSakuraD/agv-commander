@@ -23,48 +23,23 @@ import {
 // import DeleteInitPosebtn from "./DeleteInitPosebtn";
 
 export type Pose = {
-  id: number;
-  name: string;
-  x: number;
-  y: number;
-  z: number;
-  roll: number;
-  pitch: number;
-  yaw: number;
+  param_name: string;
+  param_value: string;
+  comment: string;
 };
 
 export const columns: ColumnDef<Pose>[] = [
   {
-    accessorKey: "id",
-    header: "序号",
+    accessorKey: "param_name",
+    header: "参数名",
   },
   {
-    accessorKey: "name",
-    header: "站点名",
+    accessorKey: "param_value",
+    header: "参数值",
   },
   {
-    accessorKey: "x",
-    header: "x",
-  },
-  {
-    accessorKey: "y",
-    header: "y",
-  },
-  {
-    accessorKey: "z",
-    header: "z",
-  },
-  {
-    accessorKey: "roll",
-    header: "roll",
-  },
-  {
-    accessorKey: "pitch",
-    header: "pitch",
-  },
-  {
-    accessorKey: "yaw",
-    header: "yaw",
+    accessorKey: "comment",
+    header: "注释",
   },
   {
     id: "actions",
@@ -91,9 +66,11 @@ export const columns: ColumnDef<Pose>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>操作</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(InitPose.name)}
+                onClick={() =>
+                  navigator.clipboard.writeText(InitPose.param_name)
+                }
               >
-                拷贝地图名
+                拷贝参数名
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               {/* <ChangeInitPoseBtn {...InitPose} />
