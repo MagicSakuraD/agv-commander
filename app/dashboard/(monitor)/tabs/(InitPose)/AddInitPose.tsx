@@ -147,7 +147,7 @@ const AddInitPose: React.FC<AddInitPoseProps> = ({ AGV_point_real, angle }) => {
 
   useEffect(() => {
     let res_data = data?.data;
-    if (res_data) {
+    if (res_data && data.code === 0) {
       const ros_Pose = res_data
         .filter((item: string) => item.startsWith("  pose"))
         .map((item: string) => {
