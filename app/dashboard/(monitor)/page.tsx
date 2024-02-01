@@ -342,7 +342,7 @@ const MapPage = () => {
         </CardContent>
         <CardFooter className="">
           <Tabs defaultValue="AGV" className="w-full">
-            <TabsList>
+            <TabsList className="my-2">
               <TabsTrigger value="AGV">定位</TabsTrigger>
               {/* <TabsTrigger value="Node">ROS节点</TabsTrigger> */}
               <TabsTrigger value="mapmanager">地图管理</TabsTrigger>

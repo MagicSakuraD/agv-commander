@@ -19,13 +19,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import ChangeInitPoseBtn from "./ChangeInitPoseBtn";
-import DeleteInitPosebtn from "./DeleteInitPosebtn";
-// import DeleteMapping from "./DeleteMapping";
-// import SetCurrentMap from "./SetCurrentMap";
-// import DeleteMap from "./DeleteMap";
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
+// import ChangeInitPoseBtn from "./ChangeInitPoseBtn";
+// import DeleteInitPosebtn from "./DeleteInitPosebtn";
+
 export type Pose = {
   id: number;
   name: string;
@@ -100,8 +96,8 @@ export const columns: ColumnDef<Pose>[] = [
                 拷贝地图名
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <ChangeInitPoseBtn {...InitPose} />
-              <DeleteInitPosebtn {...InitPose} />
+              {/* <ChangeInitPoseBtn {...InitPose} />
+              <DeleteInitPosebtn {...InitPose} /> */}
             </DropdownMenuContent>
           </DropdownMenu>
         </Dialog>

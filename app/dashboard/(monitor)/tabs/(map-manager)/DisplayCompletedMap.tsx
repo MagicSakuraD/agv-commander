@@ -76,6 +76,7 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
         // 处理解析后的数据
         console.log(data);
         toast({
+          title: "消息📢:",
           description: `建图结束：${data.data}`,
         });
       })
@@ -89,6 +90,7 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
   function handleGiveUp() {
     setDialogStatus(0);
     toast({
+      title: "消息📢:",
       description: "不保存，建图结束",
     });
   }

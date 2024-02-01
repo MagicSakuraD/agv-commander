@@ -79,7 +79,7 @@ const InputName: React.FC<InputNameProps> = ({ AGV_point_real, angle }) => {
         let Pose_data = data.data;
         setPose(Pose_data);
         toast({
-          title: "成功添加如下站点:",
+          title: "消息📢:",
           description: (
             <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
               <code className="text-white">

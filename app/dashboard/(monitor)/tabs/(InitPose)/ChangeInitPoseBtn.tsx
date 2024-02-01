@@ -77,6 +77,7 @@ export function ProfileForm({ pose_id }: ProfileFormProps) {
     const result = await changeInitPose(values);
     if (result) {
       toast({
+        title: "消息📢:",
         description: result,
       });
     } else {

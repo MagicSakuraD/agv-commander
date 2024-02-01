@@ -97,6 +97,7 @@ const AlertDialogBtn: React.FC<AlertDialogBtnProps> = ({
     setStatus(1);
     setSeconds(0);
     toast({
+      title: "消息📢:",
       description: "建图数据包录制结束",
     });
     // 发送 fetch 请求
@@ -290,7 +291,7 @@ const SelectForm: React.FC<SelectFormProps> = ({ bags, setDialogStatus }) => {
       });
     console.log(data.mapping_name);
     toast({
-      title: "成功提交如下数据包:",
+      title: "消息📢:",
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{data.mapping_name}</code>

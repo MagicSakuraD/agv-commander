@@ -54,6 +54,27 @@ export async function handleDeleteMap(map_name: Map_AGV) {
   }
 }
 
+export async function DeleteInitPose(pose_id: Pose) {
+  try {
+    const response = await fetch(
+      "http://192.168.2.112:8888/api/config/deleteInitPose",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          line_number: pose_id.id,
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error("Error❌:", error);
+  }
+}
+
 export async function handleDeleteMappingBag(mapping_name: Map_bag) {
   try {
     const response = await fetch(
