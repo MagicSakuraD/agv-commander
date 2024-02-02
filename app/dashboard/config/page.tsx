@@ -42,6 +42,8 @@ import useSWR from "swr";
 import { GetConfigContent } from "@/lib/actions";
 import { DataTable } from "@/components/ui/data-table";
 import { Fileprop, columns } from "./columns";
+import { useAtom } from "jotai";
+import { FileNameAtom } from "@/lib/atoms";
 
 const FormSchema = z.object({
   File: z.string({
@@ -56,6 +58,8 @@ const MappingPage = () => {
   }
   const [Files, setFiles] = useState<File[]>([]);
   const [fileData, setFileData] = useState<Fileprop[]>([]);
+  const [fileName, setFileName] = useAtom(FileNameAtom);
+
   useEffect(() => {
     // 发送 GET 请求
     fetch("http://192.168.2.112:8888/api/info/GetAllConfigsFileName", {
@@ -88,7 +92,7 @@ const MappingPage = () => {
 
   function parseArray(arr: string[]) {
     let result = [];
-    for (let i = 0; i < arr.length; i++) {
+    for (let i = 1; i < arr.length; i++) {
       let line = arr[i];
       let match = line.match(/(.*):(.*)#(.*)/);
       if (line.startsWith("#")) {
@@ -115,6 +119,11 @@ const MappingPage = () => {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const path = data.File;
+    // const filename = path.split("/").pop();
+    // console.log(filename, "🥰"); // Outputs: LandmarkSLAM.yaml
+    if (path) {
+      setFileName(path);
+    }
     const res = await GetConfigContent(path);
     let parsed = parseArray(res);
     console.log(parsed);
@@ -122,7 +131,7 @@ const MappingPage = () => {
   }
 
   return (
-    <div className="container mx-auto pt-5 flex flex-wrap gap-5 justify-center">
+    <div className="md:container px-2 mx-auto pt-5 flex flex-wrap gap-5 justify-center">
       <Card className="w-full">
         <CardHeader>
           <CardTitle>参数配置</CardTitle>
@@ -203,6 +212,7 @@ const MappingPage = () => {
       <Card className="w-full">
         <CardHeader>
           <CardTitle>配置文件参数信息</CardTitle>
+          <CardDescription>每行的参数配置信息</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable columns={columns} data={fileData} />

@@ -18,3 +18,5 @@ export const bagnameAtom = atom("");
 export const MapNameAtom = atom("");
 
 export const markerlistAtom = atom([{ id: 0, x: 0, y: 0, yaw: 0 }]);
+
+export const FileNameAtom = atom("");

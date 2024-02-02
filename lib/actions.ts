@@ -5,6 +5,7 @@ import {
   Map_AGV,
   Map_bag,
 } from "@/app/dashboard/(monitor)/tabs/(map-manager)/columns";
+import { form_params } from "@/app/dashboard/config/ParamForm";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
@@ -163,6 +164,31 @@ export async function changeInitPose(Pose_data: Pose) {
           y: Pose_data.y,
           yaw: Pose_data.yaw,
           z: Pose_data.z,
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    return data.data;
+  } catch (error) {
+    console.error("Error❌:", error);
+    return error;
+  }
+}
+
+export async function changeFileContent(form: form_params) {
+  try {
+    const response = await fetch(
+      "http://192.168.2.112:8888/api/config/changeFileContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          file_name: form.file_name,
+          line_number: form.line_number,
+          new_content: form.new_content,
         }),
       }
     );
