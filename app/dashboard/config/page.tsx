@@ -97,20 +97,20 @@ const MappingPage = () => {
       let match = line.match(/(.*):(.*)#(.*)/);
       if (line.startsWith("#")) {
         let comment = line.slice(1).trim();
-        result.push({ id: i, param_name: "", param_value: "", comment });
+        result.push({ id: i, name: "", param_value: "", comment });
       } else if (match) {
-        let param_name = match[1].trim();
+        let name = match[1].trim();
         let param_value = match[2].trim();
         let comment = match[3].trim();
-        result.push({ id: i, param_name, param_value, comment });
+        result.push({ id: i, name, param_value, comment });
       } else {
         match = line.match(/(.*):(.*)/);
         if (match) {
-          let param_name = match[1].trim();
+          let name = match[1].trim();
           let param_value = match[2].trim();
-          result.push({ id: i, param_name, param_value, comment: "" });
+          result.push({ id: i, name, param_value, comment: "" });
         } else {
-          result.push({ id: i, param_name: "", param_value: "", comment: "" });
+          result.push({ id: i, name: "", param_value: "", comment: "" });
         }
       }
     }
@@ -124,7 +124,7 @@ const MappingPage = () => {
     if (path) {
       setFileName(path);
     }
-    const res = await GetConfigContent(path);
+    const res = await GetConfigContent(fileName);
     let parsed = parseArray(res);
     console.log(parsed);
     setFileData(parsed);

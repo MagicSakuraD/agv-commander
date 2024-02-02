@@ -18,7 +18,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { toast } from "@/components/ui/use-toast";
 import { FileNameAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
-import { changeFileContent } from "@/lib/actions";
+import { GetConfigContent, changeFileContent } from "@/lib/actions";
 
 export type form_params = {
   file_name: string;
@@ -70,11 +70,16 @@ const ParamForm: React.FC<ParamFormProps> = ({
     };
     form_body.line_number = values.id;
     form_body.new_content =
-      values.param_name + ":" + values.param_value + "#" + values.param_comment;
+      values.param_name +
+      ":" +
+      values.param_value +
+      (values.param_comment ? "#" + values.param_comment : "");
     form_body.file_name = fileName;
     console.log(form_body);
     const res = await changeFileContent(form_body);
     if (res) {
+      const response = await GetConfigContent(fileName);
+      console.log(response, "更新结果");
       toast({
         title: "消息📢",
         description: res,

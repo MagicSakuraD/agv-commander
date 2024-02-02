@@ -146,6 +146,32 @@ export async function GetConfigContent(path_name: string) {
   }
 }
 
+export async function changeFileContent(form: form_params) {
+  try {
+    const response = await fetch(
+      "http://192.168.2.112:8888/api/config/changeFileContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          file_name: form.file_name,
+          line_number: form.line_number,
+          new_content: form.new_content,
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+
+    return data.data;
+  } catch (error) {
+    console.error("Error❌:", error);
+    return error;
+  }
+}
+
 export async function changeInitPose(Pose_data: Pose) {
   try {
     const response = await fetch(
@@ -176,31 +202,6 @@ export async function changeInitPose(Pose_data: Pose) {
   }
 }
 
-export async function changeFileContent(form: form_params) {
-  try {
-    const response = await fetch(
-      "http://192.168.2.112:8888/api/config/changeFileContent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          file_name: form.file_name,
-          line_number: form.line_number,
-          new_content: form.new_content,
-        }),
-      }
-    );
-    const data = await response.json();
-    console.log(data);
-    return data.data;
-  } catch (error) {
-    console.error("Error❌:", error);
-    return error;
-  }
-}
-
 export async function GetAllLocalizationBagsName() {
   const res = await fetch(
     "http://192.168.2.112:8888/api/info/GetAllLocalizationBagsName",
@@ -216,6 +217,5 @@ export async function GetAllLocalizationBagsName() {
     // This will activate the closest `error.js` Error Boundary
     throw new Error("Failed to fetch data");
   }
-
   return res.json();
 }

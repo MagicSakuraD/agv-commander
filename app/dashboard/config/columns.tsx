@@ -25,7 +25,7 @@ import ParamForm from "./ParamForm";
 
 export type Fileprop = {
   id: number;
-  param_name: string;
+  name: string;
   param_value: string;
   comment: string;
 };
@@ -36,7 +36,7 @@ export const columns: ColumnDef<Fileprop>[] = [
     header: "序号",
   },
   {
-    accessorKey: "param_name",
+    accessorKey: "name",
     header: "参数名",
   },
   {
@@ -70,7 +70,7 @@ export const columns: ColumnDef<Fileprop>[] = [
             </DialogHeader>
             <ParamForm
               id={FileParam.id.toString()}
-              param_name={FileParam.param_name}
+              param_name={FileParam.name}
               param_value={FileParam.param_value}
               param_comment={FileParam.comment}
             />
