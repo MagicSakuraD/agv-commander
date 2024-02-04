@@ -19,7 +19,7 @@ import { toast } from "@/components/ui/use-toast";
 import { FileNameAtom, fileDataAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
 import { GetConfigContent, changeFileContent } from "@/lib/actions";
-import { parseArray } from "./page";
+import { Fileprop } from "./columns";
 
 export type form_params = {
   file_name: string;
@@ -59,6 +59,32 @@ const ParamForm: React.FC<ParamFormProps> = ({
       param_comment: param_comment,
     },
   });
+  function parseArray(arr: string[]): Fileprop[] {
+    let result = [];
+    for (let i = 1; i < arr.length; i++) {
+      let line = arr[i];
+      let match = line.match(/(.*):(.*)#(.*)/);
+      if (line.startsWith("#")) {
+        let comment = line.slice(1);
+        result.push({ id: i, name: "", param_value: "", comment });
+      } else if (match) {
+        let name = match[1];
+        let param_value = match[2].trim();
+        let comment = match[3];
+        result.push({ id: i, name, param_value, comment });
+      } else {
+        match = line.match(/(.*):(.*)/);
+        if (match) {
+          let name = match[1];
+          let param_value = match[2];
+          result.push({ id: i, name, param_value, comment: "" });
+        } else {
+          result.push({ id: i, name: "", param_value: "", comment: "" });
+        }
+      }
+    }
+    return result;
+  }
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {

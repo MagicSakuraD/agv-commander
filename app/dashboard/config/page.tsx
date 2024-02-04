@@ -51,33 +51,6 @@ const FormSchema = z.object({
   }),
 });
 
-export function parseArray(arr: string[]) {
-  let result = [];
-  for (let i = 1; i < arr.length; i++) {
-    let line = arr[i];
-    let match = line.match(/(.*):(.*)#(.*)/);
-    if (line.startsWith("#")) {
-      let comment = line.slice(1);
-      result.push({ id: i, name: "", param_value: "", comment });
-    } else if (match) {
-      let name = match[1];
-      let param_value = match[2].trim();
-      let comment = match[3];
-      result.push({ id: i, name, param_value, comment });
-    } else {
-      match = line.match(/(.*):(.*)/);
-      if (match) {
-        let name = match[1];
-        let param_value = match[2];
-        result.push({ id: i, name, param_value, comment: "" });
-      } else {
-        result.push({ id: i, name: "", param_value: "", comment: "" });
-      }
-    }
-  }
-  return result;
-}
-
 const MappingPage = () => {
   interface File {
     label: string;
@@ -113,6 +86,33 @@ const MappingPage = () => {
         console.error("Error:", error);
       });
   }, []);
+
+  function parseArray(arr: string[]): Fileprop[] {
+    let result = [];
+    for (let i = 1; i < arr.length; i++) {
+      let line = arr[i];
+      let match = line.match(/(.*):(.*)#(.*)/);
+      if (line.startsWith("#")) {
+        let comment = line.slice(1);
+        result.push({ id: i, name: "", param_value: "", comment });
+      } else if (match) {
+        let name = match[1];
+        let param_value = match[2].trim();
+        let comment = match[3];
+        result.push({ id: i, name, param_value, comment });
+      } else {
+        match = line.match(/(.*):(.*)/);
+        if (match) {
+          let name = match[1];
+          let param_value = match[2];
+          result.push({ id: i, name, param_value, comment: "" });
+        } else {
+          result.push({ id: i, name: "", param_value: "", comment: "" });
+        }
+      }
+    }
+    return result;
+  }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
