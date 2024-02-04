@@ -52,7 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ isOpen, setIsOpen }) => {
               <div>
                 <span className="sr-only">Open user menu</span>
                 <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarImage src="/try.png" />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </div>

@@ -9,7 +9,7 @@ import { markerlistAtom } from "@/lib/atoms";
 const icon = L.icon({
   iconSize: [20, 20],
 
-  iconUrl: "/compass.png",
+  iconUrl: "/arrow3.png",
 });
 
 interface MapMarkerProps {
@@ -21,17 +21,6 @@ interface MapMarkerProps {
 
 export function MapMarker({ x, y, yaw }: MapMarkerProps) {
   const [latitude, longitude] = [x, y];
-  //   const [prevPos, setPrevPos] = useState([latitude, longitude]);
-  //   const [prevAngle, setPrevAngle] = useState(angle);
-
-  //   useEffect(() => {
-  //     if (prevPos[1] !== longitude || prevPos[0] !== latitude)
-  //       setPrevPos([latitude, longitude]);
-  //   }, [latitude, longitude, prevPos]);
-
-  //   useEffect(() => {
-  //     if (prevAngle !== angle) setPrevAngle(angle);
-  //   }, [angle, prevAngle]);
 
   return (
     <LeafletTrackingMarker

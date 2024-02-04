@@ -179,7 +179,7 @@ const ParamForm: React.FC<ParamFormProps> = ({
           )}
         />
         <DialogClose asChild>
-          <Button type="submit">Submit</Button>
+          <Button type="submit">提交</Button>
         </DialogClose>
       </form>
     </Form>

@@ -32,12 +32,15 @@ const Localization: React.FC<LocalizationProps> = ({ isRecord }) => {
   useEffect(() => {
     let map_data;
     if (data && data.data) {
-      map_data = data.data.bags;
-      for (const name of map_data) {
-        loc_list.push({
-          name: name,
-        });
-      }
+      // map_data = data.data.bags;
+      // for (const name of map_data) {
+      //   loc_list.push({
+      //     name: name,
+      //   });
+      // }
+      loc_list = data.data.bags.map((item: string) => ({
+        name: item,
+      }));
       // console.log(loc_list);
       setLocs(loc_list);
     }

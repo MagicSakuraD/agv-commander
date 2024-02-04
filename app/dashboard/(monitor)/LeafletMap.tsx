@@ -24,6 +24,7 @@ import {
   temperatureAtom,
   MapNameAtom,
   markerlistAtom,
+  carShowAtom,
 } from "@/lib/atoms";
 import { useAtom } from "jotai";
 import useSocket from "./mqtt/socket";
@@ -58,6 +59,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
   const [rpi_temperature, setRpi_temperature] = useAtom(temperatureAtom);
   const [MapName, setMapName] = useAtom(MapNameAtom);
   const [markerlist, setMarkerlist] = useAtom(markerlistAtom);
+  const [carShow, setCarShow] = useAtom(carShowAtom);
 
   // Create a new image object
   const img = new Image();
@@ -183,8 +185,15 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
           </>
         )}
 
-        {markerlist.length >= 2 && <PointMarker />}
-        {AGV_point_real && <MapMarker data={AGV_point_real} angle={angle} />}
+        {markerlist.length >= 2 && AGV_point_real && (
+          <>
+            <PointMarker /> <MapMarker data={AGV_point_real} angle={angle} />
+          </>
+        )}
+        {AGV_point_real && carShow && (
+          <MapMarker data={AGV_point_real} angle={angle} />
+        )}
+
         <ScaleControl position="bottomleft" metric={true} imperial={false} />
       </MapContainer>
     </div>

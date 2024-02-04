@@ -23,3 +23,5 @@ export const markerlistAtom = atom([{ id: 0, x: 0, y: 0, yaw: 0 }]);
 export const FileNameAtom = atom("");
 
 export const fileDataAtom = atom<Fileprop[]>([]);
+
+export const carShowAtom = atom(true);

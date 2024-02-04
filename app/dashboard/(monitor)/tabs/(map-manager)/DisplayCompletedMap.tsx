@@ -42,13 +42,15 @@ const FormSchema = z.object({
 interface InputFormProps {
   bagname: string;
   setBagname: React.Dispatch<React.SetStateAction<string>>;
+  children?: React.ReactNode; // Add this line
 }
 
-export function InputForm({ bagname, setBagname }: InputFormProps) {
+export function InputForm({ bagname, setBagname, children }: InputFormProps) {
+  let bagnameWithoutSuffix = bagname.replace(/\.bag$/, "");
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      mapname: bagname,
+      mapname: bagnameWithoutSuffix,
     },
   });
 
@@ -68,7 +70,7 @@ export function InputForm({ bagname, setBagname }: InputFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex w-full items-center gap -2 justify-between"
+        className="flex w-full flex-col gap-4 mt-2"
       >
         <FormField
           control={form.control}
@@ -86,7 +88,9 @@ export function InputForm({ bagname, setBagname }: InputFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit">提交</Button>
+        <div>{children}</div>
+
+        {/* <Button type="submit">提交</Button> */}
       </form>
     </Form>
   );
@@ -130,6 +134,7 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
   }, []);
 
   function handleSave() {
+    console.log("ok");
     fetch("http://192.168.2.112:8888//api/work/SaveMappingTaskCacheImage", {
       method: "POST", // 或 'GET'
       headers: {
@@ -217,19 +222,22 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
       <AlertDialogHeader>
         <AlertDialogTitle>是否保存地图❓</AlertDialogTitle>
       </AlertDialogHeader>
-      <InputForm bagname={bagname} setBagname={setBagname} />
-      <div ref={screenRef} className="relative flex h-96 mt-3">
-        <Image
-          src={`data:image/png;base64,${imgdata}`}
-          alt="地图图片"
-          fill={true}
-        />
-        <FullscreenButton />
-      </div>
-      <AlertDialogFooter className="mt-4">
-        <AlertDialogCancel onClick={handleGiveUp}>不保存</AlertDialogCancel>
-        <AlertDialogAction onClick={handleSave}>保存</AlertDialogAction>
-      </AlertDialogFooter>
+      <InputForm bagname={bagname} setBagname={setBagname}>
+        <div ref={screenRef} className="relative flex h-96 mt-3">
+          <Image
+            src={`data:image/png;base64,${imgdata}`}
+            alt="地图图片"
+            fill={true}
+          />
+          <FullscreenButton />
+        </div>
+        <AlertDialogFooter className="mt-4">
+          <AlertDialogCancel onClick={handleGiveUp}>不保存</AlertDialogCancel>
+          <AlertDialogAction onClick={handleSave} type="submit">
+            保存
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </InputForm>
     </div>
   );
 };

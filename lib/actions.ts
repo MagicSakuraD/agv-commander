@@ -106,6 +106,7 @@ export async function handleSetCurrentMap(map_name: Map_AGV) {
         headers: {
           "Content-Type": "application/json",
         },
+        cache: "no-store",
         body: JSON.stringify({
           map_name: map_name.name,
         }),

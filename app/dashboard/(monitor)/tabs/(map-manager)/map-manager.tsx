@@ -506,11 +506,7 @@ const Map_Manager = () => {
     if (mapsData && mapsData.data.maps) {
       // 处理地图数据
       let map_data = mapsData.data.maps;
-      for (const name of map_data) {
-        map_list.push({
-          name: name,
-        });
-      }
+      map_list = map_data.map((item: string) => ({ name: item }));
       setMaps(map_list);
     }
 
