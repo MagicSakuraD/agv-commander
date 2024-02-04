@@ -16,6 +16,7 @@ export async function handleDelete(loc: Loc_AGV) {
       "http://192.168.2.112:8888/api/config/deleteDebugDataBag",
       {
         method: "POST",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
         },
@@ -40,6 +41,7 @@ export async function handleDeleteMap(map_name: Map_AGV) {
       "http://192.168.2.112:8888/api/config/DeleteLidarMappingMap",
       {
         method: "POST",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
         },
@@ -61,6 +63,7 @@ export async function DeleteInitPose(pose_id: Pose) {
       "http://192.168.2.112:8888/api/config/deleteInitPose",
       {
         method: "POST",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
         },
@@ -82,6 +85,7 @@ export async function handleDeleteMappingBag(mapping_name: Map_bag) {
       "http://192.168.2.112:8888/api/config/deleteRecordMappingBag",
       {
         method: "POST",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
         },
@@ -132,6 +136,7 @@ export async function GetAllMapsName() {
       "http://192.168.2.112:8888/api/info/GetAllMapsName",
       {
         method: "GET",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
         },
@@ -184,6 +189,7 @@ export async function changeFileContent(form: form_params) {
       "http://192.168.2.112:8888/api/config/changeFileContent",
       {
         method: "POST",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
         },
@@ -210,6 +216,7 @@ export async function changeInitPose(Pose_data: Pose) {
       "http://192.168.2.112:8888/api/config/changeInitPose",
       {
         method: "POST",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
         },

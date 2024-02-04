@@ -57,8 +57,8 @@ const InputName: React.FC<InputNameProps> = ({ AGV_point_real, angle }) => {
       name: data.Posename,
       pitch: "0",
       roll: "0",
-      x: AGV_point_real![0].toString(),
-      y: AGV_point_real![1].toString(),
+      x: AGV_point_real![1].toString(),
+      y: AGV_point_real![0].toString(),
       yaw: angle,
       z: "0",
     };
@@ -165,8 +165,8 @@ const AddInitPose: React.FC<AddInitPoseProps> = ({ AGV_point_real, angle }) => {
       const markerlist_res = ros_Pose.map(
         (pose: { id: number; x: number; y: number; yaw: number }) => ({
           id: pose.id,
-          x: pose.x,
-          y: pose.y,
+          x: pose.y,
+          y: pose.x,
           yaw: pose.yaw,
         })
       );
