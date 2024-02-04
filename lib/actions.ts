@@ -112,9 +112,39 @@ export async function handleSetCurrentMap(map_name: Map_AGV) {
       }
     );
     const data = await response.json();
-    console.log(data);
+    if (data.code === 0) {
+      console.log(data, "🗺️", map_name.name);
+      return data.data;
+    } else {
+      console.log("请求失败❌:", data, "🗺️", map_name.name);
+      return data.data;
+    }
+  } catch (error) {
+    console.error("Error❌:", error);
+    return error;
+  }
+}
 
-    return data.data;
+export async function GetAllMapsName() {
+  try {
+    const response = await fetch(
+      "http://192.168.2.112:8888/api/info/GetAllMapsName",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        next: { revalidate: 1 },
+      }
+    );
+    const data = await response.json();
+    if (data.code === 0) {
+      console.log(data.data);
+      return data.data;
+    } else {
+      console.log("请求失败❌:", data.data);
+      return data.data;
+    }
   } catch (error) {
     console.error("Error❌:", error);
     return error;
@@ -130,6 +160,7 @@ export async function GetConfigContent(path_name: string) {
         headers: {
           "Content-Type": "application/json",
         },
+        cache: "no-store",
       }
     );
     const data = await response.json();
@@ -137,11 +168,11 @@ export async function GetConfigContent(path_name: string) {
       console.log(data.data);
       return data.data;
     } else {
-      console.error("请求失败❌:", data.data);
-      return data.code;
+      console.log("请求失败❌:", data.data, data);
+      return data.data;
     }
   } catch (error) {
-    console.error("Error❌:", error);
+    console.log("Error❌:", error);
     return error;
   }
 }

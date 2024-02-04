@@ -59,6 +59,7 @@ import CheckMapping from "./CheckMapping";
 import LoadingMapping from "./LoadingMapping";
 import DisplayCompletedMap from "./DisplayCompletedMap";
 import useSWR from "swr";
+import { GetAllMapsName } from "@/lib/actions";
 
 interface AlertDialogBtnProps {
   status: number; // 或者你的状态的类型
@@ -454,6 +455,20 @@ const MappingBtn: React.FC<MappingBtnProps> = ({ bags }) => {
 };
 
 const Map_Manager = () => {
+  // const fetchMapData = async () => {
+  //   try {
+  //     const result = await GetAllMapsName();
+  //     let map_data = result.maps;
+  //     for (const name of map_data) {
+  //       map_list.push({
+  //         name: name,
+  //       });
+  //     }
+  //     setMaps(map_list);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
   const [status, setStatus] = useState(0);
   const [maps, setMaps] = React.useState<Map_AGV[]>([]);
   let map_list: Map_AGV[] = [];
@@ -498,6 +513,8 @@ const Map_Manager = () => {
       }
       setMaps(map_list);
     }
+
+    // fetchMapData();
 
     if (bagsData && bagsData.data.bags) {
       // 处理建图数据包数据

@@ -16,9 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { toast } from "@/components/ui/use-toast";
-import { FileNameAtom } from "@/lib/atoms";
+import { FileNameAtom, fileDataAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
 import { GetConfigContent, changeFileContent } from "@/lib/actions";
+import { parseArray } from "./page";
 
 export type form_params = {
   file_name: string;
@@ -47,6 +48,7 @@ const ParamForm: React.FC<ParamFormProps> = ({
   param_comment,
 }) => {
   const [fileName, setFileName] = useAtom(FileNameAtom);
+  const [fileData, setFileData] = useAtom(fileDataAtom);
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,7 +81,9 @@ const ParamForm: React.FC<ParamFormProps> = ({
     const res = await changeFileContent(form_body);
     if (res) {
       const response = await GetConfigContent(fileName);
-      console.log(response, "更新结果");
+      let parsed = parseArray(response);
+      console.log(parsed);
+      setFileData(parsed);
       toast({
         title: "消息📢",
         description: res,

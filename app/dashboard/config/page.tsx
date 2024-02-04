@@ -43,7 +43,7 @@ import { GetConfigContent } from "@/lib/actions";
 import { DataTable } from "@/components/ui/data-table";
 import { Fileprop, columns } from "./columns";
 import { useAtom } from "jotai";
-import { FileNameAtom } from "@/lib/atoms";
+import { FileNameAtom, fileDataAtom } from "@/lib/atoms";
 
 const FormSchema = z.object({
   File: z.string({
@@ -51,13 +51,41 @@ const FormSchema = z.object({
   }),
 });
 
+export function parseArray(arr: string[]) {
+  let result = [];
+  for (let i = 1; i < arr.length; i++) {
+    let line = arr[i];
+    let match = line.match(/(.*):(.*)#(.*)/);
+    if (line.startsWith("#")) {
+      let comment = line.slice(1);
+      result.push({ id: i, name: "", param_value: "", comment });
+    } else if (match) {
+      let name = match[1];
+      let param_value = match[2].trim();
+      let comment = match[3];
+      result.push({ id: i, name, param_value, comment });
+    } else {
+      match = line.match(/(.*):(.*)/);
+      if (match) {
+        let name = match[1];
+        let param_value = match[2];
+        result.push({ id: i, name, param_value, comment: "" });
+      } else {
+        result.push({ id: i, name: "", param_value: "", comment: "" });
+      }
+    }
+  }
+  return result;
+}
+
 const MappingPage = () => {
   interface File {
     label: string;
     value: string;
   }
   const [Files, setFiles] = useState<File[]>([]);
-  const [fileData, setFileData] = useState<Fileprop[]>([]);
+
+  const [fileData, setFileData] = useAtom(fileDataAtom);
   const [fileName, setFileName] = useAtom(FileNameAtom);
 
   useEffect(() => {
@@ -90,41 +118,12 @@ const MappingPage = () => {
     resolver: zodResolver(FormSchema),
   });
 
-  function parseArray(arr: string[]) {
-    let result = [];
-    for (let i = 1; i < arr.length; i++) {
-      let line = arr[i];
-      let match = line.match(/(.*):(.*)#(.*)/);
-      if (line.startsWith("#")) {
-        let comment = line.slice(1).trim();
-        result.push({ id: i, name: "", param_value: "", comment });
-      } else if (match) {
-        let name = match[1].trim();
-        let param_value = match[2].trim();
-        let comment = match[3].trim();
-        result.push({ id: i, name, param_value, comment });
-      } else {
-        match = line.match(/(.*):(.*)/);
-        if (match) {
-          let name = match[1].trim();
-          let param_value = match[2].trim();
-          result.push({ id: i, name, param_value, comment: "" });
-        } else {
-          result.push({ id: i, name: "", param_value: "", comment: "" });
-        }
-      }
-    }
-    return result;
-  }
-
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const path = data.File;
-    // const filename = path.split("/").pop();
-    // console.log(filename, "🥰"); // Outputs: LandmarkSLAM.yaml
     if (path) {
       setFileName(path);
     }
-    const res = await GetConfigContent(fileName);
+    const res = await GetConfigContent(path);
     let parsed = parseArray(res);
     console.log(parsed);
     setFileData(parsed);
@@ -134,8 +133,8 @@ const MappingPage = () => {
     <div className="md:container px-2 mx-auto pt-5 flex flex-wrap gap-5 justify-center">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>参数配置</CardTitle>
-          <CardDescription>修改相关配置文件参数</CardDescription>
+          <CardTitle>1.选择配置文件</CardTitle>
+          <CardDescription>可按照关键字搜素文件</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -211,8 +210,8 @@ const MappingPage = () => {
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>配置文件参数信息</CardTitle>
-          <CardDescription>每行的参数配置信息</CardDescription>
+          <CardTitle>2.修改配置文件</CardTitle>
+          <CardDescription>逐行修改配置文件信息</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable columns={columns} data={fileData} />
