@@ -354,7 +354,7 @@ interface ItemProps {
 const Item: React.FC<ItemProps> = ({ bags }) => {
   const [DialogStatus, setDialogStatus] = useState(0);
   function handlefalse() {
-    setDialogStatus(1);
+    setDialogStatus(3);
   }
 
   function handletrue() {

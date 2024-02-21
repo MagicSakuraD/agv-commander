@@ -42,10 +42,16 @@ const FormSchema = z.object({
 interface InputFormProps {
   bagname: string;
   setBagname: React.Dispatch<React.SetStateAction<string>>;
+  setDialogStatus: React.Dispatch<React.SetStateAction<number>>;
   children?: React.ReactNode; // Add this line
 }
 
-export function InputForm({ bagname, setBagname, children }: InputFormProps) {
+export function InputForm({
+  bagname,
+  setBagname,
+  setDialogStatus,
+  children,
+}: InputFormProps) {
   let bagnameWithoutSuffix = bagname.replace(/\.bag$/, "");
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -54,16 +60,47 @@ export function InputForm({ bagname, setBagname, children }: InputFormProps) {
     },
   });
 
+  function handleSave(bagname2: string) {
+    console.log(bagname2, "🥰");
+    fetch("http://192.168.2.112:8888//api/work/SaveMappingTaskCacheImage", {
+      method: "POST", // 或 'GET'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ map_name: bagname2 }), // 将表单值转换为 JSON
+    })
+      .then((response) => {
+        // 检查响应是否成功
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        // 解析响应主体
+        return response.json();
+      })
+      .then((data) => {
+        // 处理解析后的数据
+        console.log(data);
+        if (data.data === "把当前缓存区建好的图片，转移到指定文件夹下成功") {
+          toast({
+            title: "建图成功✔️:",
+            description: `${data.data}`,
+          });
+        } else {
+          toast({
+            title: "消息📢:",
+            description: `建图结束：${data.data}`,
+          });
+        }
+      })
+      .catch((error) => {
+        // 处理错误
+        console.error("Error:", error);
+      });
+  }
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "消息📢:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-    setBagname(data.mapname);
+    let bagname2 = data.mapname;
+    handleSave(bagname2);
   }
 
   return (
@@ -133,38 +170,6 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
       });
   }, []);
 
-  function handleSave() {
-    console.log("ok");
-    fetch("http://192.168.2.112:8888//api/work/SaveMappingTaskCacheImage", {
-      method: "POST", // 或 'GET'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ map_name: bagname }), // 将表单值转换为 JSON
-    })
-      .then((response) => {
-        // 检查响应是否成功
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        // 解析响应主体
-        return response.json();
-      })
-      .then((data) => {
-        // 处理解析后的数据
-        console.log(data);
-        toast({
-          title: "消息📢:",
-          description: `建图结束：${data.data}`,
-        });
-      })
-      .catch((error) => {
-        // 处理错误
-        console.error("Error:", error);
-      });
-    setDialogStatus(0);
-  }
-
   function handleGiveUp() {
     setDialogStatus(0);
     toast({
@@ -216,13 +221,26 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
       </button>
     );
   }
+  function handleCancel() {
+    setDialogStatus(0);
+  }
 
   return (
     <div>
+      <AlertDialogCancel
+        onClick={handleCancel}
+        className="absolute border-none	right-4 top-4 rounded-sm opacity-70  transition-opacity hover:opacity-100 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+      >
+        ❌
+      </AlertDialogCancel>
       <AlertDialogHeader>
         <AlertDialogTitle>是否保存地图❓</AlertDialogTitle>
       </AlertDialogHeader>
-      <InputForm bagname={bagname} setBagname={setBagname}>
+      <InputForm
+        bagname={bagname}
+        setBagname={setBagname}
+        setDialogStatus={setDialogStatus}
+      >
         <div ref={screenRef} className="relative flex h-96 mt-3">
           <Image
             src={`data:image/png;base64,${imgdata}`}
@@ -232,10 +250,12 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
           <FullscreenButton />
         </div>
         <AlertDialogFooter className="mt-4">
-          <AlertDialogCancel onClick={handleGiveUp}>不保存</AlertDialogCancel>
-          <AlertDialogAction onClick={handleSave} type="submit">
-            保存
-          </AlertDialogAction>
+          {/* <AlertDialogCancel onClick={handleGiveUp}>不保存</AlertDialogCancel> */}
+          <Button variant="secondary" onClick={handleGiveUp}>
+            不保存
+          </Button>
+          {/* <AlertDialogAction type="submit">保存</AlertDialogAction> */}
+          <Button type="submit">保存</Button>
         </AlertDialogFooter>
       </InputForm>
     </div>

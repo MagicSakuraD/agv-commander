@@ -38,7 +38,12 @@ const PointMarker = () => {
   return (
     <div>
       {markerlist.map((marker) => (
-        <MapMarker key={marker.id} x={marker.x} y={marker.y} yaw={marker.yaw} />
+        <MapMarker
+          key={marker.id}
+          x={marker.x}
+          y={marker.y}
+          yaw={(360 - (marker.yaw - 90)) % 360}
+        />
       ))}
     </div>
   );

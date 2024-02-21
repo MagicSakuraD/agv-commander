@@ -34,7 +34,7 @@ export default function MapMarker({ data, angle }: MapMarkerProps) {
       position={[latitude, longitude]}
       // previousPosition={prevPos as L.LatLngExpression}
       duration={1000}
-      rotationAngle={angle}
+      rotationAngle={(360 - (angle - 90)) % 360}
     />
   );
 }
