@@ -1,6 +1,6 @@
 "use client";
 import React, { Children, ReactNode, useEffect, useState } from "react";
-import L, { Point } from "leaflet";
+import L from "leaflet";
 import {
   ImageOverlay,
   MapContainer,
@@ -11,6 +11,8 @@ import {
   useMap,
   ScaleControl,
   useMapEvent,
+  LayerGroup,
+  LayersControl,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import Grid from "./map/grid";
@@ -185,14 +187,22 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
           </>
         )}
 
-        {markerlist.length >= 2 && AGV_point_real && (
+        {/* {markerlist.length >= 2 && AGV_point_real && (
           <>
             <PointMarker /> <MapMarker data={AGV_point_real} angle={angle} />
           </>
         )}
         {AGV_point_real && carShow && (
           <MapMarker data={AGV_point_real} angle={angle} />
-        )}
+        )} */}
+        {AGV_point_real && <MapMarker data={AGV_point_real} angle={angle} />}
+        <LayersControl position="topright">
+          <LayersControl.Overlay name="初始化点">
+            <LayerGroup>
+              <PointMarker />
+            </LayerGroup>
+          </LayersControl.Overlay>
+        </LayersControl>
 
         <ScaleControl position="bottomleft" metric={true} imperial={false} />
       </MapContainer>
