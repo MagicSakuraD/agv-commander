@@ -5,6 +5,7 @@ import {
   PresentationChartBarIcon,
   DocumentDuplicateIcon,
   MapIcon,
+  TruckIcon,
   FolderIcon,
 } from "@heroicons/react/24/outline";
 import { MdMonitorHeart } from "react-icons/md";
@@ -18,6 +19,10 @@ const links = [
   { name: "系统监控", href: "/dashboard", icon: PresentationChartBarIcon },
 
   { name: "参数配置", href: "/dashboard/config", icon: FolderIcon },
+
+  { name: "路线设置", href: "/dashboard/plan", icon: MapIcon },
+
+  { name: "车辆控制", href: "/dashboard/vehicle", icon: TruckIcon },
 ];
 
 export default function NavLinks() {

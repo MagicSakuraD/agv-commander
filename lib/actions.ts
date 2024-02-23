@@ -258,3 +258,36 @@ export async function GetAllLocalizationBagsName() {
   }
   return res.json();
 }
+
+export async function GetCurrentMapUseName() {
+  const res = await fetch(
+    "http://192.168.2.112:8888/api/info/CurrentMapUseName",
+    {
+      cache: "no-store",
+      method: "GET",
+    }
+  );
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
+export async function GetMappingBagPngData(Map_name: Map_AGV) {
+  const res = await fetch(
+    `http://192.168.2.112:8888/api/info/GetMappingBagPngData/{name}?name=${Map_name.name}`,
+    {
+      cache: "no-store",
+      method: "GET",
+    }
+  );
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("Failed to fetch data");
+  }
+  return res.json();
+}

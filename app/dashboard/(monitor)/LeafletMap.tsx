@@ -32,6 +32,7 @@ import { useAtom } from "jotai";
 import useSocket from "./mqtt/socket";
 import { io } from "socket.io-client";
 import PointMarker from "./tabs/(InitPose)/PointMarker";
+import { GetCurrentMapUseName } from "@/lib/actions";
 
 function MyClick() {
   const map = useMapEvent("click", (e) => {
@@ -57,6 +58,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
 }) => {
   const [png_x, setPng_x] = useState<number>(0);
   const [png_y, setPng_y] = useState<number>(0);
+  const [currentMap, setCurrentMap] = useState<string>("暂无地图");
   const [resolution, setResolution] = useState<number>(0);
   const [rpi_temperature, setRpi_temperature] = useAtom(temperatureAtom);
   const [MapName, setMapName] = useAtom(MapNameAtom);
@@ -107,6 +109,9 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
           socket.emit("start");
         });
 
+        const currentMap_data = await GetCurrentMapUseName();
+        setCurrentMap(currentMap_data.data);
+
         // useSocket();
       } catch (error) {
         console.log(error, "地图获取失败😵");
@@ -148,6 +153,13 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
 
   return (
     <div>
+      <p className="my-3 text-lg">
+        地图:
+        <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono  font-semibold">
+          {currentMap}
+        </code>
+      </p>
+
       <MapContainer
         center={[0, 0]}
         zoom={5}
