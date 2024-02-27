@@ -28,7 +28,7 @@ export type Fileprop = {
 
 export const columns: ColumnDef<Fileprop>[] = [
   {
-    accessorKey: "Id",
+    accessorKey: "mainId",
     header: "动作大类",
   },
   {
@@ -41,7 +41,7 @@ export const columns: ColumnDef<Fileprop>[] = [
   },
   {
     accessorKey: "name",
-    header: "动作解释",
+    header: "动作名描述",
   },
   {
     id: "actions",

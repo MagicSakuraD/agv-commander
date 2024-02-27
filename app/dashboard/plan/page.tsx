@@ -25,6 +25,32 @@ import { Label } from "@/components/ui/label";
 import { set } from "zod";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
+import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { toast } from "@/components/ui/use-toast";
+
+const FormSchema = z.object({
+  mainId: z.string({
+    required_error: "请选择一个动作大类.",
+  }),
+  subId: z.string({
+    required_error: "请选择一个具体动作.",
+  }),
+  aciton_value: z.string({
+    required_error: "请输入参数.",
+  }),
+});
 
 interface CardWithFormProps {
   actionData: any[];
@@ -40,6 +66,38 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
 }) => {
   const [selectedAction, setSelectedAction] = useState<string>("");
   const [vehicleAction, setVehicleAction] = useState<any[]>([]);
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      aciton_value: "",
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    const action_base = actionData.find(
+      (action) => action.id.toString() === data.mainId
+    );
+
+    const action_sub = vehicleAction.find(
+      (action) => action.subId.toString() === data.subId
+    );
+
+    let comment_name: string = action_base.name + ": " + action_sub.description;
+    comment_name = comment_name.replace(/\{.*?\}/g, data.aciton_value);
+    const form_data = { ...data, name: comment_name };
+    setList((prev) => [...prev, form_data]);
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">
+            {JSON.stringify(form_data, null, 2)}
+          </code>
+        </pre>
+      ),
+    });
+  }
 
   useEffect(() => {
     fetch("http://192.168.2.112:8888/api/planning/GetPlanningActions", {
@@ -60,98 +118,160 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
       });
   }, []);
 
-  function handleChangeAction(value: string) {
-    actionlist.push(value);
-    setSelectedAction(value);
-    setVehicleAction(actionData[0].subActions);
-  }
+  function handleClickAction() {}
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>创建决策元动作</CardTitle>
+        <CardTitle>添加决策动作</CardTitle>
         <CardDescription>设置AGV车体动作或路径规划</CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="flex flex-col gap-8">
-          <div className="grid w-full items-center gap-4">
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="mainAciton">动作大类</Label>
-              <Select onValueChange={handleChangeAction}>
-                <SelectTrigger id="mainAciton">
-                  <SelectValue placeholder="请选择" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  {actionData.map((action) => (
-                    <SelectItem key={action.id} value={action.id.toString()}>
-                      {action.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          {selectedAction === "130" && (
-            <VehicleBody vehicleAction={vehicleAction} />
-          )}
-          {selectedAction === "131" && <div>that</div>}
-        </form>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-full space-y-6"
+          >
+            <FormField
+              control={form.control}
+              name="mainId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>动作大类</FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      // 这里是你的自定义代码
+                      const action_base = actionData.find(
+                        (action) => action.id.toString() === value
+                      );
+
+                      if (action_base) {
+                        setSelectedAction(value);
+                        setVehicleAction(action_base.subActions);
+                      }
+                      // 确保调用 field.onChange，以便 React Hook Form 更新状态
+                      field.onChange(value);
+                    }}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="请选择一个动作大类" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {actionData.map((action) => (
+                        <SelectItem
+                          key={action.id}
+                          value={action.id.toString()}
+                        >
+                          {action.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {selectedAction === "130" && (
+              <div className="flex flex-col gap-3">
+                <FormField
+                  control={form.control}
+                  name="subId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>具体动作</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="请选择一个具体动作" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {vehicleAction.map((action) => (
+                            <SelectItem
+                              key={action.subId}
+                              value={action.subId.toString()}
+                            >
+                              {action.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="aciton_value"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>参数设置</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="单位：米/度"
+                          {...field}
+                          type="number"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+            {selectedAction === "131" && (
+              <div className="flex flex-col gap-3">
+                {" "}
+                <FormField
+                  control={form.control}
+                  name="subId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>规划方式</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="请选择一个规划方式" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {vehicleAction.map((action) => (
+                            <SelectItem
+                              key={action.subId}
+                              value={action.subId.toString()}
+                            >
+                              {action.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+            <Button type="submit">Submit</Button>
+          </form>
+        </Form>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button>提交</Button>
-      </CardFooter>
     </Card>
   );
 };
 
-function handleChangeSubAct(value: string) {
-  console.log(value);
-  actionlist.push(value);
-  console.log(actionlist);
-}
-
-function handleChangeInput(e: React.ChangeEvent<HTMLInputElement>) {
-  console.log(e.target.value);
-  actionlist.push(e.target.value);
-  console.log(actionlist);
-}
-
 interface VehicleBodyProps {
   vehicleAction: any[];
 }
-
-const VehicleBody: React.FC<VehicleBodyProps> = ({ vehicleAction }) => {
-  return (
-    <div className="flex flex-col">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="grid gap-2">
-          <Label htmlFor="area">具体动作</Label>
-          <Select onValueChange={handleChangeSubAct}>
-            <SelectTrigger id="area">
-              <SelectValue placeholder="请选择" />
-            </SelectTrigger>
-            <SelectContent>
-              {vehicleAction.map((action) => (
-                <SelectItem key={action.subId} value={action.subId.toString()}>
-                  {action.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="security-level">参数设置</Label>
-          <Input
-            type="number"
-            placeholder="单位：米/度"
-            id="security-level"
-            onChange={handleChangeInput}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const initialList: any[] = [];
 
@@ -169,11 +289,13 @@ const PlanPage = () => {
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>表单预览</CardTitle>
-          <CardDescription>将表单保存到任务工作区</CardDescription>
+          <CardTitle>待提交表单</CardTitle>
+          <CardDescription>
+            确认表单正确，后将表单保存到任务工作区
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={initialList} />
+          <DataTable columns={columns} data={list} />
         </CardContent>
       </Card>
     </div>
