@@ -38,6 +38,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 const FormSchema = z.object({
   mainId: z.string({
@@ -86,11 +87,11 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
     );
 
     let comment_name: string = "";
-    if (selectedAction === "130") {
+    if (selectedAction === "0x82") {
       comment_name = action_base.name + ": " + action_sub.description;
       comment_name = comment_name.replace(/\{.*?\}/g, data.aciton_value);
     } else {
-      if (selectedActionSub === "33537") {
+      if (selectedActionSub === "0x8301") {
         comment_name = action_base.name + ": " + action_sub.description;
         // 将 data.action_value 转换为数组
         let actionValues = data.aciton_value.split(",");
@@ -192,7 +193,7 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
                 </FormItem>
               )}
             />
-            {selectedAction === "130" && (
+            {selectedAction === "0x82" && (
               <div className="flex flex-col gap-3">
                 <FormField
                   control={form.control}
@@ -244,7 +245,7 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
                 />
               </div>
             )}
-            {selectedAction === "131" && (
+            {selectedAction === "0x83" && (
               <div className="flex flex-col gap-3">
                 <FormField
                   control={form.control}
@@ -289,7 +290,7 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
                   )}
                 />
 
-                {selectedActionSub === "33537" && (
+                {selectedActionSub === "0x8301" && (
                   <div>
                     <FormField
                       control={form.control}
@@ -301,82 +302,95 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
                             placeholder="起始位姿态x坐标"
                             type="number"
                             onChange={(event) => {
-                              // 创建一个新的数组，其中第一个元素是新的值，其余元素是 preActionData 中的旧元素
                               const newPreActionData = [
-                                ...preActionData,
                                 event.target.value,
+                                ...preActionData.slice(1),
                               ];
 
                               // 使用 setPreActionData 函数来更新 preActionData
                               setPreActionData(newPreActionData);
+                              if (newPreActionData.length === 6) {
+                                field.onChange(newPreActionData.join(","));
+                              }
                             }}
                           />
                           <Input
                             placeholder="起始位姿态y坐标"
                             onChange={(event) => {
-                              // 创建一个新的数组，其中第一个元素是新的值，其余元素是 preActionData 中的旧元素
                               const newPreActionData = [
-                                ...preActionData,
-                                event.target.value,
+                                ...preActionData.slice(0, 1), // 保留第一个值
+                                event.target.value, // 使用 event.target.value 替换第二个值
+                                ...preActionData.slice(2), // 保留剩余的值
                               ];
 
                               // 使用 setPreActionData 函数来更新 preActionData
                               setPreActionData(newPreActionData);
+                              if (newPreActionData.length === 6) {
+                                field.onChange(newPreActionData.join(","));
+                              }
                             }}
                           />
                           <Input
                             placeholder="起始位姿态角度"
                             onChange={(event) => {
-                              // 创建一个新的数组，其中第一个元素是新的值，其余元素是 preActionData 中的旧元素
                               const newPreActionData = [
-                                ...preActionData,
-                                event.target.value,
+                                ...preActionData.slice(0, 2), // 保留前两个值
+                                event.target.value, // 使用 event.target.value 替换第三个值
+                                ...preActionData.slice(3), // 保留剩余的值
                               ];
 
                               // 使用 setPreActionData 函数来更新 preActionData
                               setPreActionData(newPreActionData);
+                              if (newPreActionData.length === 6) {
+                                field.onChange(newPreActionData.join(","));
+                              }
                             }}
                           />
                           <Input
                             placeholder="目标位姿态x坐标"
                             onChange={(event) => {
-                              // 创建一个新的数组，其中第一个元素是新的值，其余元素是 preActionData 中的旧元素
                               const newPreActionData = [
-                                ...preActionData,
-                                event.target.value,
+                                ...preActionData.slice(0, 3), // 保留前三个值
+                                event.target.value, // 使用 event.target.value 替换第四个值
+                                ...preActionData.slice(4), // 保留剩余的值
                               ];
 
                               // 使用 setPreActionData 函数来更新 preActionData
                               setPreActionData(newPreActionData);
+                              if (newPreActionData.length === 6) {
+                                field.onChange(newPreActionData.join(","));
+                              }
                             }}
                           />
                           <Input
                             placeholder="目标位姿态y坐标"
                             onChange={(event) => {
-                              // 创建一个新的数组，其中第一个元素是新的值，其余元素是 preActionData 中的旧元素
                               const newPreActionData = [
-                                ...preActionData,
-                                event.target.value,
+                                ...preActionData.slice(0, 4), // 保留前四个值
+                                event.target.value, // 使用 event.target.value 替换第五个值
+                                ...preActionData.slice(5), // 保留剩余的值
                               ];
 
                               // 使用 setPreActionData 函数来更新 preActionData
                               setPreActionData(newPreActionData);
+                              if (newPreActionData.length === 6) {
+                                field.onChange(newPreActionData.join(","));
+                              }
                             }}
                           />
                           <FormControl>
                             <Input
                               placeholder="目标位姿态角度"
                               onChange={(e) => {
-                                // 创建一个新的数组，其中第一个元素是新的值，其余元素是 preActionData 中的旧元素
                                 const newPreActionData = [
-                                  ...preActionData,
-                                  e.target.value,
+                                  ...preActionData.slice(0, 5), // 保留前五个值
+                                  e.target.value, // 使用 e.target.value 替换第六个值
+                                  // ...preActionData.slice(6), // 保留剩余的值
                                 ];
                                 console.log(newPreActionData, "😔");
                                 // 使用 setPreActionData 函数来更新 preActionData
                                 setPreActionData(newPreActionData);
 
-                                console.log(preActionData, "👽");
                                 // 确保调用 field.onChange，以便 React Hook Form 更新状态
                                 field.onChange(newPreActionData.join(","));
                               }}
@@ -389,8 +403,38 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
                     />
                   </div>
                 )}
-                {selectedActionSub === "33538" && <div>old</div>}
-                {selectedActionSub === "33539" && <div>mic</div>}
+                {selectedActionSub === "0x8302" && (
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="aciton_value"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>引导点跟随</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="目标速度,单位m/s"
+                              onChange={(e) => {
+                                const newPreActionData = [
+                                  e.target.value, // 使用 e.target.value 替换第六个值
+                                  ...preActionData.slice(1), // 保留剩余的值
+                                ];
+                                console.log(newPreActionData, "😔");
+                                // 使用 setPreActionData 函数来更新 preActionData
+                                setPreActionData(newPreActionData);
+
+                                // 确保调用 field.onChange，以便 React Hook Form 更新状态
+                                field.onChange(newPreActionData.join(","));
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+                {selectedActionSub === "0x8303" && <div>mic</div>}
               </div>
             )}
             <Button type="submit">提交</Button>
