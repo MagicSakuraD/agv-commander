@@ -26,7 +26,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
@@ -59,7 +59,7 @@ interface CardWithFormProps {
 }
 let actionlist: string[] = [];
 
-export const CardWithForm: React.FC<CardWithFormProps> = ({
+const CardWithForm: React.FC<CardWithFormProps> = ({
   actionData,
   setActionData,
   setList,
@@ -68,7 +68,10 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
   const [vehicleAction, setVehicleAction] = useState<any[]>([]);
   const [selectedActionSub, setSelectedActionSub] = useState<string>("");
   const [preActionData, setPreActionData] = useState<string[]>([]);
-  // let preAction_data: string[] = [];
+  const [inputs, setInputs] = useState<
+    { x: string; y: string; theta: string }[]
+  >([]);
+  const [inputnumber, setInputNumber] = useState<number>(0);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -137,7 +140,30 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
       });
   }, []);
 
-  function handleClickAction() {}
+  function handleAppend() {
+    setInputs([...inputs, { x: "", y: "", theta: "" }]);
+  }
+
+  const handleInputChange = () => () => {
+    // const newInputs = [...inputs];
+    // newInputs[index][field] = event.target.value;
+    // setInputs(newInputs);
+  };
+
+  function onChangeInputs(index: number, value: string, field: any) {
+    console.log(inputnumber, "df😔", value, index);
+    const newPreActionData = [
+      ...preActionData.slice(0, 1), // 保留第一个值
+      value, // 使用 event.target.value 替换第二个值
+      ...preActionData.slice(2), // 保留剩余的值
+    ];
+
+    // 使用 setPreActionData 函数来更新 preActionData
+    setPreActionData(newPreActionData);
+    if (newPreActionData.length === 6) {
+      field.onChange(newPreActionData.join(","));
+    }
+  }
 
   return (
     <Card className="w-full">
@@ -428,6 +454,44 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
                               }}
                             />
                           </FormControl>
+
+                          {inputs.map((input, index) => (
+                            <div key={index} className="flex flex-row gap-2">
+                              <Input
+                                type="text"
+                                placeholder="x坐标"
+                                value={input.x}
+                                onChange={(e) => {
+                                  onChangeInputs(index, e.target.value, field);
+                                }}
+                              />
+                              <Input
+                                type="text"
+                                placeholder="y坐标"
+                                value={input.y}
+                                onChange={(e) => {
+                                  onChangeInputs(index, e.target.value, field);
+                                }}
+                              />
+                              <Input
+                                type="text"
+                                placeholder="角度theta"
+                                value={input.theta}
+                                onChange={(e) => {
+                                  onChangeInputs(index, e.target.value, field);
+                                }}
+                              />
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={handleAppend}
+                          >
+                            添加引导点
+                          </Button>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -444,10 +508,6 @@ export const CardWithForm: React.FC<CardWithFormProps> = ({
     </Card>
   );
 };
-
-interface VehicleBodyProps {
-  vehicleAction: any[];
-}
 
 const initialList: any[] = [];
 
