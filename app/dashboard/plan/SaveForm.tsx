@@ -41,7 +41,8 @@ const SaveForm: React.FC<SaveFormProps> = ({ list }) => {
       (item) => `${item.mainId}|${item.subId}|${item.aciton_value}`
     );
 
-    let resultList = stringList.join(",");
+    let resultList = stringList.join("\n");
+    console.log("数组", stringList);
     console.log("保存数据👩", resultList);
     // 创建请求体对象
     let bodyContent = {
