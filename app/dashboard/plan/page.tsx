@@ -37,8 +37,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
+
+import SaveForm from "./SaveForm";
+import PlanningTaskFiles from "./PlanningTaskFiles";
 
 const FormSchema = z.object({
   mainId: z.string({
@@ -98,27 +99,54 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
         comment_name = action_base.name + ": " + action_sub.description;
         // 将 data.action_value 转换为数组
         let actionValues = data.aciton_value.split(",");
-
+        let firstThree = actionValues.slice(0, 3).join(",");
+        let rest = actionValues.slice(3).join(",");
+        let result = firstThree + "|" + rest;
+        data.aciton_value = result;
         // 使用 replace 方法的函数参数
         comment_name = comment_name.replace(/\{.*?\}/g, () => {
           // 使用 Array.shift 方法来依次获取 actionValues 中的元素
           return actionValues.shift() || "";
         });
+      } else if (selectedActionSub === "0x8302") {
+        let guide_point = data.aciton_value.split(",");
+        let speed = guide_point[0];
+        let coordinates = guide_point.slice(1);
+        let groups = [];
+        for (let i = 0; i < coordinates.length; i += 3) {
+          groups.push(
+            `(${coordinates[i]}, ${coordinates[i + 1]}, ${coordinates[i + 2]})`
+          );
+        }
+
+        let res_groups = [];
+        for (let i = 0; i < coordinates.length; i += 3) {
+          res_groups.push(
+            `${coordinates[i]},${coordinates[i + 1]},${coordinates[i + 2]}`
+          );
+        }
+        let result = res_groups.join("|");
+        data.aciton_value = speed + "|" + result;
+
+        console.log(groups, "😊😊😊", speed, coordinates);
+        let formattedCoordinates = groups.join(", ");
+        comment_name = `${action_base.name}: 以${speed}m/s的速度依次经过${formattedCoordinates}引导点`;
+      } else if (selectedActionSub === "0x8303") {
+        comment_name = action_base.name + ": " + action_sub.description;
+        let actionValues = data.aciton_value.split(",");
+        let speed = actionValues[0];
+        let coordinates = actionValues.slice(1);
+        let iterator = actionValues.values();
+        comment_name = comment_name.replace(/\{.*?\}/g, () => {
+          let nextValue = iterator.next();
+          return nextValue.done ? "" : nextValue.value;
+        });
+        data.aciton_value = speed + "|" + coordinates;
       }
     }
 
     const form_data = { ...data, name: comment_name };
     setList((prev) => [...prev, form_data]);
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">
-            {JSON.stringify(form_data, null, 2)}
-          </code>
-        </pre>
-      ),
-    });
   }
 
   useEffect(() => {
@@ -150,25 +178,47 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
     // setInputs(newInputs);
   };
 
-  function onChangeInputs(index: number, value: string, field: any) {
-    console.log(inputnumber, "df😔", value, index);
-    const newPreActionData = [
-      ...preActionData.slice(0, 1), // 保留第一个值
-      value, // 使用 event.target.value 替换第二个值
-      ...preActionData.slice(2), // 保留剩余的值
-    ];
+  let newPreActionData: string[] = [];
+  function onChangeInputs(
+    index: number,
+    value: string,
+    field: any,
+    id: string
+  ) {
+    if (id === "x") {
+      newPreActionData = [
+        ...preActionData.slice(0, index * 3 + 1), // 保留第一个值
+        value, // 使用 event.target.value 替换第二个值
+        ...preActionData.slice(index * 3 + 2), // 保留剩余的值
+      ];
+      // 使用 setPreActionData 函数来更新 preActionData
+      setPreActionData(newPreActionData);
+    } else if (id === "y") {
+      newPreActionData = [
+        ...preActionData.slice(0, index * 3 + 2), // 保留第一个值
+        value, // 使用 event.target.value 替换第二个值
+        ...preActionData.slice(index * 3 + 3),
+      ];
+      setPreActionData(newPreActionData);
+    } else if (id === "theta") {
+      newPreActionData = [
+        ...preActionData.slice(0, index * 3 + 3), // 保留第一个值
+        value, // 使用 event.target.value 替换第二个值
+        ...preActionData.slice(index * 3 + 4),
+      ];
+      setPreActionData(newPreActionData);
+    }
 
-    // 使用 setPreActionData 函数来更新 preActionData
-    setPreActionData(newPreActionData);
-    if (newPreActionData.length === 6) {
+    if (newPreActionData.length === index * 3 + 4) {
       field.onChange(newPreActionData.join(","));
     }
+    console.log(newPreActionData, "😔");
   }
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>添加决策动作</CardTitle>
+        <CardTitle>1.新建任务文件</CardTitle>
         <CardDescription>设置AGV车体动作或路径规划</CardDescription>
       </CardHeader>
       <CardContent>
@@ -342,6 +392,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           />
                           <Input
                             placeholder="起始位姿态y坐标"
+                            type="number"
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 1), // 保留第一个值
@@ -358,6 +409,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           />
                           <Input
                             placeholder="起始位姿态角度"
+                            type="number"
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 2), // 保留前两个值
@@ -374,6 +426,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           />
                           <Input
                             placeholder="目标位姿态x坐标"
+                            type="number"
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 3), // 保留前三个值
@@ -390,6 +443,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           />
                           <Input
                             placeholder="目标位姿态y坐标"
+                            type="number"
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 4), // 保留前四个值
@@ -407,13 +461,14 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <FormControl>
                             <Input
                               placeholder="目标位姿态角度"
+                              type="number"
                               onChange={(e) => {
                                 const newPreActionData = [
                                   ...preActionData.slice(0, 5), // 保留前五个值
                                   e.target.value, // 使用 e.target.value 替换第六个值
                                   // ...preActionData.slice(6), // 保留剩余的值
                                 ];
-                                console.log(newPreActionData, "😔");
+
                                 // 使用 setPreActionData 函数来更新 preActionData
                                 setPreActionData(newPreActionData);
 
@@ -436,7 +491,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                       name="aciton_value"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>引导点跟随</FormLabel>
+                          <FormLabel>参数设置</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="目标速度,单位m/s"
@@ -445,7 +500,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                                   e.target.value, // 使用 e.target.value 替换第六个值
                                   ...preActionData.slice(1), // 保留剩余的值
                                 ];
-                                console.log(newPreActionData, "😔");
+
                                 // 使用 setPreActionData 函数来更新 preActionData
                                 setPreActionData(newPreActionData);
 
@@ -460,25 +515,37 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                               <Input
                                 type="text"
                                 placeholder="x坐标"
-                                value={input.x}
                                 onChange={(e) => {
-                                  onChangeInputs(index, e.target.value, field);
+                                  onChangeInputs(
+                                    index,
+                                    e.target.value,
+                                    field,
+                                    "x"
+                                  );
                                 }}
                               />
                               <Input
                                 type="text"
                                 placeholder="y坐标"
-                                value={input.y}
                                 onChange={(e) => {
-                                  onChangeInputs(index, e.target.value, field);
+                                  onChangeInputs(
+                                    index,
+                                    e.target.value,
+                                    field,
+                                    "y"
+                                  );
                                 }}
                               />
                               <Input
                                 type="text"
                                 placeholder="角度theta"
-                                value={input.theta}
                                 onChange={(e) => {
-                                  onChangeInputs(index, e.target.value, field);
+                                  onChangeInputs(
+                                    index,
+                                    e.target.value,
+                                    field,
+                                    "theta"
+                                  );
                                 }}
                               />
                             </div>
@@ -486,7 +553,6 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <Button
                             type="button"
                             variant="outline"
-                            size="sm"
                             className="mt-2"
                             onClick={handleAppend}
                           >
@@ -498,7 +564,90 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                     />
                   </div>
                 )}
-                {selectedActionSub === "0x8303" && <div>mic</div>}
+                {selectedActionSub === "0x8303" && (
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="aciton_value"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>参数设置</FormLabel>
+                          <Input
+                            placeholder="目标速度,单位m/s"
+                            type="number"
+                            onChange={(event) => {
+                              const newPreActionData = [
+                                event.target.value,
+                                ...preActionData.slice(1),
+                              ];
+
+                              // 使用 setPreActionData 函数来更新 preActionData
+                              setPreActionData(newPreActionData);
+                              if (newPreActionData.length === 4) {
+                                field.onChange(newPreActionData.join(","));
+                              }
+                            }}
+                          />
+                          <Input
+                            placeholder="目标位姿态x坐标"
+                            type="number"
+                            onChange={(event) => {
+                              const newPreActionData = [
+                                ...preActionData.slice(0, 1), // 保留第一个值
+                                event.target.value, // 使用 event.target.value 替换第二个值
+                                ...preActionData.slice(2), // 保留剩余的值
+                              ];
+
+                              // 使用 setPreActionData 函数来更新 preActionData
+                              setPreActionData(newPreActionData);
+                              if (newPreActionData.length === 4) {
+                                field.onChange(newPreActionData.join(","));
+                              }
+                            }}
+                          />
+                          <Input
+                            placeholder="目标位姿态y坐标"
+                            type="number"
+                            onChange={(event) => {
+                              const newPreActionData = [
+                                ...preActionData.slice(0, 2), // 保留前两个值
+                                event.target.value, // 使用 event.target.value 替换第三个值
+                                ...preActionData.slice(3), // 保留剩余的值
+                              ];
+
+                              // 使用 setPreActionData 函数来更新 preActionData
+                              setPreActionData(newPreActionData);
+                              if (newPreActionData.length === 4) {
+                                field.onChange(newPreActionData.join(","));
+                              }
+                            }}
+                          />
+                          <FormControl>
+                            <Input
+                              placeholder="目标位姿态角度"
+                              type="number"
+                              onChange={(event) => {
+                                const newPreActionData = [
+                                  ...preActionData.slice(0, 3), // 保留前三个值
+                                  event.target.value, // 使用 event.target.value 替换第四个值
+                                  ...preActionData.slice(4), // 保留剩余的值
+                                ];
+
+                                // 使用 setPreActionData 函数来更新 preActionData
+                                setPreActionData(newPreActionData);
+                                if (newPreActionData.length === 4) {
+                                  field.onChange(newPreActionData.join(","));
+                                }
+                              }}
+                            />
+                          </FormControl>
+
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
               </div>
             )}
             <Button type="submit">提交</Button>
@@ -525,13 +674,26 @@ const PlanPage = () => {
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>待提交表单</CardTitle>
+          <CardTitle>2.保存任务文件</CardTitle>
           <CardDescription>
-            确认表单正确，后将表单保存到任务工作区
+            检查任务，确认无误后保存到任务工作区
           </CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable columns={columns} data={list} />
+        </CardContent>
+        <CardFooter>
+          <SaveForm list={list} />
+        </CardFooter>
+      </Card>
+
+      <Card className="w-full text-muted-foreground">
+        <CardHeader>
+          <CardTitle>任务文件列表</CardTitle>
+          <CardDescription>规划模块下的所有任务文件</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PlanningTaskFiles />
         </CardContent>
       </Card>
     </div>

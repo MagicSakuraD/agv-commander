@@ -6,6 +6,7 @@ import {
   Map_bag,
 } from "@/app/dashboard/(monitor)/tabs/(map-manager)/columns";
 import { form_params } from "@/app/dashboard/config/ParamForm";
+import { PlanningTaskFile } from "@/app/dashboard/plan/columns";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
@@ -279,6 +280,22 @@ export async function GetCurrentMapUseName() {
 export async function GetMappingBagPngData(Map_name: Map_AGV) {
   const res = await fetch(
     `http://192.168.2.112:8888/api/info/GetMappingBagPngData/{name}?name=${Map_name.name}`,
+    {
+      cache: "no-store",
+      method: "GET",
+    }
+  );
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("Failed to fetch data");
+  }
+  return res.json();
+}
+
+export async function DeletePlanningTaskFile(task_name: PlanningTaskFile) {
+  const res = await fetch(
+    `http://192.168.2.112:8888/api/planning/DeletePlanningTaskFile/{path}?path=${task_name.name}`,
     {
       cache: "no-store",
       method: "GET",
