@@ -12,6 +12,7 @@ const PlanningTaskFiles = async () => {
     "http://192.168.2.112:8888/api/planning/GetPlanningTaskFiles",
     fetcher,
     {
+      refreshInterval: 1500, // 每隔 3000 毫秒重新获取一次数据
       refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
     }
   );
@@ -24,8 +25,8 @@ const PlanningTaskFiles = async () => {
     }));
   }
 
-  if (error) return <div>Failed to load</div>;
-  if (!data) return <div>Loading...</div>;
+  if (error) return <div>请求失败</div>;
+  if (!data) return <div>加载中...</div>;
 
   return (
     <div>
