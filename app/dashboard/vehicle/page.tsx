@@ -94,7 +94,7 @@ export default function VehiclePage() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full">Continue</Button>
+          <Button className="w-full">执行</Button>
         </CardFooter>
       </Card>
     </div>

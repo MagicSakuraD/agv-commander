@@ -60,6 +60,7 @@ import LoadingMapping from "./LoadingMapping";
 import DisplayCompletedMap from "./DisplayCompletedMap";
 import useSWR from "swr";
 import { GetAllMapsName } from "@/lib/actions";
+import { CubeFour, MapRoad } from "@icon-park/react";
 
 interface AlertDialogBtnProps {
   status: number; // 或者你的状态的类型
@@ -527,7 +528,14 @@ const Map_Manager = () => {
         <Card className="flex-1  flex flex-col justify-between">
           <div>
             <CardHeader>
-              <CardTitle>建图数据</CardTitle>
+              <CardTitle className="flex flex-row gap-2 items-center">
+                <CubeFour
+                  theme="two-tone"
+                  size="20"
+                  fill={["#333", "#22c55e"]}
+                />
+                建图数据
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <DataTable columns={columns_bag} data={bags} />
@@ -542,7 +550,14 @@ const Map_Manager = () => {
         <Card className="flex-1 flex flex-col justify-between">
           <div>
             <CardHeader>
-              <CardTitle>地图数据</CardTitle>
+              <CardTitle className="flex flex-row gap-2 items-center">
+                <MapRoad
+                  theme="two-tone"
+                  size="20"
+                  fill={["#333", "#22c55e"]}
+                />
+                地图数据
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <DataTable columns={columns} data={maps} />

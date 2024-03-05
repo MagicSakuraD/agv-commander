@@ -40,6 +40,7 @@ import {
 
 import SaveForm from "./SaveForm";
 import PlanningTaskFiles from "./PlanningTaskFiles";
+import { FileDisplay } from "@icon-park/react";
 
 const FormSchema = z.object({
   mainId: z.string({
@@ -687,9 +688,16 @@ const PlanPage = () => {
         </CardFooter>
       </Card>
 
-      <Card className="w-full text-muted-foreground">
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle>任务文件列表</CardTitle>
+          <CardTitle className="flex flex-row items-center gap-2">
+            <FileDisplay
+              theme="two-tone"
+              size="20"
+              fill={["#333", "#22c55e"]}
+            />{" "}
+            任务文件列表
+          </CardTitle>
           <CardDescription>规划模块下的所有任务文件</CardDescription>
         </CardHeader>
         <CardContent>

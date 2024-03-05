@@ -58,6 +58,7 @@ import MyComponent from "./LeafletMap";
 import dynamic from "next/dynamic";
 import Roslib from "./mqtt/roslib";
 import AddInitPose from "./tabs/(InitPose)/AddInitPose";
+import { Local, SolidStateDisk } from "@icon-park/react";
 
 const LeafletMap = dynamic(() => import("./LeafletMap"), {
   ssr: false, // 禁用服务器端渲染
@@ -350,7 +351,7 @@ const MapPage = () => {
               AGV_point_real={AGV_point_real}
               angle={angle}
             ></LeafletMap>
-            <TabsContent value="AGV" className="flex flex-col gap-4">
+            <TabsContent value="AGV" className="flex flex-col gap-4 mt-5">
               <div className="flex flex-wrap gap-3 justify-between w-full">
                 <Card className="flex-1 h-auto grow ">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -558,7 +559,14 @@ const MapPage = () => {
               <div className="flex flex-col gap-4 md:flex-row">
                 <Card className="flex-1">
                   <CardHeader>
-                    <CardTitle>定位数据包</CardTitle>
+                    <CardTitle className="flex flex-row gap-2 items-center">
+                      <Local
+                        theme="two-tone"
+                        size="20"
+                        fill={["#333", "#22c55e"]}
+                      />
+                      定位数据包
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Localization isRecord={Record_ok} />
@@ -567,7 +575,14 @@ const MapPage = () => {
 
                 <Card className="flex-1">
                   <CardHeader>
-                    <CardTitle>硬盘空间</CardTitle>
+                    <CardTitle className="flex flex-row gap-2">
+                      <SolidStateDisk
+                        theme="two-tone"
+                        size="20"
+                        fill={["#333", "#22c55e"]}
+                      />
+                      硬盘空间
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="flex justify-center items-center">
                     <ActiveShapePieChart />

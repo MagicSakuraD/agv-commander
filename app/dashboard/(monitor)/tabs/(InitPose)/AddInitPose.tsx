@@ -30,6 +30,7 @@ import {
 import useSWR from "swr";
 import { carShowAtom, markerlistAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
+import { WholeSiteAccelerator } from "@icon-park/react";
 
 const FormSchema = z.object({
   Posename: z.string().min(2, {
@@ -180,7 +181,14 @@ const AddInitPose: React.FC<AddInitPoseProps> = ({ AGV_point_real, angle }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>激光定位初始化点</CardTitle>
+        <CardTitle className="flex flex-row gap-2">
+          <WholeSiteAccelerator
+            theme="two-tone"
+            size="20"
+            fill={["#333", "#22c55e"]}
+          />
+          激光定位初始化点
+        </CardTitle>
         <CardDescription>按照AGV当前位姿设置初始化点</CardDescription>
         <div className="mt-5">
           <InputName AGV_point_real={AGV_point_real} angle={angle} />
