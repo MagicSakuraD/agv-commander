@@ -40,7 +40,7 @@ import {
 
 import SaveForm from "./SaveForm";
 import PlanningTaskFiles from "./PlanningTaskFiles";
-import { FileDisplay } from "@icon-park/react";
+import { FileDisplay, OneKey, TwoKey } from "@icon-park/react";
 
 const FormSchema = z.object({
   mainId: z.string({
@@ -219,7 +219,10 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>1.新建任务文件</CardTitle>
+        <CardTitle className="flex flex-row items-center gap-2">
+          <OneKey theme="two-tone" size="20" fill={["#333", "#22c55e"]} />
+          新建任务文件
+        </CardTitle>
         <CardDescription>设置AGV车体动作或路径规划</CardDescription>
       </CardHeader>
       <CardContent>
@@ -675,7 +678,10 @@ const PlanPage = () => {
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>2.保存任务文件</CardTitle>
+          <CardTitle className="flex flex-row gap-2 items-center">
+            <TwoKey theme="two-tone" size="20" fill={["#333", "#22c55e"]} />
+            保存任务文件
+          </CardTitle>
           <CardDescription>
             检查任务，确认无误后保存到任务工作区
           </CardDescription>

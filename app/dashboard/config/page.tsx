@@ -44,6 +44,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Fileprop, columns } from "./columns";
 import { useAtom } from "jotai";
 import { FileNameAtom, fileDataAtom } from "@/lib/atoms";
+import { OneKey, TwoKey } from "@icon-park/react";
 
 const FormSchema = z.object({
   File: z.string({
@@ -133,7 +134,10 @@ const MappingPage = () => {
     <div className="md:container px-2 mx-auto pt-5 flex flex-wrap gap-5 justify-center">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>1.选择配置文件</CardTitle>
+          <CardTitle className="flex flex-row gap-2 items-center">
+            <OneKey theme="two-tone" size="20" fill={["#333", "#22c55e"]} />
+            选择配置文件
+          </CardTitle>
           <CardDescription>可按照关键字搜素文件</CardDescription>
         </CardHeader>
         <CardContent>
@@ -210,7 +214,10 @@ const MappingPage = () => {
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>2.修改配置文件</CardTitle>
+          <CardTitle className="flex flex-row gap-2 items-center">
+            <TwoKey theme="two-tone" size="20" fill={["#333", "#22c55e"]} />
+            修改配置文件
+          </CardTitle>
           <CardDescription>逐行修改配置文件信息</CardDescription>
         </CardHeader>
         <CardContent>

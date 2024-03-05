@@ -313,7 +313,7 @@ const MapPage = () => {
                 <TabsTrigger value="InitPose">初始化点</TabsTrigger>
               </TabsList>
 
-              <div className="text-sm text-muted-foreground flex flex-row items-center gap-1">
+              <div className="text-sm text-muted-foreground flex flex-row items-center gap-2">
                 {ros_Running ? (
                   <>
                     <svg

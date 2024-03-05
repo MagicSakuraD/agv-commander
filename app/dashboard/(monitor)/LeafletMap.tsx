@@ -155,7 +155,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
     <div>
       <p className="my-3 text-lg">
         地图:
-        <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono  font-semibold">
+        <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono  font-semibold text-green-600">
           {currentMap}
         </code>
       </p>
