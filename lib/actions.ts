@@ -255,7 +255,7 @@ export async function GetAllLocalizationBagsName() {
 
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
+    throw new Error("获取数据失败");
   }
   return res.json();
 }
@@ -271,7 +271,7 @@ export async function GetCurrentMapUseName() {
 
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
+    throw new Error("获取数据失败");
   }
 
   return res.json();
@@ -288,7 +288,7 @@ export async function GetMappingBagPngData(Map_name: Map_AGV) {
 
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
+    throw new Error("获取数据失败");
   }
   return res.json();
 }
@@ -304,7 +304,30 @@ export async function DeletePlanningTaskFile(task_name: PlanningTaskFile) {
 
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
+    throw new Error("获取数据失败");
   }
+  return res.json();
+}
+
+export async function SetControlNodeState(cmd_num: string) {
+  const res = await fetch(
+    "http://192.168.2.112:8888/api/control/SetControlNodeState",
+    {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cmd: cmd_num,
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("获取数据失败");
+  }
+
   return res.json();
 }

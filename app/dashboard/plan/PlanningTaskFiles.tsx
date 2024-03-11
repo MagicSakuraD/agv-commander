@@ -6,7 +6,7 @@ import useSWR from "swr";
 const fetcher = (...args: [string, RequestInit?]) =>
   fetch(...args).then((res) => res.json());
 
-const PlanningTaskFiles = async () => {
+const PlanningTaskFiles = () => {
   // const [tasks_list, setTasks_list] = useState<PlanningTaskFile[]>([]); // [
   const { data, error } = useSWR(
     "http://192.168.2.112:8888/api/planning/GetPlanningTaskFiles",
