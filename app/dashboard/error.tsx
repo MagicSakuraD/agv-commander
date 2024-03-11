@@ -15,9 +15,17 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="flex h-96 flex-col items-center justify-center">
-      <h2 className="text-center">出了点问题😵</h2>
-
+    <main className="flex h-[32rem] flex-col items-center justify-center">
+      <h2 className="text-center inline">
+        出了点问题
+        <img
+          src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Crossed-Out%20Eyes.png"
+          alt="Face with Crossed-Out Eyes"
+          width="25"
+          height="25"
+          className="inline"
+        />
+      </h2>
       <button
         className="mt-4 rounded-md bg-green-500 px-4 py-2 text-sm text-white transition-colors hover:bg-green-400"
         onClick={

@@ -18,17 +18,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GameThree, RobotOne } from "@icon-park/react";
-import { Home } from "@icon-park/react";
+import { GameThree, PauseOne, Play, RobotOne } from "@icon-park/react";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 export default function VehiclePage() {
+  const [task, setTask] = useState("暂无");
+
   return (
     <div className="md:container px-2 mx-auto pt-5">
       <Card>
         <CardHeader>
           <CardTitle>控制模式</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-10">
+        <CardContent className="grid gap-16">
           <RadioGroup defaultValue="card" className="grid grid-cols-2 gap-4">
             <div>
               <RadioGroupItem
@@ -93,8 +97,19 @@ export default function VehiclePage() {
             </Select>
           </div>
         </CardContent>
-        <CardFooter>
-          <Button className="w-full">执行</Button>
+        <CardFooter className="mt-8 flex flex-col gap-5">
+          <Button className="w-full">执行任务</Button>
+
+          <Separator />
+          <div className="flex flex-row gap-5 w-full justify-center rounded-full h-12 items-center mt-12 border-2 shadow-md">
+            <span>
+              <b className="text-muted-foreground">正在运行的任务: </b>
+              <b>{task}</b>
+            </span>
+
+            <PauseOne theme="two-tone" size="36" fill={["#333", "#22c55e"]} />
+            {/* <Play theme="two-tone" size="36" fill={['#333' ,'#22c55e']}/> */}
+          </div>
         </CardFooter>
       </Card>
     </div>
