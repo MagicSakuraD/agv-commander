@@ -331,3 +331,49 @@ export async function SetControlNodeState(cmd_num: string) {
 
   return res.json();
 }
+
+export async function SetPlanningTaskFile(path: string) {
+  const res = await fetch(
+    "http://192.168.2.112:8888/api/planning/SetPlanningTaskFile",
+    {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        path: path,
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("获取数据失败");
+  }
+
+  return res.json();
+}
+
+export async function SetPlanningNodeState(cmd: string) {
+  const res = await fetch(
+    "http://192.168.2.112:8888/api/control/SetPlanningNodeState",
+    {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cmd: cmd,
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("获取数据失败");
+  }
+
+  return res.json();
+}

@@ -10,6 +10,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import { GameThree, PauseOne, Play, RobotOne } from "@icon-park/react";
+import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
+import {
+  SetControlNodeState,
+  SetPlanningNodeState,
+  SetPlanningTaskFile,
+} from "@/lib/actions";
+import { useTask } from "@/lib/swr";
+import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { set, useForm } from "react-hook-form";
+import { z } from "zod";
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -17,13 +41,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GameThree, PauseOne, RobotOne } from "@icon-park/react";
-import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
-import { SetControlNodeState } from "@/lib/actions";
+import { toast } from "@/components/ui/use-toast";
+
+const FormSchema = z.object({
+  task: z.string({
+    required_error: "Please select an task to display.",
+  }),
+});
 
 export default function VehiclePage() {
   const [task, setTask] = useState("暂无");
+  const [pause, setPause] = useState(true);
 
   const handleRadioChange = async (value: string) => {
     let cmd = value === "Manual" ? "0" : "1";
@@ -31,12 +59,43 @@ export default function VehiclePage() {
     console.log(data);
   };
 
+  const { data, isLoading, isError } = useTask();
+  const dataEntries = Object.entries(data?.data);
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  });
+
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log("its working😊", data.task);
+    setTask(data.task);
+    const task_data = SetPlanningTaskFile(data.task);
+    console.log(task_data, "task_data😂");
+    // toast({
+    //   title: "You submitted the following values:",
+    //   description: (
+    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+    //     </pre>
+    //   ),
+    // });
+  }
+
+  function hadnlePause() {
+    setPause(!pause);
+    console.log(pause, "pause😂");
+    let cmd = pause ? "3" : "4";
+    const State_data = SetPlanningNodeState(cmd);
+    console.log(State_data, "State_data😂");
+  }
+
   return (
     <div className="md:container px-2 mx-auto pt-5">
       <Card>
         <CardHeader>
           <CardTitle>控制模式</CardTitle>
         </CardHeader>
+
         <CardContent className="grid gap-16">
           <RadioGroup
             defaultValue="card"
@@ -83,32 +142,48 @@ export default function VehiclePage() {
             </div>
           </RadioGroup>
 
-          <div className="grid gap-2">
-            <Label htmlFor="month">选择任务文件</Label>
-            <Select>
-              <SelectTrigger id="month">
-                <SelectValue placeholder="Month" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">January</SelectItem>
-                <SelectItem value="2">February</SelectItem>
-                <SelectItem value="3">March</SelectItem>
-                <SelectItem value="4">April</SelectItem>
-                <SelectItem value="5">May</SelectItem>
-                <SelectItem value="6">June</SelectItem>
-                <SelectItem value="7">July</SelectItem>
-                <SelectItem value="8">August</SelectItem>
-                <SelectItem value="9">September</SelectItem>
-                <SelectItem value="10">October</SelectItem>
-                <SelectItem value="11">November</SelectItem>
-                <SelectItem value="12">December</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="w-full space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="task"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>选择任务文件</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="请选择" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {dataEntries.map(([key, value]) => (
+                            <SelectItem value={value as string} key={key}>
+                              {key}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button className="w-full" type="submit">
+                  执行任务
+                </Button>
+              </form>
+            </Form>
           </div>
         </CardContent>
         <CardFooter className="mt-8 flex flex-col gap-5">
-          <Button className="w-full">执行任务</Button>
-
           <Separator />
           <div className="flex flex-row gap-5 w-full justify-center rounded-full h-12 items-center border-2 shadow-md">
             <span>
@@ -116,8 +191,21 @@ export default function VehiclePage() {
               <b>{task}</b>
             </span>
 
-            <PauseOne theme="two-tone" size="36" fill={["#333", "#22c55e"]} />
-            {/* <Play theme="two-tone" size="36" fill={['#333' ,'#22c55e']}/> */}
+            <Button
+              variant="ghost"
+              className="rounded-full w-10"
+              onClick={hadnlePause}
+            >
+              {pause ? (
+                <PauseOne
+                  theme="two-tone"
+                  size="36"
+                  fill={["#333", "#22c55e"]}
+                />
+              ) : (
+                <Play theme="two-tone" size="36" fill={["#333", "#22c55e"]} />
+              )}
+            </Button>
           </div>
         </CardFooter>
       </Card>
