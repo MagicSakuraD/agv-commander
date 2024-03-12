@@ -6,7 +6,11 @@ const fetcher = (...args: [string, RequestInit?]) =>
 export function useTask() {
   const { data, error, isLoading } = useSWR(
     `http://192.168.2.112:8888/api/planning/GetPlanningTaskFiles`,
-    fetcher
+    fetcher,
+    {
+      refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
+      refreshInterval: 3000,
+    }
   );
 
   return {

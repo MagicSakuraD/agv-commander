@@ -6,6 +6,7 @@ import React from "react";
 import { PlanningTaskFile } from "./columns";
 import { DeletePlanningTaskFile } from "@/lib/actions";
 import { mutate } from "swr";
+import { Delete } from "@icon-park/react";
 
 const DeleteTask = (task_name: PlanningTaskFile) => {
   return (
@@ -17,7 +18,8 @@ const DeleteTask = (task_name: PlanningTaskFile) => {
           //   mutate("http://192.168.2.112:8888/api/planning/GetPlanningTaskFiles");
         }}
       >
-        删除<DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+        <Delete theme="two-tone" size="16" fill={["#333", "#ef4444"]} />
+        删除
       </DropdownMenuItem>
     </>
   );

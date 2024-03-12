@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteTask from "./DeleteTask";
+import TaskEditor from "./TaskEditor";
 // import ParamForm from "./ParamForm";
 
 export type Fileprop = {
@@ -121,6 +122,7 @@ export const columns_task: ColumnDef<PlanningTaskFile>[] = [
             <DropdownMenuSeparator />
             <DeleteTask {...task_name} />
             {/* <DeleteMapping {...mapping_name} /> */}
+            <TaskEditor />
           </DropdownMenuContent>
         </DropdownMenu>
       );

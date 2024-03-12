@@ -7,7 +7,7 @@ export default function NotFound() {
       <h2 className="text-xl font-semibold">404:未找到访问资源😵</h2>
       {/* <p>无法找到</p> */}
       <Link
-        href="/dashboard/dashboard"
+        href="/dashboard"
         className="mt-4 rounded-md bg-green-500 px-4 py-2 text-sm text-white transition-colors hover:bg-green-400"
       >
         返回首页

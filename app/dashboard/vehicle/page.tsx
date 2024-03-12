@@ -60,33 +60,33 @@ export default function VehiclePage() {
   };
 
   const { data, isLoading, isError } = useTask();
-  const dataEntries = Object.entries(data?.data);
+  // const dataEntries = Object.entries(data?.data);
+  const dataEntries = data?.data ? Object.entries(data.data) : [];
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("its working😊", data.task);
-    setTask(data.task);
+    console.log("设置任务", data.task);
+
     const task_data = SetPlanningTaskFile(data.task);
-    console.log(task_data, "task_data😂");
-    // toast({
-    //   title: "You submitted the following values:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // });
+    console.log(task_data, "task_data");
+    let filename = data.task.split("/").pop();
+    if (filename) {
+      console.log("设置任务", filename);
+      setTask(filename);
+    } else {
+      console.log("设置任务失败");
+    }
   }
 
   function hadnlePause() {
     setPause(!pause);
-    console.log(pause, "pause😂");
+    console.log(pause, "pause");
     let cmd = pause ? "3" : "4";
     const State_data = SetPlanningNodeState(cmd);
-    console.log(State_data, "State_data😂");
+    console.log(State_data, "State_data");
   }
 
   return (
