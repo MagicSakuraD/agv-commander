@@ -377,3 +377,19 @@ export async function SetPlanningNodeState(cmd: string) {
 
   return res.json();
 }
+
+export async function GetPlanningTaskFile(task_name: PlanningTaskFile) {
+  const res = await fetch(
+    `http://192.168.2.112:8888/api/planning/GetPlanningTaskFile/{path}?path=${task_name.name}`,
+    {
+      cache: "no-store",
+      method: "GET",
+    }
+  );
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("获取数据失败");
+  }
+  return res.json();
+}

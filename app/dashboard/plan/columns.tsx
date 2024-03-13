@@ -120,9 +120,8 @@ export const columns_task: ColumnDef<PlanningTaskFile>[] = [
               拷贝任务文件名
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <TaskEditor {...task_name} />
             <DeleteTask {...task_name} />
-            {/* <DeleteMapping {...mapping_name} /> */}
-            <TaskEditor />
           </DropdownMenuContent>
         </DropdownMenu>
       );
