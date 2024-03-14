@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
+import { set, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { CopyIcon } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
@@ -33,42 +33,51 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { EditTwo } from "@icon-park/react";
 import { PlanningTaskFile } from "./columns";
 import { GetPlanningTaskFile } from "@/lib/actions";
+import { cn } from "@/lib/utils";
 
-const formSchema = z.object({
-  taskName: z.string().array().nonempty({
-    message: "不能为空!",
-  }),
+const profileFormSchema = z.object({
+  taskName: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
 });
 
 const TaskEditor = (task_name: PlanningTaskFile) => {
+  const [taskArry, setTaskArry] = useState([]); // [task_name, setTaskName] = useState("defaultTaskName" as string);
   let filename = task_name.name.split("/").pop();
-
-  type ProfileFormValues = z.infer<typeof formSchema>;
-
+  type ProfileFormValues = z.infer<typeof profileFormSchema>;
+  let transformedData: { value: string }[] = [];
   // This can come from your database or API.
   const defaultValues: Partial<ProfileFormValues> = {
-    taskName: [""], // replace "defaultTaskName" with your actual default task name
+    taskName: transformedData, // replace "defaultTaskName" with your actual default task name
   };
 
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(profileFormSchema),
     defaultValues,
     mode: "onChange",
   });
 
-  // const { fields, append, remove } = useFieldArray({
-  //   control: form.control,
-  //   name: "taskName",
-  // });
+  const { fields, append, remove } = useFieldArray({
+    name: "taskName", // 注意这里
+    control: form.control,
+  });
 
   useEffect(() => {
     // Call the function that updates Router's state here
-    const subtask_data = GetPlanningTaskFile(task_name);
-    console.log(subtask_data);
+    GetPlanningTaskFile(task_name).then((subtask_data) => {
+      console.log(subtask_data);
+      transformedData = subtask_data.data.map((item: string) => ({
+        value: item,
+      }));
+      // setTaskArry(transformedData);
+      console.log(transformedData);
+    });
   }, []);
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof profileFormSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
@@ -90,20 +99,27 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="taskName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>决策动作</FormLabel>
-                  <FormControl>
-                    <Input placeholder="shadcn" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {fields.map((field, index) => (
+              <FormField
+                control={form.control}
+                key={field.id}
+                name={`taskName.${index}.value`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={cn(index !== 0 && "sr-only")}>
+                      决策动作
+                    </FormLabel>
+                    <FormDescription className={cn(index !== 0 && "sr-only")}>
+                      Add links to your website, blog, or social media profiles.
+                    </FormDescription>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
             <Button type="submit">Submit</Button>
             <DialogFooter className="sm:justify-start">
               <DialogClose asChild>
