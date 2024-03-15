@@ -85,13 +85,20 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
   function onSubmit(values: z.infer<typeof profileFormSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    const resultList = values.taskName.map((item) => item.value).join("\n");
+    console.log(resultList);
+    const filenameWithoutExtension = filename!.replace(".txt", "");
+    console.log(filenameWithoutExtension, "filename🚒");
+    let bodyContent = {
+      content: resultList,
+      name: filenameWithoutExtension,
+    };
     fetch("http://192.168.2.112:8888/api/planning/OverridePlanningTaskFile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      // body: JSON.stringify(bodyContent),
+      body: JSON.stringify(bodyContent),
     })
       .then((response) => {
         // 检查响应的状态码

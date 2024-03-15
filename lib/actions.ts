@@ -383,6 +383,7 @@ export async function GetPlanningTaskFile(task_name: PlanningTaskFile) {
     `http://192.168.2.112:8888/api/planning/GetPlanningTaskFile/{path}?path=${task_name.name}`,
     {
       method: "GET",
+      cache: "no-store",
     }
   );
 

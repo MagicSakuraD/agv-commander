@@ -14,6 +14,7 @@ import {
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import DeletItem from "./deletItem";
+import DownloadItem from "./DownloadItem";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Loc_AGV = {
@@ -54,6 +55,7 @@ export const columns: ColumnDef<Loc_AGV>[] = [
               拷贝数据包名
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DownloadItem {...loc} />
             <DeletItem {...loc} />
           </DropdownMenuContent>
         </DropdownMenu>

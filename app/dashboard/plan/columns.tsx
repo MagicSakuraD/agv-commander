@@ -54,7 +54,7 @@ export const columns: ColumnDef<Fileprop>[] = [
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
-              {/* <MoreHorizontal className="h-4 w-4" /> */}
+
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-4 h-4 bi bi-three-dots"
@@ -73,7 +73,6 @@ export const columns: ColumnDef<Fileprop>[] = [
               拷贝动作名
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            {/* <DeleteTask {...ActionParam} /> */}
           </DropdownMenuContent>
         </DropdownMenu>
       );

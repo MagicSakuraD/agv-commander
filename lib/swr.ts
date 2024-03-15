@@ -12,7 +12,6 @@ export function useTask() {
       refreshInterval: 3000,
     }
   );
-
   return {
     data: data,
     isLoading,
