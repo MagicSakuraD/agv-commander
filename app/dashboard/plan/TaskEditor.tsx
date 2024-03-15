@@ -30,10 +30,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { EditTwo } from "@icon-park/react";
+import { EditTwo, ViewList } from "@icon-park/react";
 import { PlanningTaskFile } from "./columns";
 import { GetPlanningTaskFile } from "@/lib/actions";
 import { cn } from "@/lib/utils";
+import { toast } from "@/components/ui/use-toast";
 
 const profileFormSchema = z.object({
   taskName: z.array(
@@ -44,13 +45,14 @@ const profileFormSchema = z.object({
 });
 
 const TaskEditor = (task_name: PlanningTaskFile) => {
-  const [taskArry, setTaskArry] = useState([]); // [task_name, setTaskName] = useState("defaultTaskName" as string);
+  const [taskArray, setTaskArray] = useState<{ value: string }[]>([]);
   let filename = task_name.name.split("/").pop();
   type ProfileFormValues = z.infer<typeof profileFormSchema>;
   let transformedData: { value: string }[] = [];
+
   // This can come from your database or API.
   const defaultValues: Partial<ProfileFormValues> = {
-    taskName: transformedData, // replace "defaultTaskName" with your actual default task name
+    taskName: transformedData,
   };
 
   const form = useForm<ProfileFormValues>({
@@ -68,11 +70,14 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
     // Call the function that updates Router's state here
     GetPlanningTaskFile(task_name).then((subtask_data) => {
       console.log(subtask_data);
-      transformedData = subtask_data.data.map((item: string) => ({
+      const newData = subtask_data.data.map((item: string) => ({
         value: item,
       }));
-      // setTaskArry(transformedData);
-      console.log(transformedData);
+      // setTaskArray(transformedData);
+
+      setTaskArray(transformedData);
+      transformedData = newData;
+      form.reset({ taskName: transformedData });
     });
   }, []);
 
@@ -81,6 +86,43 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+    fetch("http://192.168.2.112:8888/api/planning/OverridePlanningTaskFile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // body: JSON.stringify(bodyContent),
+    })
+      .then((response) => {
+        // 检查响应的状态码
+        if (!response.ok) {
+          throw new Error("HTTP 状态" + response.status);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // 处理响应数据
+
+        if (data.code === 0) {
+          // 如果 'code' 的值为 0，那么打印 'data' 的值
+          console.log(data.data);
+          toast({
+            title: "消息📢:",
+            description: "✅: " + data.msg,
+          });
+        } else if (data.code === -1) {
+          // 如果 'code' 的值为 -1，那么打印一个错误消息
+          console.log(data.msg);
+          toast({
+            title: "消息📢:",
+            description: "❌: " + data.msg,
+          });
+        }
+      })
+      .catch((error) => {
+        // 处理错误
+        console.error("Error:", error);
+      });
   }
 
   return (
@@ -95,7 +137,10 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>任务：{filename}</DialogTitle>
+          <DialogTitle className="flex gap-1 items-center justify-center">
+            <ViewList theme="two-tone" size="20" fill={["#333", "#16a34a"]} />
+            {filename}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -107,24 +152,41 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className={cn(index !== 0 && "sr-only")}>
-                      决策动作
+                      动作列表
                     </FormLabel>
                     <FormDescription className={cn(index !== 0 && "sr-only")}>
-                      Add links to your website, blog, or social media profiles.
+                      添加，删除或编辑动作
                     </FormDescription>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <div className="flex flex-row gap-2">
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => remove(index)}
+                      >
+                        删除
+                      </Button>
+                    </div>
+
                     <FormMessage />
                   </FormItem>
                 )}
               />
             ))}
-            <Button type="submit">Submit</Button>
-            <DialogFooter className="sm:justify-start">
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => append({ value: "" })}
+            >
+              添加动作
+            </Button>
+
+            <DialogFooter className="w-full">
               <DialogClose asChild>
-                <Button type="button" variant="secondary">
-                  Close
+                <Button type="submit" className="w-full">
+                  提交
                 </Button>
               </DialogClose>
             </DialogFooter>
