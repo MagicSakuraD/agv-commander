@@ -317,6 +317,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           placeholder="单位：米/度"
                           {...field}
                           type="number"
+                          step="any" // 允许输入任何数字，包括小数
                         />
                       </FormControl>
                       <FormMessage />
@@ -381,6 +382,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <Input
                             placeholder="起始位姿态x坐标"
                             type="number"
+                            step="any" // 允许输入任何数字，包括小数
                             onChange={(event) => {
                               const newPreActionData = [
                                 event.target.value,
@@ -397,6 +399,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <Input
                             placeholder="起始位姿态y坐标"
                             type="number"
+                            step="any" // 允许输入任何数字，包括小数
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 1), // 保留第一个值
@@ -414,6 +417,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <Input
                             placeholder="起始位姿态角度"
                             type="number"
+                            step="any" // 允许输入任何数字，包括小数
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 2), // 保留前两个值
@@ -431,6 +435,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <Input
                             placeholder="目标位姿态x坐标"
                             type="number"
+                            step="any" // 允许输入任何数字，包括小数
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 3), // 保留前三个值
@@ -448,6 +453,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <Input
                             placeholder="目标位姿态y坐标"
                             type="number"
+                            step="any" // 允许输入任何数字，包括小数
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 4), // 保留前四个值
@@ -466,6 +472,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                             <Input
                               placeholder="目标位姿态角度"
                               type="number"
+                              step="any" // 允许输入任何数字，包括小数
                               onChange={(e) => {
                                 const newPreActionData = [
                                   ...preActionData.slice(0, 5), // 保留前五个值
@@ -579,6 +586,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <Input
                             placeholder="目标速度,单位m/s"
                             type="number"
+                            step="any" // 允许输入任何数字，包括小数
                             onChange={(event) => {
                               const newPreActionData = [
                                 event.target.value,
@@ -595,6 +603,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <Input
                             placeholder="目标位姿态x坐标"
                             type="number"
+                            step="any" // 允许输入任何数字，包括小数
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 1), // 保留第一个值
@@ -612,6 +621,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                           <Input
                             placeholder="目标位姿态y坐标"
                             type="number"
+                            step="any" // 允许输入任何数字，包括小数
                             onChange={(event) => {
                               const newPreActionData = [
                                 ...preActionData.slice(0, 2), // 保留前两个值
@@ -630,6 +640,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
                             <Input
                               placeholder="目标位姿态角度"
                               type="number"
+                              step="any" // 允许输入任何数字，包括小数
                               onChange={(event) => {
                                 const newPreActionData = [
                                   ...preActionData.slice(0, 3), // 保留前三个值

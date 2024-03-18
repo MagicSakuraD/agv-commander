@@ -22,14 +22,21 @@ const handleDownload = async (loc: Loc_AGV) => {
       }
       return response.blob();
     })
-    .then((data) => {
-      console.log(data);
-      //   const url = window.URL.createObjectURL(data);
-      //   const a = document.createElement("a");
-      //   a.href = url;
-      //   a.download = "filename.zip"; // replace with your filename
-      //   a.click();
-      // 处理响应数据
+    .then((blob) => {
+      // 创建一个链接元素
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      // 设置下载的文件名
+      a.download = loc.name + ".zip";
+      // 将链接元素添加到DOM中
+      document.body.appendChild(a);
+      // 触发下载
+      a.click();
+      // 清理
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     })
     .catch((error) => {
       // 处理错误
