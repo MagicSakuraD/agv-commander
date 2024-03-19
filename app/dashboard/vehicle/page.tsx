@@ -71,6 +71,9 @@ export default function VehiclePage() {
     console.log("设置任务", data.task);
 
     const task_data = SetPlanningTaskFile(data.task);
+    let cmd = "1";
+    const start_data = SetPlanningNodeState(cmd);
+    console.log(start_data, "开始运行");
     console.log(task_data, "task_data");
     let filename = data.task.split("/").pop();
     if (filename) {
