@@ -178,7 +178,7 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
                         </Button>
                       </div>
 
-                      <FormDescription>
+                      <FormDescription className="text-green-600">
                         {parseAction(field.value)}
                       </FormDescription>
                     </div>
