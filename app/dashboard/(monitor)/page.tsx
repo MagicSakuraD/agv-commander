@@ -303,7 +303,7 @@ const MapPage = () => {
   if (typeof window !== "undefined") {
     return (
       <>
-        <CardContent className="">
+        <CardContent className="pt-2">
           <Tabs defaultValue="AGV" className="w-full">
             <CardTitle className="text-2xl font-semibold tracking-tight flex flex-row justify-between mt-5">
               <TabsList className="mb-3">

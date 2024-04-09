@@ -34,6 +34,7 @@ import { EditTwo, ViewList } from "@icon-park/react";
 import { PlanningTaskFile } from "./columns";
 import { GetPlanningTaskFile } from "@/lib/actions";
 import { cn } from "@/lib/utils";
+import parseAction from "@/lib/parseAction";
 import { toast } from "@/components/ui/use-toast";
 
 const profileFormSchema = z.object({
@@ -138,7 +139,7 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           {/* <span className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm hover:text-green-600"> */}
           <EditTwo theme="two-tone" size="16" fill={["#333", "#22c55e"]} />
-          修改
+          查看&修改
           {/* </span> */}
         </DropdownMenuItem>
       </DialogTrigger>
@@ -164,16 +165,22 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
                     <FormDescription className={cn(index !== 0 && "sr-only")}>
                       添加，删除或编辑动作
                     </FormDescription>
-                    <div className="flex flex-row gap-2">
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <Button
-                        variant={"destructive"}
-                        onClick={() => remove(index)}
-                      >
-                        删除
-                      </Button>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-row gap-2">
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <Button
+                          variant={"destructive"}
+                          onClick={() => remove(index)}
+                        >
+                          删除
+                        </Button>
+                      </div>
+
+                      <FormDescription>
+                        {parseAction(field.value)}
+                      </FormDescription>
                     </div>
 
                     <FormMessage />
