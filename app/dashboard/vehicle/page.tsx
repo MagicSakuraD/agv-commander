@@ -149,7 +149,7 @@ export default function VehiclePage() {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="w-full space-y-8"
+                className="w-full space-y-16"
               >
                 <FormField
                   control={form.control}
@@ -181,7 +181,7 @@ export default function VehiclePage() {
                 />
                 <div className="text-center">
                   <Button
-                    className="md:w-96 w-full rounded-full border-slate-200 border-2 border-b-4 active:border-b-2"
+                    className="md:w-96 w-full rounded-full border-green-700 border-b-4 active:border-b-2 hover: bg-green-600/80"
                     type="submit"
                   >
                     执行任务
