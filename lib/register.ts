@@ -1,11 +1,33 @@
+"use server";
 import * as z from "zod";
-
-import { RegisterSchema } from "@/app/auth/register/page";
+import bcrypt from "bcrypt";
+import { RegisterSchema } from "@/lib/schema";
+import { db } from "@/lib/db";
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validateFields = RegisterSchema.safeParse(values);
   if (!validateFields.success) {
     return { error: "出错了,请重试" };
   }
-  return { success: "登录成功" };
+  const { email, password, name } = validateFields.data;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const existingUser = await db.user.findFirst({
+    where: {
+      email,
+    },
+  });
+
+  if (existingUser) {
+    return { error: "邮箱已存在" };
+  }
+
+  await db.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+      name,
+    },
+  });
+  // TODO: Send verification token email
+  return { success: "注册成功" };
 };

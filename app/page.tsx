@@ -22,15 +22,7 @@ import { Label } from "@/components/ui/label";
 import { FormError } from "@/components/dashboard/form-error";
 import { FormSuccess } from "@/components/dashboard/form-success";
 import { login } from "@/lib/login";
-
-export const LoginSchema = z.object({
-  email: z.string().email({
-    message: "请输入有效的电子邮件地址",
-  }),
-  password: z.string().min(1, {
-    message: "请输入正确密码",
-  }),
-});
+import { LoginSchema } from "@/lib/schema";
 
 export default function Home() {
   const [error, setError] = useState<string | undefined>("");

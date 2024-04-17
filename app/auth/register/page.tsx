@@ -26,36 +26,32 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { register } from "@/lib/register";
 import { useState, useTransition } from "react";
-
-export const RegisterSchema = z.object({
-  email: z.string().email({
-    message: "请输入有效的电子邮件地址",
-  }),
-  password: z.string().min(6, {
-    message: "密码至少为6个字符",
-  }),
-  name: z.string().min(1, { message: "请输入您的名字" }),
-});
+import { FormError } from "@/components/dashboard/form-error";
+import { FormSuccess } from "@/components/dashboard/form-success";
+import { RegisterSchema } from "@/lib/schema";
 
 function RegisterPage() {
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: "",
       password: "",
+      name: "",
     },
   });
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof RegisterSchema>) {
-    // setError("");
-    // setSuccess("");
+    setError("");
+    setSuccess("");
     startTransition(() => {
       register(values).then((data) => {
-        // setError(data.error);
-        // setSuccess(data.success);
+        setError(data.error);
+        setSuccess(data.success);
       });
     });
   }
@@ -78,6 +74,7 @@ function RegisterPage() {
                     <FormLabel>用户名</FormLabel>
                     <FormControl>
                       <Input
+                        disabled={isPending}
                         placeholder="username"
                         type="text"
                         required
@@ -96,6 +93,7 @@ function RegisterPage() {
                     <FormLabel>邮箱</FormLabel>
                     <FormControl>
                       <Input
+                        disabled={isPending}
                         placeholder="slam@example.com"
                         type="email"
                         required
@@ -117,6 +115,7 @@ function RegisterPage() {
 
                     <FormControl>
                       <Input
+                        disabled={isPending}
                         placeholder="slam"
                         {...field}
                         type="password"
@@ -127,8 +126,8 @@ function RegisterPage() {
                   </FormItem>
                 )}
               />
-              {/* <FormError mesaage={error} />
-              <FormSuccess mesaage={success} /> */}
+              <FormError mesaage={error} />
+              <FormSuccess mesaage={success} />
               <Button type="submit" className="w-full">
                 注册
               </Button>
