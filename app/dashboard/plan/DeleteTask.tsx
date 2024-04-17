@@ -15,7 +15,7 @@ const DeleteTask = (task_name: PlanningTaskFile) => {
         className="text-red-600"
         onClick={() => {
           DeletePlanningTaskFile(task_name);
-          //   mutate("http://192.168.2.112:8888/api/planning/GetPlanningTaskFiles");
+          //   mutate("http://192.168.2.220:8888/api/planning/GetPlanningTaskFiles");
         }}
       >
         <Delete theme="two-tone" size="16" fill={["#333", "#ef4444"]} />

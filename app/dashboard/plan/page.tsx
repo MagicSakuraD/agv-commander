@@ -151,7 +151,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
   }
 
   useEffect(() => {
-    fetch("http://192.168.2.112:8888/api/planning/GetPlanningActions", {
+    fetch("http://192.168.2.220:8888/api/planning/GetPlanningActions", {
       method: "GET",
     })
       .then((res) => {

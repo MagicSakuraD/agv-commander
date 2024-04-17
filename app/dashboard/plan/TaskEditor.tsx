@@ -94,7 +94,7 @@ const TaskEditor = (task_name: PlanningTaskFile) => {
       content: resultList,
       name: filenameWithoutExtension,
     };
-    fetch("http://192.168.2.112:8888/api/planning/OverridePlanningTaskFile", {
+    fetch("http://192.168.2.220:8888/api/planning/OverridePlanningTaskFile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

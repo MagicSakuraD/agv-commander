@@ -10,7 +10,7 @@ const Nodelist = () => {
 
   useEffect(() => {
     // 发送 GET 请求
-    fetch("http://192.168.2.112:8888/api/info/GetAllNodeStatus", {
+    fetch("http://192.168.2.220:8888/api/info/GetAllNodeStatus", {
       method: "GET",
     })
       .then((response) => {

@@ -86,7 +86,7 @@ const ActiveShapePieChart = () => {
   const [data, setData] = useState<{ name: string; value: unknown }[]>([]);
   useEffect(() => {
     // 发送 GET 请求
-    fetch("http://192.168.2.112:8888/api/info/GetDiskInfo", {
+    fetch("http://192.168.2.220:8888/api/info/GetDiskInfo", {
       method: "GET",
     })
       .then((response) => {

@@ -179,7 +179,7 @@ const MapPage = () => {
     };
 
     let response_btn = await fetch(
-      "http://192.168.2.112:8888/api/config/StartRecordDebugData",
+      "http://192.168.2.220:8888/api/config/StartRecordDebugData",
       {
         method: "POST",
         headers: {
@@ -216,7 +216,7 @@ const MapPage = () => {
     };
 
     // 发送 POST 请求
-    fetch("http://192.168.2.112:8888/api/config/StartLocalization", {
+    fetch("http://192.168.2.220:8888/api/config/StartLocalization", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -262,7 +262,7 @@ const MapPage = () => {
     };
 
     // 发送 POST 请求
-    fetch("http://192.168.2.112:8888/api/config/StartLocalization", {
+    fetch("http://192.168.2.220:8888/api/config/StartLocalization", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

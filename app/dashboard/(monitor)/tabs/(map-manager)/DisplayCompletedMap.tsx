@@ -62,7 +62,7 @@ export function InputForm({
 
   function handleSave(bagname2: string) {
     console.log(bagname2, "🥰");
-    fetch("http://192.168.2.112:8888//api/work/SaveMappingTaskCacheImage", {
+    fetch("http://192.168.2.220:8888//api/work/SaveMappingTaskCacheImage", {
       method: "POST", // 或 'GET'
       headers: {
         "Content-Type": "application/json",
@@ -145,7 +145,7 @@ const DisplayCompletedMap: React.FC<DisplayCompletedMapProps> = ({
   const [imgdata, setImgdata] = useState("");
   const screenRef = useRef<HTMLDivElement>(null!);
   useEffect(() => {
-    fetch("http://192.168.2.112:8888/api/work/GetMappingTaskCacheImage", {
+    fetch("http://192.168.2.220:8888/api/work/GetMappingTaskCacheImage", {
       method: "GET", // 或 'GET'
       headers: {
         "Content-Type": "application/json",
