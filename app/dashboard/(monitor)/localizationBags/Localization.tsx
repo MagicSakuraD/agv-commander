@@ -21,7 +21,7 @@ const Localization: React.FC<LocalizationProps> = ({ isRecord }) => {
   // 使用 useSWR，传入一个 URL，一个获取数据的函数，和一些选项
   // 把 shouldFetch 加入到依赖项中
   const { data, error, isLoading } = useSWR(
-    "http://192.168.2.220:8888/api/info/GetAllLocalizationBagsName",
+    "http://192.168.2.200:8888/api/info/GetAllLocalizationBagsName",
     fetcher,
     {
       refreshInterval: 1000, // 每隔 3000 毫秒重新获取一次数据

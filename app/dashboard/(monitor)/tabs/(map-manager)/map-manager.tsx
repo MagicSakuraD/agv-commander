@@ -118,7 +118,7 @@ const SwitchStatus: React.FC<SwitchStatusProps> = ({
 
   function handleOver() {
     // 发送 fetch 请求
-    fetch("http://192.168.2.220:8888/api/config/StartRecordMappingData", {
+    fetch("http://192.168.2.200:8888/api/config/StartRecordMappingData", {
       method: "POST", // 或 'GET'
       headers: {
         "Content-Type": "application/json",
@@ -278,7 +278,7 @@ const SelectForm: React.FC<SelectFormProps> = ({ bags, setDialogStatus }) => {
     let headersList = {
       "Content-Type": "application/json",
     };
-    fetch("http://192.168.2.220:8888/api/work/StartMappingTaskByBag", {
+    fetch("http://192.168.2.200:8888/api/work/StartMappingTaskByBag", {
       method: "POST",
       body: bodyContent,
       headers: headersList,
@@ -359,7 +359,7 @@ const Item: React.FC<ItemProps> = ({ bags }) => {
   }
 
   function handletrue() {
-    fetch("http://192.168.2.220:8888/api/work/ClearMappingCache", {
+    fetch("http://192.168.2.200:8888/api/work/ClearMappingCache", {
       method: "POST",
     })
       .then((response) => {
@@ -485,7 +485,7 @@ const Map_Manager = () => {
     data: mapsData,
     error: mapsError,
     isLoading: mapsLoading,
-  } = useSWR("http://192.168.2.220:8888/api/info/GetAllMapsName", fetcher, {
+  } = useSWR("http://192.168.2.200:8888/api/info/GetAllMapsName", fetcher, {
     refreshInterval: 1000,
     refreshWhenHidden: false,
   });
@@ -495,7 +495,7 @@ const Map_Manager = () => {
     error: bagsError,
     isLoading: bagsLoading,
   } = useSWR(
-    "http://192.168.2.220:8888/api/info/GetAllMappingBagsName",
+    "http://192.168.2.200:8888/api/info/GetAllMappingBagsName",
     fetcher,
     {
       refreshInterval: 1000,

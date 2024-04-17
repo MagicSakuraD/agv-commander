@@ -55,7 +55,7 @@ const Bag_form: React.FC<Bag_formProps> = ({
     // ✅ This will be type-safe and validated.
     setIsSubmitting(true);
     // 发送 fetch 请求
-    fetch("http://192.168.2.220:8888/api/config/StartRecordMappingData", {
+    fetch("http://192.168.2.200:8888/api/config/StartRecordMappingData", {
       method: "POST", // 或 'GET'
       headers: {
         "Content-Type": "application/json",

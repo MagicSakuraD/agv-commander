@@ -50,7 +50,7 @@ const SaveForm: React.FC<SaveFormProps> = ({ list }) => {
       name: data.formname,
     };
     // 发送 POST 请求
-    fetch("http://192.168.2.220:8888/api/planning/AddPlanningTaskFile", {
+    fetch("http://192.168.2.200:8888/api/planning/AddPlanningTaskFile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -88,7 +88,7 @@ const SaveForm: React.FC<SaveFormProps> = ({ list }) => {
         console.error("Error:", error);
       });
 
-    // mutate("http://192.168.2.220:8888/api/planning/GetPlanningTaskFiles");
+    // mutate("http://192.168.2.200:8888/api/planning/GetPlanningTaskFiles");
   }
 
   return (

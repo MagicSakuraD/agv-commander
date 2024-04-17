@@ -9,7 +9,7 @@ interface CheckMappingProps {
 }
 
 const CheckMapping: React.FC<CheckMappingProps> = ({ setStatus }) => {
-  const API_URL = "http://192.168.2.220:8888/api/info/CheckIsMappingRecord";
+  const API_URL = "http://192.168.2.200:8888/api/info/CheckIsMappingRecord";
 
   const fetcher = (...args: [string, RequestInit?]) =>
     fetch(...args).then((res) => res.json());

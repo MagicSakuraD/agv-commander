@@ -6,7 +6,7 @@ import { FolderDownload } from "@icon-park/react";
 
 const handleDownload = async (loc: Loc_AGV) => {
   // 发送 POST 请求
-  // fetch("http://192.168.2.220:8888//api/download/LocalizationBagZipFile", {
+  // fetch("http://192.168.2.200:8888//api/download/LocalizationBagZipFile", {
   //   method: "POST",
   //   cache: "no-store",
   //   headers: {

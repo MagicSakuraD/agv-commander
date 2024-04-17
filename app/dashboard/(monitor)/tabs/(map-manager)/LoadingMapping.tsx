@@ -40,7 +40,7 @@ const LoadingMapping: React.FC<LoadingMappingProps> = ({ setDialogStatus }) => {
   const intervalId = useRef<NodeJS.Timeout | null>(null);
   const startFetching = () => {
     intervalId.current = setInterval(() => {
-      fetch("http://192.168.2.220:8888/api/work/GetMappingTaskProcess", {
+      fetch("http://192.168.2.200:8888/api/work/GetMappingTaskProcess", {
         method: "GET",
         headers: {
           Accept: "application/json",

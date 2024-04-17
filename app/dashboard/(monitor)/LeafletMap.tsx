@@ -74,7 +74,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
     const fetchData = async () => {
       try {
         let response = await fetch(
-          "http://192.168.2.220:8888/api/info/CurrentMapUsePngData",
+          "http://192.168.2.200:8888/api/info/CurrentMapUsePngData",
           {
             method: "GET",
           }
@@ -86,7 +86,7 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
         }
 
         let response_Name = await fetch(
-          "http://192.168.2.220:8888/api/info/CurrentMapUsePngInfo",
+          "http://192.168.2.200:8888/api/info/CurrentMapUsePngInfo",
           {
             method: "GET",
           }

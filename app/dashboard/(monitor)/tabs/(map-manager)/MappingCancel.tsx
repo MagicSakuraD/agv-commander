@@ -7,7 +7,7 @@ import React from "react";
 function handleCancelMapping(
   setDialogStatus: React.Dispatch<React.SetStateAction<number>>
 ) {
-  fetch("http://192.168.2.220:8888/api/work/StopMappingTask", {
+  fetch("http://192.168.2.200:8888/api/work/StopMappingTask", {
     method: "POST", // 或 'GET'
     headers: {
       "Content-Type": "application/json",

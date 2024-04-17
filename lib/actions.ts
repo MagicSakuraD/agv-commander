@@ -14,7 +14,7 @@ import { redirect } from "next/navigation";
 export async function handleDelete(loc: Loc_AGV) {
   try {
     const response = await fetch(
-      "http://192.168.2.220:8888/api/config/deleteDebugDataBag",
+      "http://192.168.2.200:8888/api/config/deleteDebugDataBag",
       {
         method: "POST",
         cache: "no-store",
@@ -39,7 +39,7 @@ export async function handleDelete(loc: Loc_AGV) {
 export async function handleDeleteMap(map_name: Map_AGV) {
   try {
     const response = await fetch(
-      "http://192.168.2.220:8888/api/config/DeleteLidarMappingMap",
+      "http://192.168.2.200:8888/api/config/DeleteLidarMappingMap",
       {
         method: "POST",
         cache: "no-store",
@@ -61,7 +61,7 @@ export async function handleDeleteMap(map_name: Map_AGV) {
 export async function DeleteInitPose(pose_id: Pose) {
   try {
     const response = await fetch(
-      "http://192.168.2.220:8888/api/config/deleteInitPose",
+      "http://192.168.2.200:8888/api/config/deleteInitPose",
       {
         method: "POST",
         cache: "no-store",
@@ -83,7 +83,7 @@ export async function DeleteInitPose(pose_id: Pose) {
 export async function handleDeleteMappingBag(mapping_name: Map_bag) {
   try {
     const response = await fetch(
-      "http://192.168.2.220:8888/api/config/deleteRecordMappingBag",
+      "http://192.168.2.200:8888/api/config/deleteRecordMappingBag",
       {
         method: "POST",
         cache: "no-store",
@@ -105,7 +105,7 @@ export async function handleDeleteMappingBag(mapping_name: Map_bag) {
 export async function handleSetCurrentMap(map_name: Map_AGV) {
   try {
     const response = await fetch(
-      "http://192.168.2.220:8888/api/config/SetCurrentMap",
+      "http://192.168.2.200:8888/api/config/SetCurrentMap",
       {
         method: "POST",
         headers: {
@@ -134,7 +134,7 @@ export async function handleSetCurrentMap(map_name: Map_AGV) {
 export async function GetAllMapsName() {
   try {
     const response = await fetch(
-      "http://192.168.2.220:8888/api/info/GetAllMapsName",
+      "http://192.168.2.200:8888/api/info/GetAllMapsName",
       {
         method: "GET",
         cache: "no-store",
@@ -161,7 +161,7 @@ export async function GetAllMapsName() {
 export async function GetConfigContent(path_name: string) {
   try {
     const response = await fetch(
-      `http://192.168.2.220:8888/api/info/GetConfigContent/{path}?path=${path_name}`,
+      `http://192.168.2.200:8888/api/info/GetConfigContent/{path}?path=${path_name}`,
       {
         method: "GET",
         headers: {
@@ -187,7 +187,7 @@ export async function GetConfigContent(path_name: string) {
 export async function changeFileContent(form: form_params) {
   try {
     const response = await fetch(
-      "http://192.168.2.220:8888/api/config/changeFileContent",
+      "http://192.168.2.200:8888/api/config/changeFileContent",
       {
         method: "POST",
         cache: "no-store",
@@ -214,7 +214,7 @@ export async function changeFileContent(form: form_params) {
 export async function changeInitPose(Pose_data: Pose) {
   try {
     const response = await fetch(
-      "http://192.168.2.220:8888/api/config/changeInitPose",
+      "http://192.168.2.200:8888/api/config/changeInitPose",
       {
         method: "POST",
         cache: "no-store",
@@ -244,7 +244,7 @@ export async function changeInitPose(Pose_data: Pose) {
 
 export async function GetAllLocalizationBagsName() {
   const res = await fetch(
-    "http://192.168.2.220:8888/api/info/GetAllLocalizationBagsName",
+    "http://192.168.2.200:8888/api/info/GetAllLocalizationBagsName",
     {
       cache: "no-store",
       method: "GET",
@@ -262,7 +262,7 @@ export async function GetAllLocalizationBagsName() {
 
 export async function GetCurrentMapUseName() {
   const res = await fetch(
-    "http://192.168.2.220:8888/api/info/CurrentMapUseName",
+    "http://192.168.2.200:8888/api/info/CurrentMapUseName",
     {
       cache: "no-store",
       method: "GET",
@@ -279,7 +279,7 @@ export async function GetCurrentMapUseName() {
 
 export async function GetMappingBagPngData(Map_name: Map_AGV) {
   const res = await fetch(
-    `http://192.168.2.220:8888/api/info/GetMappingBagPngData/{name}?name=${Map_name.name}`,
+    `http://192.168.2.200:8888/api/info/GetMappingBagPngData/{name}?name=${Map_name.name}`,
     {
       cache: "no-store",
       method: "GET",
@@ -295,7 +295,7 @@ export async function GetMappingBagPngData(Map_name: Map_AGV) {
 
 export async function DeletePlanningTaskFile(task_name: PlanningTaskFile) {
   const res = await fetch(
-    `http://192.168.2.220:8888/api/planning/DeletePlanningTaskFile/{path}?path=${task_name.name}`,
+    `http://192.168.2.200:8888/api/planning/DeletePlanningTaskFile/{path}?path=${task_name.name}`,
     {
       cache: "no-store",
       method: "GET",
@@ -311,7 +311,7 @@ export async function DeletePlanningTaskFile(task_name: PlanningTaskFile) {
 
 export async function SetControlNodeState(cmd_num: string) {
   const res = await fetch(
-    "http://192.168.2.220:8888/api/control/SetControlNodeState",
+    "http://192.168.2.200:8888/api/control/SetControlNodeState",
     {
       method: "POST",
       cache: "no-store",
@@ -334,7 +334,7 @@ export async function SetControlNodeState(cmd_num: string) {
 
 export async function SetPlanningTaskFile(path: string) {
   const res = await fetch(
-    "http://192.168.2.220:8888/api/planning/SetPlanningTaskFile",
+    "http://192.168.2.200:8888/api/planning/SetPlanningTaskFile",
     {
       method: "POST",
       cache: "no-store",
@@ -357,7 +357,7 @@ export async function SetPlanningTaskFile(path: string) {
 
 export async function SetPlanningNodeState(cmd: string) {
   const res = await fetch(
-    "http://192.168.2.220:8888/api/control/SetPlanningNodeState",
+    "http://192.168.2.200:8888/api/control/SetPlanningNodeState",
     {
       method: "POST",
       cache: "no-store",
@@ -380,7 +380,7 @@ export async function SetPlanningNodeState(cmd: string) {
 
 export async function GetPlanningTaskFile(task_name: PlanningTaskFile) {
   const res = await fetch(
-    `http://192.168.2.220:8888/api/planning/GetPlanningTaskFile/{path}?path=${task_name.name}`,
+    `http://192.168.2.200:8888/api/planning/GetPlanningTaskFile/{path}?path=${task_name.name}`,
     {
       method: "GET",
       cache: "no-store",
