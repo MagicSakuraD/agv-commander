@@ -72,7 +72,7 @@ export default function Home() {
                     <FormControl>
                       <Input
                         disabled={isPending}
-                        placeholder="slam@example.com"
+                        placeholder=""
                         type="email"
                         required
                         {...field}
@@ -103,7 +103,7 @@ export default function Home() {
                     <FormControl>
                       <Input
                         disabled={isPending}
-                        placeholder="slam"
+                        placeholder=""
                         {...field}
                         type="password"
                         required

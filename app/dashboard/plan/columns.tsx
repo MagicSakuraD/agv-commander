@@ -127,3 +127,62 @@ export const columns_task: ColumnDef<PlanningTaskFile>[] = [
     },
   },
 ];
+
+export type kivaProp = {
+  name: string;
+  y: string;
+  angle: string;
+  speed: string;
+};
+
+export const columns_kiva: ColumnDef<kivaProp>[] = [
+  {
+    accessorKey: "name",
+    header: "x坐标",
+  },
+  {
+    accessorKey: "y",
+    header: "y坐标",
+  },
+  {
+    accessorKey: "angle",
+    header: "角度",
+  },
+  {
+    accessorKey: "speed",
+    header: "速度",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const kivaData = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-4 h-4 bi bi-three-dots"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+              </svg>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>操作</DropdownMenuLabel>
+            {/* <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(kivaData.x)}
+            >
+              拷贝动作名
+            </DropdownMenuItem> */}
+            <DropdownMenuSeparator />
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];

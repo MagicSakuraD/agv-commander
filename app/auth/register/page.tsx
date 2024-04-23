@@ -57,7 +57,7 @@ function RegisterPage() {
   }
 
   return (
-    <main className="container mt-40">
+    <main className="container mt-20">
       <Card className="mx-auto max-w-sm">
         <CardHeader>
           <CardTitle className="text-xl">注册</CardTitle>
@@ -146,7 +146,7 @@ function RegisterPage() {
               </Button>
               <div className="mt-4 text-center text-sm">
                 已经有账户？
-                <Link href="/" className="underline">
+                <Link href="/auth/login" className="underline">
                   立即登录
                 </Link>
               </div>

@@ -41,6 +41,8 @@ import {
 import SaveForm from "./SaveForm";
 import PlanningTaskFiles from "./PlanningTaskFiles";
 import { FileDisplay, Notes, OneKey, TwoKey } from "@icon-park/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import KivaPage from "./(kiva)/KivaPage";
 
 const FormSchema = z.object({
   mainId: z.string({
@@ -163,6 +165,30 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
       .then((data) => {
         const action_data = data.data;
         setActionData(action_data.agv.actions);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+    fetch("http://192.168.2.200:8888/api/planning/SetPlanningMode", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // 可以添加其他头部信息
+      },
+      body: JSON.stringify({
+        content: "free",
+        name: "setPlanningMode",
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("HTTP 状态" + res.status);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data.msg, "切换kiva模式成功");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -681,42 +707,53 @@ const PlanPage = () => {
 
   return (
     <div className="md:container px-2 mx-auto pt-5 flex flex-wrap gap-5 justify-center">
-      <CardWithForm
-        actionData={actionData}
-        setActionData={setActionData}
-        setList={setList}
-      />
+      <Tabs defaultValue="free" className="w-full">
+        <TabsList>
+          <TabsTrigger value="free">Free模式</TabsTrigger>
+          <TabsTrigger value="kiva">Kiva模式</TabsTrigger>
+        </TabsList>
+        <TabsContent value="free" className="space-y-4">
+          <CardWithForm
+            actionData={actionData}
+            setActionData={setActionData}
+            setList={setList}
+          />
 
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex flex-row gap-2 items-center">
-            <TwoKey theme="two-tone" size="20" fill={["#333", "#22c55e"]} />
-            保存任务文件
-          </CardTitle>
-          <CardDescription>
-            检查任务，确认无误后保存到任务工作区
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={list} />
-        </CardContent>
-        <CardFooter>
-          <SaveForm list={list} />
-        </CardFooter>
-      </Card>
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle className="flex flex-row gap-2 items-center">
+                <TwoKey theme="two-tone" size="20" fill={["#333", "#22c55e"]} />
+                保存任务文件
+              </CardTitle>
+              <CardDescription>
+                检查任务，确认无误后保存到任务工作区
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DataTable columns={columns} data={list} />
+            </CardContent>
+            <CardFooter>
+              <SaveForm list={list} />
+            </CardFooter>
+          </Card>
 
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex flex-row items-center gap-2">
-            <Notes theme="two-tone" size="20" fill={["#333", "#22c55e"]} />
-            任务文件列表
-          </CardTitle>
-          <CardDescription>规划模块下的所有任务文件</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <PlanningTaskFiles />
-        </CardContent>
-      </Card>
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle className="flex flex-row items-center gap-2">
+                <Notes theme="two-tone" size="20" fill={["#333", "#22c55e"]} />
+                任务文件列表
+              </CardTitle>
+              <CardDescription>规划模块下的所有任务文件</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PlanningTaskFiles />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="kiva">
+          <KivaPage />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
