@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { kivaProp, columns_kiva } from "../columns";
 import { DataTable } from "@/components/ui/data-table";
@@ -15,6 +15,9 @@ import { Gps } from "@icon-park/react";
 import { useAtom } from "jotai";
 import { parsedDataAtom } from "@/lib/atoms";
 import KivaAdd from "./KivaAdd";
+import { mutate } from "swr";
+import { toast } from "@/components/ui/use-toast";
+import { set } from "zod";
 
 // 将fetchKivaData函数定义在useEffect外部
 const fetchKivaData = (kivaData: string[]) => {
@@ -38,35 +41,12 @@ const fetchKivaData = (kivaData: string[]) => {
 
 const KivaPage = () => {
   const [kivafile, setKivafile] = useAtom(parsedDataAtom);
-
-  useEffect(() => {
-    fetch("http://192.168.2.200:8888/api/planning/SetPlanningMode", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // 可以添加其他头部信息
-      },
-      body: JSON.stringify({
-        content: "kiva",
-        name: "setPlanningMode",
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("HTTP 状态" + res.status);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data.msg, "切换kiva模式成功");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }, []);
+  const [istrigger, setIstrigger] = useState(false);
 
   const fetcher = (...args: [string, RequestInit?]) =>
     fetch(...args).then((res) => res.json());
+
+  useEffect(() => {}, []);
 
   const { data, error, isLoading } = useSWR(
     "http://192.168.2.200:8888/api/planning/GetKivaPlanningTaskFile",
@@ -76,17 +56,48 @@ const KivaPage = () => {
     }
   );
 
+  useEffect(() => {
+    if (data && data.data) {
+      setKivafile(data.data);
+    }
+  }, [data]); // <--- Update the dependency array to [data]
+
   if (error) return <div>无法访问数据</div>;
   if (isLoading) return <div>加载中...</div>;
 
-  useEffect(() => {
-    if (data) {
-      setKivafile(data.data);
-      console.log(kivafile, "kivafile🚓");
-    }
-  }, []); // Empty dependency array ensures it runs only once
-
-  console.log(kivafile, "kivafile🚓");
+  const handleSaveKiva = () => {
+    //将kivafie数组转换为字符串,每个元素之间用换行符
+    const strKivafile = kivafile.join("\n");
+    fetch("http://192.168.2.200:8888/api/planning/AddKivaTaskFile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // 可以添加其他头部信息
+      },
+      body: JSON.stringify({
+        content: strKivafile,
+        name: "setKivaMap",
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("HTTP 状态" + res.status);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data.msg, "保存成功");
+        toast({
+          title: "保存成功✅",
+        });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    //触发 SWR 重新请求
+    mutate("http://192.168.2.200:8888/api/planning/GetKivaPlanningTaskFile");
+    setIstrigger(!istrigger);
+  };
 
   // 渲染数据
   return (
@@ -109,7 +120,9 @@ const KivaPage = () => {
         </CardContent>
         <CardFooter>
           <div className="w-full text-center">
-            <Button className="w-full max-w-screen-sm">保存设置</Button>
+            <Button className="w-full max-w-screen-sm" onClick={handleSaveKiva}>
+              保存设置
+            </Button>
           </div>
         </CardFooter>
       </Card>

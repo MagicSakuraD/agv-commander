@@ -13,7 +13,7 @@ import {
 
 import { GameThree, PauseOne, Play, RobotOne } from "@icon-park/react";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   SetControlNodeState,
   SetPlanningNodeState,
@@ -42,6 +42,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 const FormSchema = z.object({
   task: z.string({
@@ -52,6 +53,39 @@ const FormSchema = z.object({
 export default function VehiclePage() {
   const [task, setTask] = useState("暂无");
   const [pause, setPause] = useState(true);
+  // 使用 useState 钩子来跟踪开关状态
+  const [isKivaMode, setIsKivaMode] = useState(false);
+
+  // 使用 useEffect 钩子来处理开关状态变化
+  useEffect(() => {
+    // 根据 isKivaMode 的值发送不同的请求
+    const mode = isKivaMode ? "kiva" : "free";
+    const url = "http://192.168.2.200:8888/api/planning/SetPlanningMode";
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // 可以添加其他头部信息
+      },
+      body: JSON.stringify({
+        content: mode,
+        name: "setPlanningMode",
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("HTTP 状态" + res.status);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data.msg, `切换${mode}模式成功`);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [isKivaMode]); // 依赖数组中包含 isKivaMode，以便在其变化时触发
 
   const handleRadioChange = async (value: string) => {
     let cmd = value === "Manual" ? "0" : "1";
@@ -91,12 +125,27 @@ export default function VehiclePage() {
     const State_data = SetPlanningNodeState(cmd);
     console.log(State_data, "State_data");
   }
+  // 处理开关点击事件
+  const handleSwitchChange = () => {
+    setIsKivaMode(!isKivaMode); // 切换开关状态
+    console.log("🤯");
+  };
 
   return (
-    <div className="md:container px-2 mx-auto pt-5">
+    <div className="md:container px-2 mx-auto pt-5 h-[50rem]">
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row justify-between">
           <CardTitle>控制模式</CardTitle>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="kiva-mode"
+              checked={isKivaMode}
+              onCheckedChange={handleSwitchChange}
+            />
+            <Label htmlFor="kiva-mode" className="font-bold">
+              kiva模式
+            </Label>
+          </div>
         </CardHeader>
 
         <CardContent className="grid gap-16">
@@ -144,60 +193,65 @@ export default function VehiclePage() {
               </Label>
             </div>
           </RadioGroup>
+          {!isKivaMode && (
+            <div className="">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="w-full space-y-16"
+                >
+                  <FormField
+                    control={form.control}
+                    name="task"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>选择任务文件</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="请选择" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {dataEntries.map(([key, value]) => (
+                              <SelectItem value={value as string} key={key}>
+                                {key}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
 
-          <div className="">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="w-full space-y-16"
-              >
-                <FormField
-                  control={form.control}
-                  name="task"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>选择任务文件</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="请选择" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {dataEntries.map(([key, value]) => (
-                            <SelectItem value={value as string} key={key}>
-                              {key}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="text-center">
-                  <Button
-                    className="md:w-96 w-full rounded-full border-green-700 border-b-4 active:border-b-2 hover: bg-green-600/80"
-                    type="submit"
-                  >
-                    执行任务
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="text-center">
+                    <Button
+                      className="md:w-96 w-full rounded-full border-green-700 border-b-4 active:border-b-2 hover: bg-green-600/80"
+                      type="submit"
+                    >
+                      执行任务
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </div>
+          )}
         </CardContent>
         <CardFooter className="mt-8 flex flex-col gap-5">
           <Separator />
-          <div className="flex flex-row gap-5 w-full justify-center rounded-full h-12 items-center border-2 shadow-md">
-            <span>
-              <b className="text-muted-foreground">正在运行的任务: </b>
-              <b>{task}</b>
-            </span>
+          <div className="flex flex-row gap-1 w-full justify-center rounded-full h-12 items-center border-2 shadow-md">
+            {!isKivaMode ? (
+              <span>
+                <b className="text-muted-foreground">正在运行的任务: </b>
+                <b>{task}</b>
+              </span>
+            ) : (
+              <span className="font-medium">暂停/继续</span>
+            )}
 
             <Button
               variant="ghost"

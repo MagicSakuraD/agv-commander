@@ -169,30 +169,6 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
       .catch((error) => {
         console.error("Error:", error);
       });
-
-    fetch("http://192.168.2.200:8888/api/planning/SetPlanningMode", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // 可以添加其他头部信息
-      },
-      body: JSON.stringify({
-        content: "free",
-        name: "setPlanningMode",
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("HTTP 状态" + res.status);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data.msg, "切换free模式成功");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
   }, []);
 
   function handleAppend() {

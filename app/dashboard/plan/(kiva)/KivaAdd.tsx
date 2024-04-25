@@ -99,7 +99,7 @@ const KivaAdd = () => {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>添加引导点</DialogTitle>
+            <DialogTitle>添加路径点</DialogTitle>
           </DialogHeader>
           <div className="">
             <Form {...form}>
@@ -114,7 +114,12 @@ const KivaAdd = () => {
                     <FormItem>
                       <FormLabel>x坐标</FormLabel>
                       <FormControl>
-                        <Input placeholder="" {...field} />
+                        <Input
+                          placeholder=""
+                          {...field}
+                          type="number"
+                          step="any"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -127,7 +132,12 @@ const KivaAdd = () => {
                     <FormItem>
                       <FormLabel>y坐标</FormLabel>
                       <FormControl>
-                        <Input placeholder="" {...field} />
+                        <Input
+                          placeholder=""
+                          {...field}
+                          type="number"
+                          step="any"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -140,7 +150,12 @@ const KivaAdd = () => {
                     <FormItem>
                       <FormLabel>角度</FormLabel>
                       <FormControl>
-                        <Input placeholder="" {...field} />
+                        <Input
+                          placeholder=""
+                          {...field}
+                          type="number"
+                          step="any"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -153,7 +168,12 @@ const KivaAdd = () => {
                     <FormItem>
                       <FormLabel>速度</FormLabel>
                       <FormControl>
-                        <Input placeholder="" {...field} />
+                        <Input
+                          placeholder=""
+                          {...field}
+                          type="number"
+                          step="any"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
