@@ -36,27 +36,25 @@ import { toast } from "@/components/ui/use-toast";
 import { EditTwo } from "@icon-park/react";
 
 const formSchema = z.object({
-  id: z.number().min(0, { message: "序号不能为空" }),
-  name: z.string().min(2, {
-    message: "站点名必须至少包含2个字符",
-  }),
-  x: z.number(),
-  y: z.number(),
-  z: z.number(),
-  roll: z.number(),
-  pitch: z.number(),
-  yaw: z.number(),
+  id: z.string(),
+  name: z.string(),
+  x: z.string(),
+  y: z.string(),
+  z: z.string(),
+  roll: z.string(),
+  pitch: z.string(),
+  yaw: z.string(),
 });
 
 interface ProfileFormProps {
-  pose_id: number;
+  pose_id: string;
   pose_name: string;
-  pose_x: number;
-  pose_y: number;
-  pose_z: number;
-  pose_roll: number;
-  pose_pitch: number;
-  pose_yaw: number;
+  pose_x: string;
+  pose_y: string;
+  pose_z: string;
+  pose_roll: string;
+  pose_pitch: string;
+  pose_yaw: string;
 }
 
 export function ProfileForm({
@@ -73,20 +71,21 @@ export function ProfileForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: pose_id,
-      name: pose_name,
-      x: pose_x,
-      y: pose_y,
-      z: pose_z,
-      roll: pose_roll,
-      pitch: pose_pitch,
-      yaw: pose_yaw,
+      id: pose_id.toString(),
+      name: pose_name.toString(),
+      x: pose_x.toString(),
+      y: pose_y.toString(),
+      z: pose_z.toString(),
+      roll: pose_roll.toString(),
+      pitch: pose_pitch.toString(),
+      yaw: pose_yaw.toString(),
     },
   });
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const result = await changeInitPose(values);
+    console.log(values, "values✌️");
     if (result) {
       toast({
         title: "消息📢:",
@@ -112,12 +111,7 @@ export function ProfileForm({
             <FormItem>
               <FormLabel>序号</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="请输入序号"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                  disabled
-                />
+                <Input placeholder="请输入序号" {...field} disabled />
               </FormControl>
               <FormDescription>固定值,不可修改,用于标识点位</FormDescription>
               <FormMessage />
@@ -142,13 +136,13 @@ export function ProfileForm({
           name="x"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>x</FormLabel>
+              <FormLabel>x坐标</FormLabel>
               <FormControl>
                 <Input
                   placeholder="请输入x坐标"
                   {...field}
                   type="number"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  step="any"
                 />
               </FormControl>
 
@@ -161,13 +155,13 @@ export function ProfileForm({
           name="y"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>y</FormLabel>
+              <FormLabel>y坐标</FormLabel>
               <FormControl>
                 <Input
                   placeholder="请输入x坐标"
                   {...field}
                   type="number"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  step="any"
                 />
               </FormControl>
 
@@ -181,13 +175,13 @@ export function ProfileForm({
           name="z"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>z</FormLabel>
+              <FormLabel>z坐标</FormLabel>
               <FormControl>
                 <Input
                   placeholder="请输入z坐标"
                   {...field}
                   type="number"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  step="any"
                 />
               </FormControl>
 
@@ -206,7 +200,7 @@ export function ProfileForm({
                   placeholder="请输入roll"
                   {...field}
                   type="number"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  step="any"
                 />
               </FormControl>
 
@@ -225,7 +219,7 @@ export function ProfileForm({
                   placeholder="请输入pitch"
                   {...field}
                   type="number"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  step="any"
                 />
               </FormControl>
 
@@ -239,13 +233,13 @@ export function ProfileForm({
           name="yaw"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>yaw</FormLabel>
+              <FormLabel>yaw角度</FormLabel>
               <FormControl>
                 <Input
                   placeholder="请输入yaw"
                   {...field}
                   type="number"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  step="any"
                 />
               </FormControl>
 
@@ -275,7 +269,7 @@ const ChangeInitPoseBtn = (Pose_data: Pose) => {
           </DropdownMenuItem>
         </DialogTrigger>
 
-        <DialogContent className="sm:max-w-96">
+        <DialogContent className="sm:max-w-80">
           <DialogHeader>
             <DialogTitle>修改初始化点位</DialogTitle>
           </DialogHeader>

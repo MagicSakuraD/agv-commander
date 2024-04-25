@@ -27,14 +27,14 @@ import DeleteInitPosebtn from "./DeleteInitPosebtn";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Pose = {
-  id: number;
+  id: string;
   name: string;
-  x: number;
-  y: number;
-  z: number;
-  roll: number;
-  pitch: number;
-  yaw: number;
+  x: string;
+  y: string;
+  z: string;
+  roll: string;
+  pitch: string;
+  yaw: string;
 };
 
 export const columns: ColumnDef<Pose>[] = [
