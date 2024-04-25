@@ -188,7 +188,7 @@ const CardWithForm: React.FC<CardWithFormProps> = ({
         return res.json();
       })
       .then((data) => {
-        console.log(data.msg, "切换kiva模式成功");
+        console.log(data.msg, "切换free模式成功");
       })
       .catch((error) => {
         console.error("Error:", error);

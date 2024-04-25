@@ -101,7 +101,10 @@ export function ProfileForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-2 overflow-y-auto max-h-screen"
+      >
         <FormField
           control={form.control}
           name="id"
@@ -272,7 +275,7 @@ const ChangeInitPoseBtn = (Pose_data: Pose) => {
           </DropdownMenuItem>
         </DialogTrigger>
 
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-96">
           <DialogHeader>
             <DialogTitle>修改初始化点位</DialogTitle>
           </DialogHeader>

@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import DeleteTask from "./DeleteTask";
 import TaskEditor from "./TaskEditor";
+import KivaEditor from "./(kiva)/KivaEditor";
+import KivaPage from "./(kiva)/KivaPage";
+import KivaDelete from "./(kiva)/KivaDelete";
 // import ParamForm from "./ParamForm";
 
 export type Fileprop = {
@@ -130,6 +133,7 @@ export const columns_task: ColumnDef<PlanningTaskFile>[] = [
 
 export type kivaProp = {
   name: string;
+  x: string;
   y: string;
   angle: string;
   speed: string;
@@ -138,6 +142,10 @@ export type kivaProp = {
 export const columns_kiva: ColumnDef<kivaProp>[] = [
   {
     accessorKey: "name",
+    header: "序号",
+  },
+  {
+    accessorKey: "x",
     header: "x坐标",
   },
   {
@@ -174,12 +182,9 @@ export const columns_kiva: ColumnDef<kivaProp>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>操作</DropdownMenuLabel>
-            {/* <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(kivaData.x)}
-            >
-              拷贝动作名
-            </DropdownMenuItem> */}
             <DropdownMenuSeparator />
+            <KivaEditor {...kivaData} />
+            <KivaDelete {...kivaData} />
           </DropdownMenuContent>
         </DropdownMenu>
       );

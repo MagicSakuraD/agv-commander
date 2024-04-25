@@ -18,7 +18,7 @@ const CheckMapping: React.FC<CheckMappingProps> = ({ setStatus }) => {
   // 使用 useSWR，传入一个 URL，一个获取数据的函数，和一些选项
   // 把 shouldFetch 加入到依赖项中
   const { data, error, isLoading } = useSWR(API_URL, fetcher, {
-    refreshInterval: 3000, // 每隔 3000 毫秒重新获取一次数据
+    refreshInterval: 1500, // 每隔 15000 毫秒重新获取一次数据
     refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
   });
 
