@@ -194,7 +194,7 @@ export function ProfileForm({
           name="roll"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>roll</FormLabel>
+              <FormLabel>roll翻滚角度</FormLabel>
               <FormControl>
                 <Input
                   placeholder="请输入roll"
@@ -213,7 +213,7 @@ export function ProfileForm({
           name="pitch"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>pitch</FormLabel>
+              <FormLabel>pitch俯仰角度</FormLabel>
               <FormControl>
                 <Input
                   placeholder="请输入pitch"
@@ -233,7 +233,7 @@ export function ProfileForm({
           name="yaw"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>yaw角度</FormLabel>
+              <FormLabel>yaw偏航角度</FormLabel>
               <FormControl>
                 <Input
                   placeholder="请输入yaw"
