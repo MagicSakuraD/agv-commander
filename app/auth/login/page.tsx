@@ -24,10 +24,8 @@ import { FormSuccess } from "@/components/dashboard/form-success";
 import { authenticate } from "@/lib/login";
 import { LoginSchema } from "@/lib/schema";
 import { useAtom } from "jotai";
-import { emailAtom } from "@/lib/atoms";
 
 export default function Home() {
-  // const [email, setEmail] = useAtom(emailAtom);
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -42,8 +40,6 @@ export default function Home() {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof LoginSchema>) {
-    console.log(values.email, "😊");
-    // setEmail(values.email);
     setError("");
     setSuccess("");
     startTransition(() => {
