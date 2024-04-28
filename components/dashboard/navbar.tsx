@@ -7,6 +7,16 @@ import Link from "next/link";
 import handleAck from "mqtt/lib/handlers/ack";
 import { NavbarProps } from "@/app/dashboard/layout";
 import { set } from "react-hook-form";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import SignOut from "./SignOut";
+import { MyAcount } from "@/lib/login";
 
 const Navbar: React.FC<NavbarProps> = ({ isOpen, setIsOpen }) => {
   return (
@@ -49,13 +59,22 @@ const Navbar: React.FC<NavbarProps> = ({ isOpen, setIsOpen }) => {
 
             <div className="flex items-center ms-3 gap-2">
               <ModeToggle />
-              <div>
-                <span className="sr-only">Open user menu</span>
-                <Avatar>
-                  <AvatarImage src="/try.png" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <div>
+                    <span className="sr-only">Open user menu</span>
+                    <Avatar>
+                      <AvatarImage src="/try.png" />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <SignOut />
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>

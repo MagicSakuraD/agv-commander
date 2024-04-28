@@ -23,8 +23,12 @@ import { FormError } from "@/components/dashboard/form-error";
 import { FormSuccess } from "@/components/dashboard/form-success";
 import { authenticate } from "@/lib/login";
 import { LoginSchema } from "@/lib/schema";
+import { useAtom } from "jotai";
+// import { userNameAtom } from "@/lib/atoms";
+import { getName } from "@/lib/getName";
 
 export default function Home() {
+  // const [userName, setUserName] = useAtom(userNameAtom);
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -38,7 +42,10 @@ export default function Home() {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof LoginSchema>) {
+  async function onSubmit(values: z.infer<typeof LoginSchema>) {
+    // const userName_new = (await getName(values.email)) as string;
+    // console.log(userName_new, "userName_new🎈");
+    // setUserName(userName_new);
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     setError("");

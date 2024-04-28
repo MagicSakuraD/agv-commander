@@ -29,3 +29,5 @@ export const carShowAtom = atom(true);
 
 // 创建对象数组的原子
 export const parsedDataAtom = atom<string[]>([]);
+
+// export const userNameAtom = atom("MyAccount");
