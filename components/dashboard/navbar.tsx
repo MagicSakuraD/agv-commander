@@ -17,8 +17,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import SignOut from "./SignOut";
 import { MyAcount } from "@/lib/login";
+import { useAtom } from "jotai";
+import { emailAtom } from "@/lib/atoms";
 
 const Navbar: React.FC<NavbarProps> = ({ isOpen, setIsOpen }) => {
+  const [email, setEmail] = useAtom(emailAtom);
   return (
     <>
       <nav className="fixed top-0 z-50 w-full border-b backdrop-blur-xl">
@@ -70,7 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({ isOpen, setIsOpen }) => {
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>{email}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <SignOut />
                 </DropdownMenuContent>

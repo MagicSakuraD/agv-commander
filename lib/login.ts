@@ -3,7 +3,6 @@ import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 
 import { LoginSchema } from "@/lib/schema";
-import { getName } from "./getName";
 
 export let MyAcount = "MyAcount";
 
@@ -16,8 +15,6 @@ export async function authenticate(values: z.infer<typeof LoginSchema>) {
     Object.entries(values).forEach(([key, value]) => {
       formData.append(key, value);
     });
-    // console.log(values.email);
-    // MyAcount = (await getName(values.email)) as string;
 
     await signIn("credentials", formData);
     return { success: "登录成功" };

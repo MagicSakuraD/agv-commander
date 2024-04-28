@@ -1,6 +1,5 @@
 import { Fileprop } from "@/app/dashboard/config/columns";
 import { atom } from "jotai";
-import { kivaProp } from "@/app/dashboard/plan/columns";
 
 export const icp_qualityAtom = atom(0); // 创建一个初始值为 0 的原子状态
 export const slam_posAtom = atom<{ x: number; y: number }>({
@@ -30,4 +29,4 @@ export const carShowAtom = atom(true);
 // 创建对象数组的原子
 export const parsedDataAtom = atom<string[]>([]);
 
-// export const userNameAtom = atom("MyAccount");
+export const emailAtom = atom("My Account");
