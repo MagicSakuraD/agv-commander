@@ -25,6 +25,7 @@ export async function authenticate(values: z.infer<typeof LoginSchema>) {
           return { error: "出错了,请重试" };
       }
     }
-    throw error;
+    // throw error;
+    return { error: "邮箱或密码错误" };
   }
 }
