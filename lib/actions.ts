@@ -131,6 +131,34 @@ export async function handleSetCurrentMap(map_name: Map_AGV) {
   }
 }
 
+export async function ClearLogFileContents(log_name: string) {
+  console.log(log_name);
+  try {
+    const response = await fetch(
+      `http://192.168.2.200:8888/api/info/ClearLogFileContents?name=${log_name}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+        body: JSON.stringify({ name: log_name }),
+      }
+    );
+    const data = await response.json();
+    if (data.code === 0) {
+      console.log(data);
+      return data.data;
+    } else {
+      console.log("请求失败❌:", data);
+      return data.data;
+    }
+  } catch (error) {
+    console.error("Error❌:", error);
+    return error;
+  }
+}
+
 export async function GetAllMapsName() {
   try {
     const response = await fetch(
@@ -173,6 +201,31 @@ export async function GetConfigContent(path_name: string) {
     const data = await response.json();
     if (data.code === 0) {
       console.log(data.data);
+      return data.data;
+    } else {
+      console.log("请求失败❌:", data.data, data);
+      return data.data;
+    }
+  } catch (error) {
+    console.log("Error❌:", error);
+    return error;
+  }
+}
+
+export async function GetLogFileContents(log_name: string) {
+  try {
+    const response = await fetch(
+      `http://192.168.2.200:8888/api/info/GetLogFileContents/{name}?name=${log_name}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      }
+    );
+    const data = await response.json();
+    if (data.code === 0) {
       return data.data;
     } else {
       console.log("请求失败❌:", data.data, data);

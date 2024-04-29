@@ -546,7 +546,7 @@ const MapPage = () => {
                   <CardContent>
                     <div className="scroll-m-20 text-xl font-semibold tracking-tight">
                       <CardDescription>启动或关闭定位节点</CardDescription>
-                      <div className="flex justify-between mt-2">
+                      <div className="flex justify-between mt-2 gap-1">
                         <Button onClick={handleRestart}>开启定位</Button>
                         <Button variant="secondary" onClick={handleStop}>
                           关闭定位
