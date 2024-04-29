@@ -48,7 +48,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { Suspense } from "react";
 import NodeSkeleton from "./NodeSkeleton";
-import Nodelist from "./tabs/nodelist";
+import Nodelist from "../node/nodelist";
 import Map_Manager from "./tabs/(map-manager)/map-manager";
 import Localization from "./localizationBags/Localization";
 import ActiveShapePieChart from "./ActiveShapePieChart";

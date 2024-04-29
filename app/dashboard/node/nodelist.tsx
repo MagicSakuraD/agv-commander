@@ -1,3 +1,4 @@
+"use client";
 import { toast } from "@/components/ui/use-toast";
 import React, { useEffect } from "react";
 import { DataTable } from "@/components/ui/data-table";

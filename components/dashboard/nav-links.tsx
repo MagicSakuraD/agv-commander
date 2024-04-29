@@ -8,6 +8,7 @@ import {
   TruckIcon,
   FolderIcon,
   DocumentMagnifyingGlassIcon,
+  DocumentChartBarIcon,
 } from "@heroicons/react/24/outline";
 import { MdMonitorHeart } from "react-icons/md";
 import Link from "next/link";
@@ -28,6 +29,11 @@ const links = [
     name: "日志信息",
     href: "/dashboard/logs",
     icon: DocumentMagnifyingGlassIcon,
+  },
+  {
+    name: "节点状态",
+    href: "/dashboard/node",
+    icon: DocumentChartBarIcon,
   },
 ];
 
