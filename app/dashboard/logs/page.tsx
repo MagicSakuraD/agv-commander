@@ -180,7 +180,7 @@ const LogsPage = () => {
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex flex-row gap-2 items-center justify-between">
-            <div>
+            <div className="flex flex-row gap-2 items-center">
               {" "}
               <TwoKey theme="two-tone" size="20" fill={["#333", "#22c55e"]} />
               查看日志详情
