@@ -17,7 +17,7 @@ export default function Component() {
                 className="inline-flex h-10 items-center justify-center rounded-md bg-green-500 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-green-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-700 disabled:pointer-events-none disabled:opacity-50 "
                 href="/auth/login"
               >
-                立即试用
+                立即开始
               </Link>
             </div>
           </div>

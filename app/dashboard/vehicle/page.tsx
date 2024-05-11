@@ -128,8 +128,14 @@ export default function VehiclePage() {
   // 处理开关点击事件
   const handleSwitchChange = () => {
     setIsKivaMode(!isKivaMode); // 切换开关状态
-    console.log("🤯");
+    console.log("切换成功🤯");
   };
+
+  function handleClick() {
+    let cmd = "1";
+    const start_data = SetPlanningNodeState(cmd);
+    console.log(start_data, "开始运行");
+  }
 
   return (
     <div className="md:container px-2 mx-auto pt-5 h-[50rem]">
@@ -193,7 +199,7 @@ export default function VehiclePage() {
               </Label>
             </div>
           </RadioGroup>
-          {!isKivaMode && (
+          {!isKivaMode ? (
             <div className="">
               <Form {...form}>
                 <form
@@ -238,6 +244,15 @@ export default function VehiclePage() {
                   </div>
                 </form>
               </Form>
+            </div>
+          ) : (
+            <div className="text-center">
+              <Button
+                className="md:w-96 w-full rounded-full"
+                onClick={handleClick}
+              >
+                开始运行
+              </Button>
             </div>
           )}
         </CardContent>
