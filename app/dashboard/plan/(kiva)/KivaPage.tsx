@@ -46,10 +46,8 @@ const KivaPage = () => {
   const fetcher = (...args: [string, RequestInit?]) =>
     fetch(...args).then((res) => res.json());
 
-  useEffect(() => {}, []);
-
   const { data, error, isLoading } = useSWR(
-    "http://192.168.2.200:8888/api/planning/GetKivaPlanningTaskFile",
+    "http://192.168.2.200:8888/api/planning/GetKivaCurrentPlanningTaskFiles",
     fetcher,
     {
       refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
@@ -95,7 +93,9 @@ const KivaPage = () => {
         console.error("Error:", error);
       });
     //触发 SWR 重新请求
-    mutate("http://192.168.2.200:8888/api/planning/GetKivaPlanningTaskFile");
+    mutate(
+      "http://192.168.2.200:8888/api/planning/GetKivaCurrentPlanningTaskFiles"
+    );
     setIstrigger(!istrigger);
   };
 

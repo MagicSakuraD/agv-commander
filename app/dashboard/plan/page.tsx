@@ -43,6 +43,7 @@ import PlanningTaskFiles from "./PlanningTaskFiles";
 import { FileDisplay, Notes, OneKey, TwoKey } from "@icon-park/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import KivaPage from "./(kiva)/KivaPage";
+import KivaTask from "./(kiva)/KivaTask";
 
 const FormSchema = z.object({
   mainId: z.string({
@@ -688,7 +689,7 @@ const PlanPage = () => {
           <TabsTrigger value="free">Free模式</TabsTrigger>
           <TabsTrigger value="kiva">Kiva模式</TabsTrigger>
         </TabsList>
-        <TabsContent value="free" className="space-y-4">
+        <TabsContent value="free" className="space-y-4 mt-6">
           <CardWithForm
             actionData={actionData}
             setActionData={setActionData}
@@ -726,8 +727,8 @@ const PlanPage = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="kiva">
-          <KivaPage />
+        <TabsContent value="kiva" className="mt-6">
+          <KivaTask />
         </TabsContent>
       </Tabs>
     </div>

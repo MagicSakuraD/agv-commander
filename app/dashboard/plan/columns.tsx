@@ -24,6 +24,7 @@ import TaskEditor from "./TaskEditor";
 import KivaEditor from "./(kiva)/KivaEditor";
 import KivaPage from "./(kiva)/KivaPage";
 import KivaDelete from "./(kiva)/KivaDelete";
+import { EditTwo } from "@icon-park/react";
 // import ParamForm from "./ParamForm";
 
 export type Fileprop = {
@@ -185,6 +186,54 @@ export const columns_kiva: ColumnDef<kivaProp>[] = [
             <DropdownMenuSeparator />
             <KivaEditor {...kivaData} />
             <KivaDelete {...kivaData} />
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+// This type is used to define the shape of our data.
+// You can use a Zod schema here if you want.
+export type KivaMode = {
+  name: string;
+  path: string;
+};
+
+export const columnsKiva: ColumnDef<KivaMode>[] = [
+  {
+    accessorKey: "name",
+    header: "文件名",
+  },
+  {
+    accessorKey: "path",
+    header: "路径",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const FileParam = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button aria-haspopup="true" size="icon" variant="ghost">
+              <span className="sr-only">Open menu</span>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-4 h-4 bi bi-three-dots"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+              </svg>
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>操作</DropdownMenuLabel>
+            <DropdownMenuItem>查看&修改</DropdownMenuItem>
+            <DropdownMenuItem>删除</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
