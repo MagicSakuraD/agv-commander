@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/card";
 import useSWR from "swr";
 import { carShowAtom, markerlistAtom } from "@/lib/atoms";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { WholeSiteAccelerator } from "@icon-park/react";
 
 const FormSchema = z.object({
@@ -128,7 +128,8 @@ interface AddInitPoseProps {
 const AddInitPose: React.FC<AddInitPoseProps> = ({ AGV_point_real, angle }) => {
   const [res_pose, setRes_pose] = useState([]);
   const [markerlist, setMarkerlist] = useAtom(markerlistAtom);
-  const [carShow, setCarShow] = useAtom(carShowAtom);
+
+  const setCarShow = useSetAtom(carShowAtom);
   const fetcher = (...args: [string, RequestInit?]) =>
     fetch(...args).then((res) => res.json());
   // 定义一个常量，用于存储 API 的 URL

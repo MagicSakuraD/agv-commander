@@ -23,7 +23,7 @@ import { FormError } from "@/components/dashboard/form-error";
 import { FormSuccess } from "@/components/dashboard/form-success";
 import { authenticate } from "@/lib/login";
 import { LoginSchema } from "@/lib/schema";
-import { useAtom } from "jotai";
+
 
 export default function Home() {
   const [error, setError] = useState<string | undefined>("");

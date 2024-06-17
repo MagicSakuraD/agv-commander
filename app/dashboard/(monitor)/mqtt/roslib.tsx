@@ -7,7 +7,7 @@ import {
   loc_posAtom,
   ros_RunningAtom,
 } from "../../../../lib/atoms";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 
 export interface ICPQualityMessage extends ROSLIB.Message {
   data: number;
@@ -25,11 +25,13 @@ export interface SlamPosMessage extends ROSLIB.Message {
   };
 }
 export default function useROSLIB() {
-  const [icp_quality, setIcp_quality] = useAtom(icp_qualityAtom);
-  const [slam_pos, setSlam_pos] = useAtom(slam_posAtom);
-  const [loc_pos, setLoc_pos] = useAtom(loc_posAtom);
+  const setIcp_quality = useSetAtom(icp_qualityAtom);
 
-  const [ros_Running, setRos_Running] = useAtom(ros_RunningAtom);
+  const setSlam_pos = useSetAtom(slam_posAtom);
+
+  const setLoc_pos = useSetAtom(loc_posAtom);
+
+  const setRos_Running = useSetAtom(ros_RunningAtom);
   useEffect(() => {
     let ros = new ROSLIB.Ros({ url: "ws://192.168.2.200:9090" });
     ros.on("connection", function () {

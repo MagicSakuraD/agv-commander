@@ -28,7 +28,7 @@ import {
   markerlistAtom,
   carShowAtom,
 } from "@/lib/atoms";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import useSocket from "./mqtt/socket";
 import { io } from "socket.io-client";
 import PointMarker from "./tabs/(InitPose)/PointMarker";
@@ -60,10 +60,11 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
   const [png_y, setPng_y] = useState<number>(0);
   const [currentMap, setCurrentMap] = useState<string>("暂无地图");
   const [resolution, setResolution] = useState<number>(0);
-  const [rpi_temperature, setRpi_temperature] = useAtom(temperatureAtom);
+  const setRpi_temperature = useSetAtom(temperatureAtom);
+
   const [MapName, setMapName] = useAtom(MapNameAtom);
-  const [markerlist, setMarkerlist] = useAtom(markerlistAtom);
-  const [carShow, setCarShow] = useAtom(carShowAtom);
+  // const [markerlist, setMarkerlist] = useAtom(markerlistAtom);
+  // const [carShow, setCarShow] = useAtom(carShowAtom);
 
   // Create a new image object
   const img = new Image();

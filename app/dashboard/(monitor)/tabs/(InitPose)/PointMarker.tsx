@@ -3,7 +3,7 @@ import { LeafletTrackingMarker } from "react-leaflet-tracking-marker";
 import { useEffect, useState } from "react";
 import L from "leaflet";
 import React from "react";
-import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { markerlistAtom } from "@/lib/atoms";
 
 const icon = L.icon({
@@ -34,7 +34,8 @@ export function MapMarker({ x, y, yaw }: MapMarkerProps) {
 }
 
 const PointMarker = () => {
-  const [markerlist, setMarkerlist] = useAtom(markerlistAtom);
+  const markerlist = useAtomValue(markerlistAtom);
+
   return (
     <div>
       {markerlist.map((marker) => (

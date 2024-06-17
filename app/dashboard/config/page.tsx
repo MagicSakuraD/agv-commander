@@ -42,7 +42,7 @@ import useSWR from "swr";
 import { GetConfigContent } from "@/lib/actions";
 import { DataTable } from "@/components/ui/data-table";
 import { Fileprop, columns } from "./columns";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { FileNameAtom, fileDataAtom } from "@/lib/atoms";
 import { OneKey, TwoKey } from "@icon-park/react";
 
@@ -60,7 +60,7 @@ const MappingPage = () => {
   const [Files, setFiles] = useState<File[]>([]);
 
   const [fileData, setFileData] = useAtom(fileDataAtom);
-  const [fileName, setFileName] = useAtom(FileNameAtom);
+  const setFileName = useSetAtom(FileNameAtom);
 
   useEffect(() => {
     // 发送 GET 请求

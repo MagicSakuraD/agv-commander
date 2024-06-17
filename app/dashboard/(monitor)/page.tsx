@@ -23,7 +23,7 @@ import {
   ros_RunningAtom,
   temperatureAtom,
 } from "../../../lib/atoms";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 
 import {
   Card,
@@ -92,11 +92,15 @@ type AGV_point = {
 const MapPage = () => {
   const { toast } = useToast();
 
-  const [rpi_temperature, setRpi_temperature] = useAtom(temperatureAtom);
-  const [icp_quality, setIcp_quality] = useAtom(icp_qualityAtom);
-  const [slam_pos, setSlam_pos] = useAtom(slam_posAtom);
-  const [loc_pos, setLoc_pos] = useAtom(loc_posAtom);
-  const [ros_Running, setRos_Running] = useAtom(ros_RunningAtom);
+  const rpi_temperature = useAtomValue(temperatureAtom);
+
+  const icp_quality = useAtomValue(icp_qualityAtom);
+
+  const slam_pos = useAtomValue(slam_posAtom);
+
+  const loc_pos = useAtomValue(loc_posAtom);
+
+  const ros_Running = useAtomValue(ros_RunningAtom);
   const [isRecord, setIsRecord] = useState(0);
   const [Record_ok, setRecord_ok] = useState(0);
   const [RecordContext, setRecordContext] = useState<string>("记录定位数据");

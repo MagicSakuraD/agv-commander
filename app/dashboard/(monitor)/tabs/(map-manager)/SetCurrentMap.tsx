@@ -7,11 +7,10 @@ import {
 import { handleSetCurrentMap } from "@/lib/actions";
 import { toast, useToast } from "@/components/ui/use-toast";
 import { MapNameAtom } from "@/lib/atoms";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 
 const SetCurrentMap = (map_name: Map_AGV) => {
-  // const [mapResult, setMapResult] = React.useState<string>("");
-  const [MapName, setMapName] = useAtom(MapNameAtom);
+  const setMapName = useSetAtom(MapNameAtom);
 
   const handleApplyMap = async () => {
     const result = await handleSetCurrentMap(map_name);

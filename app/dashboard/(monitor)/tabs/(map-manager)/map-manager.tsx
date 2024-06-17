@@ -54,7 +54,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { bagnameAtom } from "@/lib/atoms";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import CheckMapping from "./CheckMapping";
 import LoadingMapping from "./LoadingMapping";
 import DisplayCompletedMap from "./DisplayCompletedMap";
@@ -268,7 +268,7 @@ const SelectForm: React.FC<SelectFormProps> = ({ bags, setDialogStatus }) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-  const [bagname, setBagname] = useAtom(bagnameAtom);
+  const setBagname = useSetAtom(bagnameAtom);
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setBagname(data.mapping_name);
     let bodyContent = JSON.stringify({

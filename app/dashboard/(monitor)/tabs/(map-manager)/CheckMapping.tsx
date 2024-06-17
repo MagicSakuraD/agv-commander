@@ -1,6 +1,5 @@
 import { DialogHeader } from "@/components/ui/dialog";
 
-import { useAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 

@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { toast } from "@/components/ui/use-toast";
 import { FileNameAtom, fileDataAtom } from "@/lib/atoms";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GetConfigContent, changeFileContent } from "@/lib/actions";
 import { Fileprop } from "./columns";
 
@@ -47,8 +47,9 @@ const ParamForm: React.FC<ParamFormProps> = ({
   param_value,
   param_comment,
 }) => {
-  const [fileName, setFileName] = useAtom(FileNameAtom);
-  const [fileData, setFileData] = useAtom(fileDataAtom);
+  const fileName = useAtomValue(FileNameAtom);
+
+  const setFileData = useSetAtom(fileDataAtom);
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
