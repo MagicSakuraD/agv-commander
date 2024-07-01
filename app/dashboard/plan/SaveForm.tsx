@@ -89,6 +89,7 @@ const SaveForm: React.FC<SaveFormProps> = ({ list }) => {
       });
 
     // mutate("http://192.168.2.200:8888/api/planning/GetPlanningTaskFiles");
+    form.reset();
   }
 
   return (

@@ -20,6 +20,39 @@ import useSWR from "swr";
 import { DataTable } from "@/components/ui/data-table";
 import { columnsKiva, KivaMode } from "../columns";
 import { Data } from "@icon-park/react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
+
+export function BreadcrumbWithCustomSeparator() {
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink>
+            <Link href="/">Home</Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbLink>
+            <Link href="/components">Components</Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
+}
 
 function convertKivaDataToKivaMode(kivaData: {
   [key: string]: string;
@@ -68,7 +101,9 @@ const KivaTask = () => {
       <CardHeader>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-bold">任务文件</h2>
-          <Button size="sm">添加文件</Button>
+          <Link href="/dashboard/plan/create">
+            <Button size="sm">创建</Button>
+          </Link>
         </div>
       </CardHeader>
       <CardContent>

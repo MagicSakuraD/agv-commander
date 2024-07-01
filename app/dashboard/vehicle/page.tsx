@@ -19,7 +19,7 @@ import {
   SetPlanningNodeState,
   SetPlanningTaskFile,
 } from "@/lib/actions";
-import { useTask } from "@/lib/swr";
+import { useTask, useKivaTask } from "@/lib/swr";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { set, useForm } from "react-hook-form";
@@ -128,7 +128,7 @@ export default function VehiclePage() {
   // 处理开关点击事件
   const handleSwitchChange = () => {
     setIsKivaMode(!isKivaMode); // 切换开关状态
-    console.log("切换成功🤯");
+    console.log(data, "切换成功🤯");
   };
 
   function handleClick() {
@@ -155,52 +155,52 @@ export default function VehiclePage() {
         </CardHeader>
 
         <CardContent className="grid gap-16">
-          <RadioGroup
-            defaultValue="card"
-            className="grid grid-cols-2 gap-4"
-            onValueChange={handleRadioChange}
-          >
-            <div>
-              <RadioGroupItem
-                value="Manual"
-                id="Manual"
-                className="peer sr-only"
-              />
-              <Label
-                htmlFor="Manual"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-              >
-                <GameThree
-                  className="mb-3"
-                  theme="two-tone"
-                  size="40"
-                  fill={["#333", "#22c55e"]}
-                />
-                手动模式
-              </Label>
-            </div>
-            <div>
-              <RadioGroupItem
-                value="Automatic"
-                id="Automatic"
-                className="peer sr-only"
-              />
-              <Label
-                htmlFor="Automatic"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-              >
-                <RobotOne
-                  className="mb-3"
-                  theme="two-tone"
-                  size="40"
-                  fill={["#333", "#22c55e"]}
-                />
-                自动模式
-              </Label>
-            </div>
-          </RadioGroup>
           {!isKivaMode ? (
-            <div className="">
+            <div className="flex flex-col space-y-10">
+              <RadioGroup
+                defaultValue="card"
+                className="grid grid-cols-2 gap-4"
+                onValueChange={handleRadioChange}
+              >
+                <div>
+                  <RadioGroupItem
+                    value="Manual"
+                    id="Manual"
+                    className="peer sr-only"
+                  />
+                  <Label
+                    htmlFor="Manual"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                  >
+                    <GameThree
+                      className="mb-3"
+                      theme="two-tone"
+                      size="40"
+                      fill={["#333", "#22c55e"]}
+                    />
+                    手动模式
+                  </Label>
+                </div>
+                <div>
+                  <RadioGroupItem
+                    value="Automatic"
+                    id="Automatic"
+                    className="peer sr-only"
+                  />
+                  <Label
+                    htmlFor="Automatic"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                  >
+                    <RobotOne
+                      className="mb-3"
+                      theme="two-tone"
+                      size="40"
+                      fill={["#333", "#22c55e"]}
+                    />
+                    自动模式
+                  </Label>
+                </div>
+              </RadioGroup>
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}

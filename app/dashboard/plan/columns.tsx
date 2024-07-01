@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -232,7 +232,9 @@ export const columnsKiva: ColumnDef<KivaMode>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>操作</DropdownMenuLabel>
-            <DropdownMenuItem>查看&修改</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={"/"}>查看&修改</Link>
+            </DropdownMenuItem>
             <DropdownMenuItem>删除</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -18,3 +18,23 @@ export function useTask() {
     isError: error,
   };
 }
+
+export function useKivaTask() {
+  const {
+    data: taskData,
+    error: taskError,
+    isLoading: isTaskLoading,
+  } = useSWR(
+    `http://192.168.2.200:8888/api/planning/GetAllKivaPlanningTaskFilesName`,
+    fetcher,
+    {
+      refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
+      refreshInterval: 3000,
+    }
+  );
+  return {
+    data: taskData,
+    isLoading: isTaskLoading,
+    isError: taskError,
+  };
+}

@@ -76,17 +76,17 @@ const values: ValuesTpye = {
 
 const topicMqtt: string = "testtopic/2";
 
-const mqttConfig: ValuesTpye = {
-  host: "192.168.2.114",
-  port: 8083,
-  clientId: "Next_js",
-  protocol: "ws",
-};
+// const mqttConfig: ValuesTpye = {
+//   host: "192.168.2.114",
+//   port: 8083,
+//   clientId: "Next_js",
+//   protocol: "ws",
+// };
 
-type AGV_point = {
-  x: number;
-  y: number;
-};
+// type AGV_point = {
+//   x: number;
+//   y: number;
+// };
 
 //页面jsx
 const MapPage = () => {

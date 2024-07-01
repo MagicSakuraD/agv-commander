@@ -684,11 +684,15 @@ const PlanPage = () => {
 
   return (
     <div className="md:container px-2 mx-auto pt-5 flex flex-wrap gap-5 justify-center">
-      <Tabs defaultValue="free" className="w-full">
+      <Tabs defaultValue="kiva" className="w-full">
         <TabsList>
-          <TabsTrigger value="free">Free模式</TabsTrigger>
           <TabsTrigger value="kiva">Kiva模式</TabsTrigger>
+          <TabsTrigger value="free">Free模式</TabsTrigger>
         </TabsList>
+        <TabsContent value="kiva" className="mt-6">
+          <KivaTask />
+        </TabsContent>
+
         <TabsContent value="free" className="space-y-4 mt-6">
           <CardWithForm
             actionData={actionData}
@@ -726,9 +730,6 @@ const PlanPage = () => {
               <PlanningTaskFiles />
             </CardContent>
           </Card>
-        </TabsContent>
-        <TabsContent value="kiva" className="mt-6">
-          <KivaTask />
         </TabsContent>
       </Tabs>
     </div>

@@ -100,15 +100,15 @@ const LeafletMap: React.FC<MapMarkerProps> = ({
           setResolution(Number(data_png.data.resolution));
         }
 
-        const socket = io("http://192.168.2.114:5001");
-        socket.on("transmit_data", (data) => {
-          // setRos_Running(data.location_record_is_running);
-          setRpi_temperature(data.rpi_temperature);
-          // console.log(data.rpi_temperature, "👌");
-        });
-        socket.on("status", (data) => {
-          socket.emit("start");
-        });
+        // const socket = io("http://192.168.2.114:5001");
+        // socket.on("transmit_data", (data) => {
+        //   // setRos_Running(data.location_record_is_running);
+        //   setRpi_temperature(data.rpi_temperature);
+        //   // console.log(data.rpi_temperature, "👌");
+        // });
+        // socket.on("status", (data) => {
+        //   socket.emit("start");
+        // });
 
         const currentMap_data = await GetCurrentMapUseName();
         setCurrentMap(currentMap_data.data);

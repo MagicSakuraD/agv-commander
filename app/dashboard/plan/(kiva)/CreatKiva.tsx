@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
+import React from "react";
 import { kivaProp, columns_kiva } from "../columns";
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
@@ -13,12 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Gps } from "@icon-park/react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { parsedDataAtom } from "@/lib/atoms";
 import KivaAdd from "./KivaAdd";
-import { mutate } from "swr";
+
 import { toast } from "@/components/ui/use-toast";
-import { set } from "zod";
 import Link from "next/link";
 
 import {
@@ -29,6 +27,27 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { set, useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+
+const FormSchema = z.object({
+  filename: z.string().min(2, {
+    message: "filename must be at least 2 characters.",
+  }),
+});
 
 export function BreadcrumbWithCustomSeparator() {
   return (
@@ -74,34 +93,20 @@ const fetchKivaData = (kivaData: string[]) => {
   return parsedData; // Add return statement to return parsed data
 };
 
-const KivaPage = () => {
+const CreateKiva = () => {
   const [kivafile, setKivafile] = useAtom(parsedDataAtom);
-  const [istrigger, setIstrigger] = useState(false);
+  const router = useRouter();
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      filename: "",
+    },
+  });
 
-  const fetcher = (...args: [string, RequestInit?]) =>
-    fetch(...args).then((res) => res.json());
-
-  const { data, error, isLoading } = useSWR(
-    "http://192.168.2.200:8888/api/planning/GetKivaCurrentPlanningTaskFiles",
-    fetcher,
-    {
-      refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
-    }
-  );
-
-  useEffect(() => {
-    if (data && data.data) {
-      setKivafile(data.data);
-    }
-  }, [data]); // <--- Update the dependency array to [data]
-
-  if (error) return <div>无法访问数据</div>;
-  if (isLoading) return <div>加载中...</div>;
-
-  const handleSaveKiva = () => {
+  function onSubmit(data: z.infer<typeof FormSchema>) {
     //将kivafie数组转换为字符串,每个元素之间用换行符
     const strKivafile = kivafile.join("\n");
-    fetch("http://192.168.2.200:8888/api/planning/AddKivaTaskFile", {
+    fetch("http://192.168.2.200:8888/api/planning/AddKivaPlanningTaskFile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +114,7 @@ const KivaPage = () => {
       },
       body: JSON.stringify({
         content: strKivafile,
-        name: "setKivaMap",
+        name: data.filename,
       }),
     })
       .then((res) => {
@@ -123,16 +128,15 @@ const KivaPage = () => {
         toast({
           title: "保存成功✅",
         });
+
+        setKivafile([]); // 清空kivafile数组
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-    //触发 SWR 重新请求
-    mutate(
-      "http://192.168.2.200:8888/api/planning/GetKivaCurrentPlanningTaskFiles"
-    );
-    setIstrigger(!istrigger);
-  };
+
+    router.push("/dashboard/plan");
+  }
 
   // 渲染数据
   return (
@@ -158,10 +162,31 @@ const KivaPage = () => {
           <DataTable columns={columns_kiva} data={fetchKivaData(kivafile)} />
         </CardContent>
         <CardFooter>
-          <div className="w-full text-center">
-            <Button className="w-full max-w-screen-sm" onClick={handleSaveKiva}>
-              保存设置
-            </Button>
+          <div className="w-full">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className=" space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="filename"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>文件名</FormLabel>
+                      <FormControl>
+                        <Input placeholder="请输入文件名" {...field} />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="min-w-96">
+                  保存设置
+                </Button>
+              </form>
+            </Form>
           </div>
         </CardFooter>
       </Card>
@@ -169,4 +194,4 @@ const KivaPage = () => {
   );
 };
 
-export default KivaPage;
+export default CreateKiva;
