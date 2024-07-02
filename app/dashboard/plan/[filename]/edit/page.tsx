@@ -30,7 +30,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-export function BreadcrumbWithCustomSeparator() {
+function BreadcrumbWithCustomSeparator() {
   return (
     <Breadcrumb>
       <BreadcrumbList className="text-xl">
