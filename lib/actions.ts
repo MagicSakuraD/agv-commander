@@ -442,7 +442,7 @@ export async function SetKivaTaskFile(filename: string) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        path: filename,
+        name: filename,
       }),
     }
   );

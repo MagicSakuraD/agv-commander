@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { use, useEffect, useState } from "react";
 import {
   SetControlNodeState,
+  SetKivaTaskFile,
   SetPlanningNodeState,
   SetPlanningTaskFile,
 } from "@/lib/actions";
@@ -128,7 +129,7 @@ export default function VehiclePage() {
   function onSubmitkiva(data: z.infer<typeof FormSchema>) {
     const real_task = data.task.replace(/\.txt$/, "");
     console.log("任务文件名", real_task);
-    const kiva_data = SetPlanningTaskFile(real_task);
+    const kiva_data = SetKivaTaskFile(real_task);
     console.log(kiva_data, "设置kiva文件返回值");
     let cmd = "2";
     const kiva_state = SetControlNodeState(cmd);
