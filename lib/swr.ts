@@ -9,7 +9,6 @@ export function useTask() {
     fetcher,
     {
       refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
-      refreshInterval: 3000,
     }
   );
   return {
@@ -29,7 +28,6 @@ export function useKivaTask() {
     fetcher,
     {
       refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
-      refreshInterval: 3000,
     }
   );
   return {

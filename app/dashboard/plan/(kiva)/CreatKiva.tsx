@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { mutate } from "swr";
 
 const FormSchema = z.object({
   filename: z.string().min(2, {
@@ -138,6 +139,11 @@ const CreateKiva = () => {
     router.push("/dashboard/plan");
   }
 
+  const handlCancel = () => {
+    setKivafile([]); // 清空kivafile数组
+    router.push("/dashboard/plan");
+  };
+
   // 渲染数据
   return (
     <div className="mx-auto">
@@ -156,7 +162,7 @@ const CreateKiva = () => {
               <KivaAdd />
             </div>
           </CardTitle>
-          <CardDescription>设置路径点</CardDescription>
+          <CardDescription>创建路径点</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable columns={columns_kiva} data={fetchKivaData(kivafile)} />
@@ -182,9 +188,14 @@ const CreateKiva = () => {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="min-w-96">
-                  保存设置
-                </Button>
+                <div className="flex flex-row gap-3">
+                  <Button type="submit" className="min-w-96">
+                    保存设置
+                  </Button>
+                  <Button variant={"outline"} onClick={handlCancel}>
+                    取消
+                  </Button>
+                </div>
               </form>
             </Form>
           </div>

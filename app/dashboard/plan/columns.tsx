@@ -2,14 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -22,9 +15,10 @@ import {
 import DeleteTask from "./DeleteTask";
 import TaskEditor from "./TaskEditor";
 import KivaEditor from "./(kiva)/KivaEditor";
-import KivaPage from "./(kiva)/KivaPage";
 import KivaDelete from "./(kiva)/KivaDelete";
+import KivaDeleteItem from "./kivaDeleteItem";
 import { EditTwo } from "@icon-park/react";
+
 // import ParamForm from "./ParamForm";
 
 export type Fileprop = {
@@ -213,6 +207,7 @@ export const columnsKiva: ColumnDef<KivaMode>[] = [
     id: "actions",
     cell: ({ row }) => {
       const FileParam = row.original;
+      const filename = FileParam.name.replace(/\.txt$/, "");
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -232,10 +227,18 @@ export const columnsKiva: ColumnDef<KivaMode>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>操作</DropdownMenuLabel>
-            <DropdownMenuItem>
-              <Link href={"/"}>查看&修改</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>删除</DropdownMenuItem>
+            <Link href={`/dashboard/plan/${filename}/edit`}>
+              <DropdownMenuItem className="flex flex-row gap-2">
+                {" "}
+                <EditTwo
+                  theme="two-tone"
+                  size="16"
+                  fill={["#333", "#22c55e"]}
+                />
+                查看&修改
+              </DropdownMenuItem>
+            </Link>
+            <KivaDeleteItem {...FileParam} />
           </DropdownMenuContent>
         </DropdownMenu>
       );

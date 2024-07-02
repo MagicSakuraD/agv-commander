@@ -87,7 +87,7 @@ const KivaAdd = () => {
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button size={"sm"} variant="outline">
+          <Button variant="outline">
             <AddOne
               theme="two-tone"
               size="20"

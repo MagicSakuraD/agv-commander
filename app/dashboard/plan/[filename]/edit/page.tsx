@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-import { kivaProp, columns_kiva } from "../columns";
+import { kivaProp, columns_kiva } from "@/app/dashboard/plan/columns";
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import {
 import { Gps } from "@icon-park/react";
 import { useAtom } from "jotai";
 import { parsedDataAtom } from "@/lib/atoms";
-import KivaAdd from "./KivaAdd";
+import KivaAdd from "@/app/dashboard/plan/(kiva)/KivaAdd";
 import { mutate } from "swr";
 import { toast } from "@/components/ui/use-toast";
 import { set } from "zod";
@@ -77,14 +77,27 @@ const fetchKivaData = (kivaData: string[]) => {
 const KivaPage = ({ params }: { params: { filename: string } }) => {
   const [kivafile, setKivafile] = useAtom(parsedDataAtom);
   const [istrigger, setIstrigger] = useState(false);
-  console.log(params);
+  const simpleName = params.filename;
+  const filename = `${params.filename}.txt`;
 
-  const fetcher = (...args: [string, RequestInit?]) =>
-    fetch(...args).then((res) => res.json());
+  const fetcher = (url: string, init: RequestInit) =>
+    fetch(url, init).then((res) => res.json());
 
   const { data, error, isLoading } = useSWR(
-    "http://192.168.2.200:8888/api/planning/GetKivaCurrentPlanningTaskFiles",
-    fetcher,
+    "http://192.168.2.200:8888/api/planning/GetKivaPlanningTaskFile",
+    () =>
+      fetcher(
+        "http://192.168.2.200:8888/api/planning/GetKivaPlanningTaskFile",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            name: filename,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      ),
     {
       refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
     }
@@ -102,17 +115,20 @@ const KivaPage = ({ params }: { params: { filename: string } }) => {
   const handleSaveKiva = () => {
     //将kivafie数组转换为字符串,每个元素之间用换行符
     const strKivafile = kivafile.join("\n");
-    fetch("http://192.168.2.200:8888/api/planning/AddKivaTaskFile", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // 可以添加其他头部信息
-      },
-      body: JSON.stringify({
-        content: strKivafile,
-        name: "setKivaMap",
-      }),
-    })
+    fetch(
+      "http://192.168.2.200:8888/api/planning/OverrideKivaPlanningTaskFile",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // 可以添加其他头部信息
+        },
+        body: JSON.stringify({
+          content: strKivafile,
+          name: simpleName,
+        }),
+      }
+    )
       .then((res) => {
         if (!res.ok) {
           throw new Error("HTTP 状态" + res.status);
@@ -129,9 +145,7 @@ const KivaPage = ({ params }: { params: { filename: string } }) => {
         console.error("Error:", error);
       });
     //触发 SWR 重新请求
-    mutate(
-      "http://192.168.2.200:8888/api/planning/GetKivaCurrentPlanningTaskFiles"
-    );
+    mutate("http://192.168.2.200:8888/api/planning/GetKivaPlanningTaskFile");
     setIstrigger(!istrigger);
   };
 
@@ -147,7 +161,7 @@ const KivaPage = ({ params }: { params: { filename: string } }) => {
           <CardTitle className="flex flex-row justify-between">
             <div className="flex flex-row gap-1 items-center">
               <Gps theme="two-tone" size="24" fill={["#333", "#22c55e"]} />
-              <p>kiva模式</p>
+              <p>{filename}</p>
             </div>
             <div>
               <KivaAdd />

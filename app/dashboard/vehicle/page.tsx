@@ -13,7 +13,7 @@ import {
 
 import { GameThree, PauseOne, Play, RobotOne } from "@icon-park/react";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   SetControlNodeState,
   SetPlanningNodeState,
@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { on } from "events";
 
 const FormSchema = z.object({
   task: z.string({
@@ -94,8 +95,14 @@ export default function VehiclePage() {
   };
 
   const { data, isLoading, isError } = useTask();
-  // const dataEntries = Object.entries(data?.data);
+  const {
+    data: kivaData,
+    isLoading: kivaIsLoading,
+    isError: kivaIsError,
+  } = useKivaTask();
+
   const dataEntries = data?.data ? Object.entries(data.data) : [];
+  const kivaDataEntries = kivaData?.data ? Object.entries(kivaData.data) : [];
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -116,6 +123,16 @@ export default function VehiclePage() {
     } else {
       console.log("设置任务失败");
     }
+  }
+
+  function onSubmitkiva(data: z.infer<typeof FormSchema>) {
+    const real_task = data.task.replace(/\.txt$/, "");
+    console.log("任务文件名", real_task);
+    const kiva_data = SetPlanningTaskFile(real_task);
+    console.log(kiva_data, "设置kiva文件返回值");
+    let cmd = "2";
+    const kiva_state = SetControlNodeState(cmd);
+    console.log(kiva_state, "设置kiva状态,开始运行");
   }
 
   function hadnlePause() {
@@ -247,12 +264,55 @@ export default function VehiclePage() {
             </div>
           ) : (
             <div className="text-center">
-              <Button
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmitkiva)}
+                  className="w-full space-y-16"
+                >
+                  <FormField
+                    control={form.control}
+                    name="task"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>选择任务文件</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="请选择" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {kivaDataEntries.map(([key, value]) => (
+                              <SelectItem value={key as string} key={key}>
+                                {key}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="text-center">
+                    <Button
+                      className="md:w-96 w-full rounded-full"
+                      type="submit"
+                    >
+                      执行任务
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+              {/* <Button
                 className="md:w-96 w-full rounded-full"
                 onClick={handleClick}
               >
                 开始运行
-              </Button>
+              </Button> */}
             </div>
           )}
         </CardContent>

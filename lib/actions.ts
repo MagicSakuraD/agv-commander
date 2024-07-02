@@ -58,6 +58,30 @@ export async function handleDeleteMap(map_name: Map_AGV) {
   }
 }
 
+export async function handleDeletekiva(file_name: string) {
+  try {
+    const response = await fetch(
+      "http://192.168.2.200:8888/api/planning/DeleteKivaPlanningTaskFile",
+      {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: file_name,
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error("Error❌:", error);
+  }
+  revalidatePath("/dashboard/plan");
+  redirect("/dashboard/plan");
+}
+
 export async function DeleteInitPose(pose_id: Pose) {
   try {
     const response = await fetch(
@@ -396,6 +420,29 @@ export async function SetPlanningTaskFile(path: string) {
       },
       body: JSON.stringify({
         path: path,
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("获取数据失败");
+  }
+
+  return res.json();
+}
+
+export async function SetKivaTaskFile(filename: string) {
+  const res = await fetch(
+    "http://192.168.2.200:8888/api/planning/SetKivaTaskFile",
+    {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        path: filename,
       }),
     }
   );

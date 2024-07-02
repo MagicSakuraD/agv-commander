@@ -16,7 +16,7 @@ import {
   TableBody,
   Table,
 } from "@/components/ui/table";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { DataTable } from "@/components/ui/data-table";
 import { columnsKiva, KivaMode } from "../columns";
 import { Data } from "@icon-park/react";
@@ -83,6 +83,7 @@ const KivaTask = () => {
     fetcher,
     {
       refreshWhenHidden: false, // 当页面不可见时，停止重新获取数据
+      refreshInterval: 1000, // 每隔1秒重新获取数据
     }
   );
 
